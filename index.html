@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giới Thiệu Bản Thân | LÊ THANH VƯƠNG</title>
@@ -343,6 +343,39 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
+        /* Audio player styles */
+        .audio-player {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: rgba(108, 92, 231, 0.1);
+            border-radius: 10px;
+        }
+
+        .audio-player p {
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .download-btn:hover {
+            background: var(--secondary-color);
+        }
+
+        .download-btn i {
+            margin-right: 0.5rem;
+        }
+
         /* Donate section */
         .donate-section {
             text-align: center;
@@ -599,201 +632,171 @@
             }
         }
     </style>
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  </head>
-  <body>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
     <header>
-      <div class="container">
-        <div class="header-content">
-          <div class="profile">
-            <div class="avatar-container">
-              <img
-                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                alt="Avatar" class="avatar">
+        <div class="container">
+            <div class="header-content">
+                <div class="profile">
+                    <div class="avatar-container">
+                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Avatar" class="avatar">
+                    </div>
+                    <h1>LÊ THANH VƯƠNG</h1>
+                    <p class="tagline">Creative Designer & Frontend Developer | Biến ý tưởng thành hiện thực</p>
+                    <div class="social-links">
+                        <a href="https://www.facebook.com/profile.php?id=100054633901873" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link tiktok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-link github"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
             </div>
-            <h1>LÊ THANH VƯƠNG</h1>
-            <p class="tagline">Creative Designer & Frontend Developer | Biến ý
-              tưởng thành hiện thực</p>
-            <div class="social-links">
-              <a href="https://www.facebook.com/profile.php?id=100054633901873"
-                class="social-link facebook"><i
-                  class="fab fa-facebook-f"></i></a>
-              <a href="#" class="social-link instagram"><i
-                  class="fab fa-instagram"></i></a>
-              <a href="#" class="social-link tiktok"><i
-                  class="fab fa-tiktok"></i></a>
-              <a href="#" class="social-link github"><i
-                  class="fab fa-github"></i></a>
-              <a href="#" class="social-link linkedin"><i
-                  class="fab fa-linkedin-in"></i></a>
-            </div>
-          </div>
         </div>
-      </div>
     </header>
 
     <main class="container">
-      <section id="about">
-        <h2>Về Tôi</h2>
-        <div class="about-content">
-          <div class="about-text">
-            <p>Xin chào! Tôi là <strong>LÊ THANH VƯƠNG</strong>, một lập trình
-              viên và nhà nghiên cứu công nghệ với niềm đam mê phát triển phần
-              mềm,
-              trí tuệ nhân tạo và điều khiển tự động.</p>
-
-            <p>Tôi đã có kinh nghiệm làm việc với nhiều dự án liên quan đến nhận
-              diện biển số xe, xử lý ảnh và phát triển hệ thống nhúng.</p>
-
-            <p>Tôi tin rằng sự kết hợp giữa nghệ thuật và công nghệ có thể tạo
-              ra những sản phẩm xuất sắc. Với tôi, mỗi dự án là một cơ hội để
-              học hỏi và phát triển.</p>
-            <p>Khi không làm việc, tôi thích chụp ảnh, đi du lịch và khám phá
-              những công nghệ mới. Tôi cũng thường xuyên chia sẻ kiến thức trên
-              các nền tảng mạng xã hội.</p>
-          </div>
-          <div class="about-image">
-            <img
-              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-              alt="Làm việc nhóm">
-          </div>
-        </div>
-      </section>
-
-      <section id="skills">
-        <h2>Kỹ Năng Chuyên Môn</h2>
-        <div class="skills">
-          <span class="skill">UI/UX Design</span>
-          <span class="skill">Figma</span>
-          <span class="skill">Adobe Creative Suite</span>
-          <span class="skill">HTML5/CSS3</span>
-          <span class="skill">JavaScript</span>
-          <span class="skill">React.js</span>
-          <span class="skill">Vue.js</span>
-          <span class="skill">Responsive Design</span>
-          <span class="skill">Animation</span>
-          <span class="skill">Photography</span>
-          <span class="skill">Video Editing</span>
-          <span class="skill">Project Management</span>
-        </div>
-      </section>
-
-      <section id="experience">
-        <h2>Hành Trình Nghề Nghiệp</h2>
-        <div class="timeline">
-          <div class="timeline-item">
-            <div class="timeline-date">2 tháng 4 năm 2025 lúc 9:14p sáng - Hiện
-              tại</div>
-            <div class="timeline-content">
-              <h3>GIÚP ĐỠ BẠN BÈ </h3>
-              <p> LỜI NHẮC THANH TOÁN KHOẢN NỢ </p>
-              <p>Chào LUÂN, tôi rất vui khi đã giúp bạn vượt qua bài PLCPLC
-                mà bạn gặp phải. Tuy nhiên, như một nguyên tắc bất di bất dịch,
-                công sức của tôi cần được ‘hoàn trả’. Không gì lớn lao, chỉ cần
-                một buổi đá banh hoặc bữa ăn ngon hoặc 1 củ để tôi cảm thấy xứng
-                đáng với những giờ phút không ngủ để giúp bạn. Chắc bạn không
-                muốn tôi phải gửi hóa đơn ‘đòi nợ’ đâu nhỉ?</p>
-              <div class="audio-player">
-            <p>Ghi âm nhắc nợ:</p>
-            <audio controls style="width: 100%; max-width: 400px;">
-                <source src="webvuongle/9.14,2 thg 4.m4a" type="audio/mp4">
-                Trình duyệt của bạn không hỗ trợ phát âm thanh.
-            </audio>
-            <a href="webvuongle/9.14,2 thg 4.m4a" download class="download-btn">
-                <i class="fas fa-download"></i> Tải xuống
-            </a>
-        </div>
+        <section id="about">
+            <h2>Về Tôi</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Xin chào! Tôi là <strong>LÊ THANH VƯƠNG</strong>, một lập trình viên và nhà nghiên cứu công nghệ với niềm đam mê phát triển phần mềm, trí tuệ nhân tạo và điều khiển tự động.</p>
+                    <p>Tôi đã có kinh nghiệm làm việc với nhiều dự án liên quan đến nhận diện biển số xe, xử lý ảnh và phát triển hệ thống nhúng.</p>
+                    <p>Tôi tin rằng sự kết hợp giữa nghệ thuật và công nghệ có thể tạo ra những sản phẩm xuất sắc. Với tôi, mỗi dự án là một cơ hội để học hỏi và phát triển.</p>
+                    <p>Khi không làm việc, tôi thích chụp ảnh, đi du lịch và khám phá những công nghệ mới. Tôi cũng thường xuyên chia sẻ kiến thức trên các nền tảng mạng xã hội.</p>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Làm việc nhóm">
+                </div>
             </div>
-            
-          </div>
-          <div class="timeline-item">
-            <div class="timeline-date">2 tháng 4 năm 2025 lúc 15:34p chiều -
-              Hiện tại</div>
-            <div class="timeline-content">
-              <h3>GIÚP ĐỠ BẠN BÈ</h3>
-              <p>LỜI NHẮC THANH TOÁN KHOẢN NỢ </p>
-              <p>Chào "NHÓM HUYNH" ! Mình rất vui khi có thể giúp nhóm bạn giải
-                quyết đề tài IOT của bạn
-                . Tuy nhiên, như mọi hợp tác tốt đẹp, chẳng ai làm không
-                công cả! 😁 Vì vậy, đừng quên ‘trả ơn’ mình một cách xứng đáng,
-                có thể là một buổi cà phê hay bữa ăn ngon. Nếu không, tôi sẽ
-                phải bắt đầu ghi sổ nợ và chắc chắn sẽ gửi hóa đơn sau đấy!</p>
+        </section>
+
+        <section id="skills">
+            <h2>Kỹ Năng Chuyên Môn</h2>
+            <div class="skills">
+                <span class="skill">UI/UX Design</span>
+                <span class="skill">Figma</span>
+                <span class="skill">Adobe Creative Suite</span>
+                <span class="skill">HTML5/CSS3</span>
+                <span class="skill">JavaScript</span>
+                <span class="skill">React.js</span>
+                <span class="skill">Vue.js</span>
+                <span class="skill">Responsive Design</span>
+                <span class="skill">Animation</span>
+                <span class="skill">Photography</span>
+                <span class="skill">Video Editing</span>
+                <span class="skill">Project Management</span>
             </div>
-          </div>
+        </section>
+
+        <section id="experience">
+            <h2>Hành Trình Nghề Nghiệp</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2 tháng 4 năm 2025 lúc 9:14p sáng - Hiện tại</div>
+                    <div class="timeline-content">
+                        <h3>GIÚP ĐỠ BẠN BÈ</h3>
+                        <p>LỜI NHẮC THANH TOÁN KHOẢN NỢ</p>
+                        <p>Chào LUÂN, tôi rất vui khi đã giúp bạn vượt qua bài PLCPLC mà bạn gặp phải. Tuy nhiên, như một nguyên tắc bất di bất dịch, công sức của tôi cần được 'hoàn trả'. Không gì lớn lao, chỉ cần một buổi đá banh hoặc bữa ăn ngon hoặc 1 củ để tôi cảm thấy xứng đáng với những giờ phút không ngủ để giúp bạn. Chắc bạn không muốn tôi phải gửi hóa đơn 'đòi nợ' đâu nhỉ?</p>
+                        
+                        <div class="audio-player">
+                            <p>Ghi âm nhắc nợ:</p>
+                            <audio controls style="width: 100%; max-width: 400px;">
+                                <source src="9.14-2-thg-4.m4a" type="audio/mp4">
+                                Trình duyệt của bạn không hỗ trợ phát âm thanh.
+                            </audio>
+                            <a href="9.14-2-thg-4.m4a" download class="download-btn">
+                                <i class="fas fa-download"></i> Tải xuống
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2 tháng 4 năm 2025 lúc 15:34p chiều - Hiện tại</div>
+                    <div class="timeline-content">
+                        <h3>GIÚP ĐỠ BẠN BÈ</h3>
+                        <p>LỜI NHẮC THANH TOÁN KHOẢN NỢ</p>
+                        <p>Chào "NHÓM HUYNH" ! Mình rất vui khi có thể giúp nhóm bạn giải quyết đề tài IOT của bạn. Tuy nhiên, như mọi hợp tác tốt đẹp, chẳng ai làm không công cả! 😁 Vì vậy, đừng quên 'trả ơn' mình một cách xứng đáng, có thể là một buổi cà phê hay bữa ăn ngon. Nếu không, tôi sẽ phải bắt đầu ghi sổ nợ và chắc chắn sẽ gửi hóa đơn sau đấy!</p>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="portfolio">
-          <h2>Portfolio</h2>
-          <p>Một số dự án tiêu biểu tôi đã thực hiện trong thời gian qua:</p>
-
-          <div class="gallery">
-            <div class="gallery-item">
-              <img
-                src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                alt="Dự án 1">
-            </div>
-            <div class="gallery-item">
-              <img
-                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
-                alt="Dự án 2">
-            </div>
-            <div clpng"
-                  alt="QR Code Donate" class="qr-code">
-              </div>
-
-              <p>Quét mã QR để ủng hộ qua ứng dụng Momo hoặc ngân
-                hàng</p>
-
-              <div class="donate-methods">
-                <div class="method">
-                  <div class="method-icon"><i
-                      class="fas fa-money-bill-wave"></i></div>
-                  <h3>Ví Momo</h3>
-                  <p>0329742219</p>
-                  <p>LÊ THANH VƯƠNG</p>
+            <h2>Portfolio</h2>
+            <p>Một số dự án tiêu biểu tôi đã thực hiện trong thời gian qua:</p>
+            
+            <div class="gallery">
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Dự án 1">
                 </div>
-
-                <div class="method">
-                  <div class="method-icon"><i
-                      class="fas fa-university"></i></div>
-                  <h3>Ngân Hàng</h3>
-                  <p>Vietcombank</p>
-                  <p>1027010352</p>
-                  <p>LÊ THANH VƯƠNG</p>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Dự án 2">
                 </div>
-              </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Dự án 3">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Dự án 4">
+                </div>
             </div>
-          </div>
         </section>
-      </main>
 
-      <footer>
+        <section id="donate">
+            <div class="donate-section">
+                <div class="donate-content">
+                    <h2 class="donate-title">Ủng Hộ Tôi</h2>
+                    <p class="donate-desc">Nếu bạn thấy nội dung của tôi hữu ích và muốn ủng hộ, hãy quét mã QR hoặc sử dụng một trong các phương thức thanh toán dưới đây. Mọi đóng góp của bạn sẽ giúp tôi tạo ra nhiều nội dung chất lượng hơn!</p>
+                    
+                    <div class="qr-container">
+                        <img src="webvuongle/qr.png" alt="QR Code Donate" class="qr-code">
+                    </div>
+                    
+                    <p>Quét mã QR để ủng hộ qua ứng dụng Momo hoặc ngân hàng</p>
+                    
+                    <div class="donate-methods">
+                        <div class="method">
+                            <div class="method-icon"><i class="fas fa-money-bill-wave"></i></div>
+                            <h3>Ví Momo</h3>
+                            <p>0329742219</p>
+                            <p>LÊ THANH VƯƠNG</p>
+                        </div>
+                        <div class="method">
+                            <div class="method-icon"><i class="fas fa-university"></i></div>
+                            <h3>Ngân Hàng</h3>
+                            <p>Vietcombank</p>
+                            <p>1027010352</p>
+                            <p>LÊ THANH VƯƠNG</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
         <div class="container">
-          <div class="footer-content">
-            <div class="footer-logo">LÊ THANH VƯƠNG</div>
-            <div class="footer-links">
-              <a href="#about" class="footer-link">Về Tôi</a>
-              <a href="#skills" class="footer-link">Kỹ Năng</a>
-              <a href="#experience" class="footer-link">Kinh Nghiệm</a>
-              <a href="#portfolio" class="footer-link">Portfolio</a>
-              <a href="#donate" class="footer-link">Ủng Hộ</a>
+            <div class="footer-content">
+                <div class="footer-logo">LÊ THANH VƯƠNG</div>
+                <div class="footer-links">
+                    <a href="#about" class="footer-link">Về Tôi</a>
+                    <a href="#skills" class="footer-link">Kỹ Năng</a>
+                    <a href="#experience" class="footer-link">Kinh Nghiệm</a>
+                    <a href="#portfolio" class="footer-link">Portfolio</a>
+                    <a href="#donate" class="footer-link">Ủng Hộ</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-link facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-link tiktok"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="social-link github"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link linkedin"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+                <p class="copyright">© 2025 LÊ THANH VƯƠNG. All rights reserved.</p>
             </div>
-            <div class="social-links">
-              <a href="#" class="social-link facebook"><i
-                  class="fab fa-facebook-f"></i></a>
-              <a href="#" class="social-link instagram"><i
-                  class="fab fa-instagram"></i></a>
-              <a href="#" class="social-link tiktok"><i
-                  class="fab fa-tiktok"></i></a>
-              <a href="#" class="social-link github"><i
-                  class="fab fa-github"></i></a>
-              <a href="#" class="social-link linkedin"><i
-                  class="fab fa-linkedin-in"></i></a>
-            </div>
-            <p class="copyright">© 2025 LÊ THANH VƯƠNG. All rights reserved.</p>
-          </div>
         </div>
-      </footer>
-    </body>
-  </html>
+    </footer>
+</body>
+</html>
