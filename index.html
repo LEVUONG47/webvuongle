@@ -1,566 +1,815 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop Trường Star - Tài khoản Liên Quân VIP</title>
+    <title>Giới Thiệu Bản Thân | LÊ THANH VƯƠNG</title>
     <style>
-        /* Reset CSS và font chữ */
+        :root {
+            --primary-color: #6C5CE7;
+            --secondary-color: #A29BFE;
+            --accent-color: #FD79A8;
+            --dark-color: #2D3436;
+            --light-color: #F5F6FA;
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
-        
+
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
         body {
-            background-color: #f5f5f5;
-            color: #333;
-            line-height: 1.6;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.7;
+            overflow-x: hidden;
         }
-        
-        /* Header */
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header với hiệu ứng glassmorphism */
         header {
-            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             color: white;
-            padding: 1.5rem 0;
+            padding: 3rem 0;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: relative;
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-        
+
         header::before {
-            content: "";
+            content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover;
-            opacity: 0.2;
-            z-index: 0;
+            background: var(--gradient);
+            z-index: -1;
+            opacity: 0.9;
         }
-        
+
         .header-content {
             position: relative;
             z-index: 1;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
         }
-        
-        .logo {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        
-        .slogan {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 1rem;
-        }
-        
-        /* Navigation */
-        nav {
-            background-color: #222;
-            padding: 0.8rem 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        
-        .nav-container {
+
+        /* Profile section */
+        .profile {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            margin-bottom: 2rem;
         }
-        
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-        
-        .nav-links li {
-            margin-left: 1.5rem;
-        }
-        
-        .nav-links a {
-            color: white;
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
-            padding: 0.5rem 0;
+
+        .avatar-container {
             position: relative;
+            width: 180px;
+            height: 180px;
+            margin-bottom: 1.5rem;
         }
-        
-        .nav-links a:hover {
-            color: #fdbb2d;
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.5s ease;
         }
-        
-        .nav-links a::after {
+
+        .avatar-container:hover .avatar {
+            transform: scale(1.05);
+        }
+
+        .avatar-container::after {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: #fdbb2d;
-            transition: width 0.3s;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            border: 2px dashed var(--accent-color);
+            animation: spin 20s linear infinite;
+            opacity: 0.7;
+            pointer-events: none;
         }
-        
-        .nav-links a:hover::after {
-            width: 100%;
+
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
         }
-        
-        /* Main content */
-        .container {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 20px;
+
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, white, #F5F6FA);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        
-        .page-title {
-            font-size: 2rem;
-            color: #1a2a6c;
+
+        .tagline {
+            font-size: 1.3rem;
+            opacity: 0.9;
             margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid #fdbb2d;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Social links với hiệu ứng hover */
+        .social-links {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .social-link:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .social-link:hover::before {
+            left: 100%;
+        }
+
+        .social-link.facebook { background: #1877F2; }
+        .social-link.instagram { background: linear-gradient(45deg, #405DE6, #5851DB, #833AB4, #C13584, #E1306C, #FD1D1D, #F56040, #F77737, #FCAF45, #FFDC80); }
+        .social-link.tiktok { background: #000000; }
+        .social-link.github { background: #333; }
+        .social-link.linkedin { background: #0077B5; }
+
+        /* Main content */
+        main {
+            padding: 4rem 0;
+        }
+
+        /* Section styling */
+        section {
+            margin-bottom: 3rem;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--gradient);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            position: relative;
             display: inline-block;
         }
-        
-        /* Product grid */
-        .product-grid {
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent-color);
+            border-radius: 3px;
+        }
+
+        /* About section */
+        .about-content {
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+        }
+
+        .about-text {
+            flex: 1;
+        }
+
+        .about-image {
+            flex: 1;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s ease;
+        }
+
+        .about-image:hover {
+            transform: scale(1.03);
+        }
+
+        .about-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Skills section */
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .skill {
+            background: var(--light-color);
+            color: var(--dark-color);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #eee;
+        }
+
+        .skill:hover {
+            background: var(--gradient);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--secondary-color);
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 2.5rem;
+            padding-left: 2rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 10px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid var(--accent-color);
+            box-shadow: 0 0 0 4px white;
+        }
+
+        .timeline-date {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: inline-block;
+            background: var(--light-color);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+
+        .timeline-content {
+            background: var(--light-color);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Donate section */
+        .donate-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: var(--gradient);
+            border-radius: 15px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .donate-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse 8s infinite linear;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .donate-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .donate-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .donate-desc {
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            opacity: 0.9;
+        }
+
+        .qr-container {
+            display: inline-block;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .qr-container:hover {
+            transform: scale(1.05);
+        }
+
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
+        }
+
+        .donate-methods {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .method {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 1.5rem;
+            border-radius: 10px;
+            width: 200px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .method:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .method-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .method h3 {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .method p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        /* Gallery section */
+        .gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 1.5rem;
             margin-top: 2rem;
         }
-        
-        .product-card {
-            background-color: white;
-            border-radius: 8px;
+
+        .gallery-item {
+            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            aspect-ratio: 1/1;
         }
-        
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+
+        .gallery-item:hover {
+            transform: scale(1.03);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
-        
-        .product-image {
-            height: 200px;
-            overflow: hidden;
-        }
-        
-        .product-image img {
+
+        .gallery-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.5s;
+            transition: transform 0.5s ease;
         }
-        
-        .product-card:hover .product-image img {
-            transform: scale(1.05);
+
+        .gallery-item:hover img {
+            transform: scale(1.1);
         }
-        
-        .product-info {
-            padding: 1.5rem;
-        }
-        
-        .product-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1a2a6c;
-        }
-        
-        .product-price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #b21f1f;
-            margin: 0.5rem 0;
-        }
-        
-        .product-original-price {
-            text-decoration: line-through;
-            color: #777;
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
-        }
-        
-        .product-description {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        
-        .product-meta {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            color: #888;
-            margin-bottom: 1rem;
-        }
-        
-        .buy-button {
-            display: inline-block;
-            background: linear-gradient(to right, #b21f1f, #fdbb2d);
-            color: white;
-            padding: 0.7rem 1.5rem;
-            border-radius: 4px;
-            text-decoration: none;
-            font-weight: 600;
-            text-align: center;
-            transition: all 0.3s;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        .buy-button:hover {
-            background: linear-gradient(to right, #8a1818, #e0a825);
-            box-shadow: 0 4px 12px rgba(178, 31, 31, 0.3);
-        }
-        
+
         /* Footer */
         footer {
-            background-color: #222;
-            color: #ddd;
-            padding: 3rem 0 1.5rem;
-            margin-top: 3rem;
-        }
-        
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-        }
-        
-        .footer-column h3 {
-            color: white;
-            font-size: 1.2rem;
-            margin-bottom: 1.5rem;
+            text-align: center;
+            padding: 3rem 0;
+            background: var(--dark-color);
+            color: var(--light-color);
             position: relative;
-            padding-bottom: 0.5rem;
         }
-        
-        .footer-column h3::after {
+
+        footer::before {
             content: '';
             position: absolute;
-            bottom: 0;
+            top: 0;
             left: 0;
-            width: 50px;
-            height: 2px;
-            background-color: #fdbb2d;
+            right: 0;
+            height: 5px;
+            background: var(--gradient);
         }
-        
-        .footer-column ul {
-            list-style: none;
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
         }
-        
-        .footer-column ul li {
-            margin-bottom: 0.8rem;
+
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--accent-color), var(--primary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        
-        .footer-column ul li a {
-            color: #ddd;
-            text-decoration: none;
-            transition: color 0.3s;
-        }
-        
-        .footer-column ul li a:hover {
-            color: #fdbb2d;
-        }
-        
-        .contact-info {
+
+        .footer-links {
             display: flex;
-            align-items: center;
-            margin-bottom: 0.8rem;
-        }
-        
-        .contact-info i {
-            margin-right: 0.8rem;
-            color: #fdbb2d;
-        }
-        
-        .social-links {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        
-        .social-links a {
-            display: inline-flex;
-            align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
-            background-color: #333;
-            color: white;
-            border-radius: 50%;
-            transition: all 0.3s;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
         }
-        
-        .social-links a:hover {
-            background-color: #fdbb2d;
-            transform: translateY(-3px);
+
+        .footer-link {
+            color: var(--light-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
-        
+
+        .footer-link:hover {
+            color: var(--accent-color);
+        }
+
         .copyright {
-            text-align: center;
-            padding-top: 2rem;
-            margin-top: 2rem;
-            border-top: 1px solid #444;
+            opacity: 0.7;
             font-size: 0.9rem;
-            color: #aaa;
         }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-container {
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .about-content {
                 flex-direction: column;
             }
             
-            .nav-links {
-                margin-top: 1rem;
+            .about-image {
+                width: 100%;
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
             }
             
-            .nav-links li {
-                margin-left: 1rem;
-                margin-right: 1rem;
+            .tagline {
+                font-size: 1.1rem;
             }
             
-            .product-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 2rem;
+            section {
+                padding: 2rem;
             }
             
-            .product-grid {
-                grid-template-columns: 1fr;
+            .method {
+                width: 150px;
             }
         }
-        
-        /* Animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 576px) {
+            header {
+                padding: 2rem 0;
+            }
+            
+            .avatar-container {
+                width: 150px;
+                height: 150px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            section {
+                padding: 1.5rem;
+            }
+            
+            .donate-methods {
+                gap: 1rem;
+            }
+            
+            .method {
+                width: 100%;
+                max-width: 200px;
+            }
         }
-        
-        .product-card {
-            animation: fadeIn 0.5s ease-out forwards;
-            opacity: 0;
-        }
-        
-        .product-card:nth-child(1) { animation-delay: 0.1s; }
-        .product-card:nth-child(2) { animation-delay: 0.2s; }
-        .product-card:nth-child(3) { animation-delay: 0.3s; }
-        .product-card:nth-child(4) { animation-delay: 0.4s; }
-        .product-card:nth-child(5) { animation-delay: 0.5s; }
-        .product-card:nth-child(6) { animation-delay: 0.6s; }
     </style>
-</head>
-<body>
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
     <header>
+      <div class="container">
         <div class="header-content">
-            <div class="logo">SHOP TRƯỜNG STAR</div>
-            <div class="slogan">Nơi mua bán tài khoản Liên Quân uy tín, giá tốt</div>
+          <div class="profile">
+            <div class="avatar-container">
+              <img
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                alt="Avatar" class="avatar">
+            </div>
+            <h1>LÊ THANH VƯƠNG</h1>
+            <p class="tagline">Creative Designer & Frontend Developer | Biến ý
+              tưởng thành hiện thực</p>
+            <div class="social-links">
+              <a href="https://www.facebook.com/profile.php?id=100054633901873"
+                class="social-link facebook"><i
+                  class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-link instagram"><i
+                  class="fab fa-instagram"></i></a>
+              <a href="#" class="social-link tiktok"><i
+                  class="fab fa-tiktok"></i></a>
+              <a href="#" class="social-link github"><i
+                  class="fab fa-github"></i></a>
+              <a href="#" class="social-link linkedin"><i
+                  class="fab fa-linkedin-in"></i></a>
+            </div>
+          </div>
         </div>
+      </div>
     </header>
-    
-    <nav>
-        <div class="nav-container">
-            <div class="brand">TRANG CHỦ LIÊN QUÂN</div>
-            <ul class="nav-links">
-                <li><a href="#">Trang chủ</a></li>
-                <li><a href="#">Tài khoản Liên Quân</a></li>
-                <li><a href="#">Tướng & Skin</a></li>
-                <li><a href="#">Ngọc & Bảng ngọc</a></li>
-                <li><a href="#">Liên hệ</a></li>
-            </ul>
-        </div>
-    </nav>
-    
+
     <main class="container">
-        <h1 class="page-title">TÀI KHOẢN LIÊN QUÂN VIP</h1>
-        
-        <div class="product-grid">
-            <!-- Product 1 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200?text=Liên+Quân+VIP+1" alt="Liên Quân VIP 1">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Tài khoản Liên Quân VIP 1</h3>
-                    <div class="product-price">1.500.000đ <span class="product-original-price">2.000.000đ</span></div>
-                    <div class="product-meta">
-                        <span>Tướng: 100+</span>
-                        <span>Skin: 50+</span>
-                    </div>
-                    <p class="product-description">Tài khoản VIP với đầy đủ tướng và skin hot nhất, rank Cao Thủ, có thể chơi ngay.</p>
-                    <button class="buy-button">MUA NGAY</button>
-                </div>
-            </div>
-            
-            <!-- Product 2 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200?text=Liên+Quân+VIP+2" alt="Liên Quân VIP 2">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Tài khoản Liên Quân VIP 2</h3>
-                    <div class="product-price">2.500.000đ <span class="product-original-price">3.200.000đ</span></div>
-                    <div class="product-meta">
-                        <span>Tướng: Full</span>
-                        <span>Skin: 80+</span>
-                    </div>
-                    <p class="product-description">Tài khoản full tướng, gần full skin, rank Thách Đấu, có nhiều skin giới hạn.</p>
-                    <button class="buy-button">MUA NGAY</button>
-                </div>
-            </div>
-            
-            <!-- Product 3 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200?text=Liên+Quân+VIP+3" alt="Liên Quân VIP 3">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Tài khoản Liên Quân VIP 3</h3>
-                    <div class="product-price">3.800.000đ <span class="product-original-price">4.500.000đ</span></div>
-                    <div class="product-meta">
-                        <span>Tướng: Full</span>
-                        <span>Skin: 120+</span>
-                    </div>
-                    <p class="product-description">Tài khoản cực phẩm, full skin limited edition, rank Cao Thủ, nhiều vật phẩm độc.</p>
-                    <button class="buy-button">MUA NGAY</button>
-                </div>
-            </div>
-            
-            <!-- Product 4 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200?text=Liên+Quân+VIP+4" alt="Liên Quân VIP 4">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Tài khoản Liên Quân VIP 4</h3>
-                    <div class="product-price">5.000.000đ <span class="product-original-price">6.200.000đ</span></div>
-                    <div class="product-meta">
-                        <span>Tướng: Full</span>
-                        <span>Skin: 150+</span>
-                    </div>
-                    <p class="product-description">Tài khoản đẳng cấp, full bộ sưu tập skin, rank Thách Đấu cao, cực kỳ hiếm.</p>
-                    <button class="buy-button">MUA NGAY</button>
-                </div>
-            </div>
-            
-            <!-- Product 5 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200?text=Liên+Quân+VIP+5" alt="Liên Quân VIP 5">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Tài khoản Liên Quân VIP 5</h3>
-                    <div class="product-price">7.500.000đ <span class="product-original-price">9.000.000đ</span></div>
-                    <div class="product-meta">
-                        <span>Tướng: Full</span>
-                        <span>Skin: Full</span>
-                    </div>
-                    <p class="product-description">Tài khoản đỉnh cao, full skin không thiếu một cái nào, rank Cao Thủ, cực phẩm.</p>
-                    <button class="buy-button">MUA NGAY</button>
-                </div>
-            </div>
-            
-            <!-- Product 6 -->
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200?text=Liên+Quân+VIP+6" alt="Liên Quân VIP 6">
-                </div>
-                <div class="product-info">
-                    <h3 class="product-title">Tài khoản Liên Quân VIP 6</h3>
-                    <div class="product-price">10.000.000đ <span class="product-original-price">12.000.000đ</span></div>
-                    <div class="product-meta">
-                        <span>Tướng: Full</span>
-                        <span>Skin: Full+</span>
-                    </div>
-                    <p class="product-description">Tài khoản siêu VIP, full skin + skin giới hạn đặc biệt, rank cao, cực kỳ hiếm.</p>
-                    <button class="buy-button">MUA NGAY</button>
-                </div>
-            </div>
+      <section id="about">
+        <h2>Về Tôi</h2>
+        <div class="about-content">
+          <div class="about-text">
+            <p>Xin chào! Tôi là <strong>LÊ THANH VƯƠNG</strong>, một lập trình
+              viên và nhà nghiên cứu công nghệ với niềm đam mê phát triển phần
+              mềm,
+              trí tuệ nhân tạo và điều khiển tự động.</p>
+
+            <p>Tôi đã có kinh nghiệm làm việc với nhiều dự án liên quan đến nhận
+              diện biển số xe, xử lý ảnh và phát triển hệ thống nhúng.</p>
+
+            <p>Tôi tin rằng sự kết hợp giữa nghệ thuật và công nghệ có thể tạo
+              ra những sản phẩm xuất sắc. Với tôi, mỗi dự án là một cơ hội để
+              học hỏi và phát triển.</p>
+            <p>Khi không làm việc, tôi thích chụp ảnh, đi du lịch và khám phá
+              những công nghệ mới. Tôi cũng thường xuyên chia sẻ kiến thức trên
+              các nền tảng mạng xã hội.</p>
+          </div>
+          <div class="about-image">
+            <img
+              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+              alt="Làm việc nhóm">
+          </div>
         </div>
-    </main>
-    
-    <footer>
-        <div class="footer-container">
-            <div class="footer-column">
-                <h3>VỀ SHOP TRƯỜNG STAR</h3>
-                <p>Chuyên cung cấp tài khoản game Liên Quân VIP uy tín, chất lượng với giá thành hợp lý nhất thị trường.</p>
-                <div class="social-links">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
-                    <a href="#"><i class="fab fa-zalo"></i></a>
-                </div>
-            </div>
-            
-            <div class="footer-column">
-                <h3>DANH MỤC</h3>
-                <ul>
-                    <li><a href="#">Trang chủ</a></li>
-                    <li><a href="#">Tài khoản Liên Quân</a></li>
-                    <li><a href="#">Tướng & Skin</a></li>
-                    <li><a href="#">Ngọc & Bảng ngọc</a></li>
-                    <li><a href="#">Hướng dẫn mua hàng</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>CHÍNH SÁCH</h3>
-                <ul>
-                    <li><a href="#">Chính sách bảo mật</a></li>
-                    <li><a href="#">Chính sách đổi trả</a></li>
-                    <li><a href="#">Điều khoản dịch vụ</a></li>
-                    <li><a href="#">Cam kết chất lượng</a></li>
-                </ul>
-            </div>
-            
-            <div class="footer-column">
-                <h3>LIÊN HỆ</h3>
-                <div class="contact-info">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span>123 Đường ABC, Quận XYZ, TP.HCM</span>
-                </div>
-                <div class="contact-info">
-                    <i class="fas fa-phone-alt"></i>
-                    <span>0909.123.456</span>
-                </div>
-                <div class="contact-info">
-                    <i class="fas fa-envelope"></i>
-                    <span>shoptruongstar@gmail.com</span>
-                </div>
-            </div>
+      </section>
+
+      <section id="skills">
+        <h2>Kỹ Năng Chuyên Môn</h2>
+        <div class="skills">
+          <span class="skill">UI/UX Design</span>
+          <span class="skill">Figma</span>
+          <span class="skill">Adobe Creative Suite</span>
+          <span class="skill">HTML5/CSS3</span>
+          <span class="skill">JavaScript</span>
+          <span class="skill">React.js</span>
+          <span class="skill">Vue.js</span>
+          <span class="skill">Responsive Design</span>
+          <span class="skill">Animation</span>
+          <span class="skill">Photography</span>
+          <span class="skill">Video Editing</span>
+          <span class="skill">Project Management</span>
         </div>
-        
-        <div class="copyright">
-            &copy; 2023 Shop Trường Star. All Rights Reserved.
+      </section>
+
+      <section id="experience">
+        <h2>Hành Trình Nghề Nghiệp</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">2 tháng 4 năm 2025 lúc 9:14p sáng - Hiện
+              tại</div>
+            <div class="timeline-content">
+              <h3>GIÚP ĐỠ BẠN BÈ </h3>
+              <p> LỜI NHẮC THANH TOÁN KHOẢN NỢ </p>
+              <p>Chào LUÂN, tôi rất vui khi đã giúp bạn vượt qua bài PLCPLC
+                mà bạn gặp phải. Tuy nhiên, như một nguyên tắc bất di bất dịch,
+                công sức của tôi cần được ‘hoàn trả’. Không gì lớn lao, chỉ cần
+                một buổi đá banh hoặc bữa ăn ngon hoặc 1 củ để tôi cảm thấy xứng
+                đáng với những giờ phút không ngủ để giúp bạn. Chắc bạn không
+                muốn tôi phải gửi hóa đơn ‘đòi nợ’ đâu nhỉ?</p>
+            </div>
+            <audio src="webvuongle/9.14,2 thg 4.m4a" preload="metadata"></audio>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-date">2 tháng 4 năm 2025 lúc 15:34p chiều -
+              Hiện tại</div>
+            <div class="timeline-content">
+              <h3>GIÚP ĐỠ BẠN BÈ</h3>
+              <p>LỜI NHẮC THANH TOÁN KHOẢN NỢ </p>
+              <p>Chào "NHÓM HUYNH" ! Mình rất vui khi có thể giúp nhóm bạn giải
+                quyết đề tài IOT của bạn
+                . Tuy nhiên, như mọi hợp tác tốt đẹp, chẳng ai làm không
+                công cả! 😁 Vì vậy, đừng quên ‘trả ơn’ mình một cách xứng đáng,
+                có thể là một buổi cà phê hay bữa ăn ngon. Nếu không, tôi sẽ
+                phải bắt đầu ghi sổ nợ và chắc chắn sẽ gửi hóa đơn sau đấy!</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="portfolio">
+          <h2>Portfolio</h2>
+          <p>Một số dự án tiêu biểu tôi đã thực hiện trong thời gian qua:</p>
+
+          <div class="gallery">
+            <div class="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1547658719-da2b51169166?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                alt="Dự án 1">
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                alt="Dự án 2">
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                alt="Dự án 3">
+            </div>
+            <div class="gallery-item">
+              <img
+                src="https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80"
+                alt="Dự án 4">
+            </div>
+          </div>
+        </section>
+
+        <section id="donate">
+          <div class="donate-section">
+            <div class="donate-content">
+              <h2 class="donate-title">Ủng Hộ Tôi</h2>
+              <p class="donate-desc">Nếu bạn thấy nội dung của tôi hữu ích và
+                muốn
+                ủng hộ, hãy quét mã QR hoặc sử dụng một trong các phương thức
+                thanh toán dưới đây. Mọi đóng góp của bạn sẽ giúp tôi tạo ra
+                nhiều
+                nội dung chất lượng hơn!</p>
+
+              <div class="qr-container">
+                <img
+                  src="webvuongle/qr.jpgjpg"
+                  alt="QR Code Donate" class="qr-code">
+              </div>
+
+              <p>Quét mã QR để ủng hộ qua ứng dụng Momo hoặc ngân
+                hàng</p>
+
+              <div class="donate-methods">
+                <div class="method">
+                  <div class="method-icon"><i
+                      class="fas fa-money-bill-wave"></i></div>
+                  <h3>Ví Momo</h3>
+                  <p>03297422190329742219</p>
+                  <p>LÊ THANH VƯƠNG</p>
+                </div>
+
+                <div class="method">
+                  <div class="method-icon"><i
+                      class="fas fa-university"></i></div>
+                  <h3>Ngân Hàng</h3>
+                  <p>Vietcombank</p>
+                  <p>1027010352</p>
+                  <p>LÊ THANH VƯƠNG</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="container">
+          <div class="footer-content">
+            <div class="footer-logo">LÊ THANH VƯƠNG</div>
+            <div class="footer-links">
+              <a href="#about" class="footer-link">Về Tôi</a>
+              <a href="#skills" class="footer-link">Kỹ Năng</a>
+              <a href="#experience" class="footer-link">Kinh Nghiệm</a>
+              <a href="#portfolio" class="footer-link">Portfolio</a>
+              <a href="#donate" class="footer-link">Ủng Hộ</a>
+            </div>
+            <div class="social-links">
+              <a href="#" class="social-link facebook"><i
+                  class="fab fa-facebook-f"></i></a>
+              <a href="#" class="social-link instagram"><i
+                  class="fab fa-instagram"></i></a>
+              <a href="#" class="social-link tiktok"><i
+                  class="fab fa-tiktok"></i></a>
+              <a href="#" class="social-link github"><i
+                  class="fab fa-github"></i></a>
+              <a href="#" class="social-link linkedin"><i
+                  class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p class="copyright">© 2025 LÊ THANH VƯƠNG. All rights reserved.</p>
+          </div>
         </div>
-    </footer>
-    
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-</body>
-</html>
+      </footer>
+    </body>
+  </html>
