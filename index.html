@@ -343,36 +343,146 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
         }
 
-        /* Audio player styles */
-        .audio-player {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: rgba(108, 92, 231, 0.1);
-            border-radius: 10px;
+        /* Nâng cấp Audio Player */
+        .audio-container {
+            margin-top: 1.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
 
-        .audio-player p {
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+        .audio-container:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .audio-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .audio-icon {
+            font-size: 1.8rem;
             color: var(--primary-color);
+            margin-right: 0.8rem;
         }
 
-        .download-btn {
-            display: inline-block;
-            margin-top: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: var(--primary-color);
+        .audio-title {
+            font-weight: 600;
+            color: var(--dark-color);
+            flex-grow: 1;
+        }
+
+        .audio-duration {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            margin-top: 0.8rem;
+        }
+
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient);
             color: white;
-            border-radius: 5px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-right: 1rem;
+            transition: all 0.3s;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(108, 92, 231, 0.3);
+        }
+
+        .progress-container {
+            flex-grow: 1;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            cursor: pointer;
+            margin-right: 1rem;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+        .time-display {
+            display: flex;
+            font-size: 0.85rem;
+            color: #666;
+            min-width: 80px;
+            justify-content: space-between;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
+        }
+
+        .volume-btn {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            -webkit-appearance: none;
+            background: #e0e0e0;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .download-audio {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary-color);
+            border-radius: 6px;
             text-decoration: none;
-            transition: background 0.3s;
+            font-size: 0.9rem;
+            transition: all 0.3s;
         }
 
-        .download-btn:hover {
-            background: var(--secondary-color);
+        .download-audio:hover {
+            background: rgba(108, 92, 231, 0.2);
+            transform: translateY(-2px);
         }
 
-        .download-btn i {
+        .download-audio i {
             margin-right: 0.5rem;
         }
 
@@ -602,6 +712,20 @@
             .method {
                 width: 150px;
             }
+
+            .audio-controls {
+                flex-wrap: wrap;
+            }
+
+            .volume-control {
+                margin-left: 0;
+                margin-top: 0.8rem;
+                width: 100%;
+            }
+
+            .volume-slider {
+                width: 100%;
+            }
         }
 
         @media (max-width: 576px) {
@@ -700,13 +824,38 @@
                         <p>LỜI NHẮC THANH TOÁN KHOẢN NỢ</p>
                         <p>Chào LUÂN, tôi rất vui khi đã giúp bạn vượt qua bài PLCPLC mà bạn gặp phải. Tuy nhiên, như một nguyên tắc bất di bất dịch, công sức của tôi cần được 'hoàn trả'. Không gì lớn lao, chỉ cần một buổi đá banh hoặc bữa ăn ngon hoặc 1 củ để tôi cảm thấy xứng đáng với những giờ phút không ngủ để giúp bạn. Chắc bạn không muốn tôi phải gửi hóa đơn 'đòi nợ' đâu nhỉ?</p>
                         
-                        <div class="audio-player">
-                            <p>Ghi âm nhắc nợ:</p>
-                            <audio controls style="width: 100%; max-width: 400px;">
-                                <source src="webvuongle/luan.m4a" type="audio/mp4">
-                                Trình duyệt của bạn không hỗ trợ phát âm thanh.
-                            </audio>
-                            <a href="9.14-2-thg-4.m4a" download class="download-btn">
+                        <!-- Trình phát âm thanh nâng cấp -->
+                        <div class="audio-container">
+                            <div class="audio-header">
+                                <i class="fas fa-microphone-alt audio-icon"></i>
+                                <span class="audio-title">Ghi âm nhắc nợ</span>
+                                <span class="audio-duration" id="duration">00:00</span>
+                            </div>
+                            
+                            <audio id="audio-player" src="webvuongle/luan.m4a"></audio>
+                            
+                            <div class="audio-controls">
+                                <button class="play-btn" id="play-btn">
+                                    <i class="fas fa-play" id="play-icon"></i>
+                                </button>
+                                
+                                <div class="progress-container" id="progress-container">
+                                    <div class="progress-bar" id="progress-bar"></div>
+                                </div>
+                                
+                                <div class="time-display">
+                                    <span id="current-time">00:00</span>
+                                    <span>/</span>
+                                    <span id="total-time">00:00</span>
+                                </div>
+                                
+                                <div class="volume-control">
+                                    <i class="fas fa-volume-up volume-btn" id="volume-btn"></i>
+                                    <input type="range" class="volume-slider" id="volume-slider" min="0" max="1" step="0.01" value="1">
+                                </div>
+                            </div>
+                            
+                            <a href="webvuongle/luan.m4a" download class="download-audio">
                                 <i class="fas fa-download"></i> Tải xuống
                             </a>
                         </div>
@@ -798,5 +947,102 @@
             </div>
         </div>
     </footer>
+
+    <script>
+       // JavaScript cho trình phát âm thanh
+        document.addEventListener('DOMContentLoaded', function() {
+            const audioPlayer = document.getElementById('audio-player');
+            const playBtn = document.getElementById('play-btn');
+            const playIcon = document.getElementById('play-icon');
+            const progressBar = document.getElementById('progress-bar');
+            const progressContainer = document.getElementById('progress-container');
+            const currentTimeEl = document.getElementById('current-time');
+            const totalTimeEl = document.getElementById('total-time');
+            const durationEl = document.getElementById('duration');
+            const volumeBtn = document.getElementById('volume-btn');
+            const volumeSlider = document.getElementById('volume-slider');
+            
+            // Định dạng thời gian (phút:giây)
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            // Cập nhật tổng thời gian khi metadata được tải
+            audioPlayer.addEventListener('loadedmetadata', function() {
+                totalTimeEl.textContent = formatTime(audioPlayer.duration);
+                durationEl.textContent = formatTime(audioPlayer.duration);
+            });
+            
+            // Play/Pause
+            playBtn.addEventListener('click', function() {
+                if (audioPlayer.paused) {
+                    audioPlayer.play();
+                    playIcon.classList.remove('fa-play');
+                    playIcon.classList.add('fa-pause');
+                } else {
+                    audioPlayer.pause();
+                    playIcon.classList.remove('fa-pause');
+                    playIcon.classList.add('fa-play');
+                }
+            });
+            
+            // Cập nhật thanh tiến trình
+            audioPlayer.addEventListener('timeupdate', function() {
+                const progressPercent = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
+            });
+            
+            // Nhảy đến vị trí khi click trên thanh tiến trình
+            progressContainer.addEventListener('click', function(e) {
+                const width = this.clientWidth;
+                const clickX = e.offsetX;
+                const duration = audioPlayer.duration;
+                audioPlayer.currentTime = (clickX / width) * duration;
+            });
+            
+            // Khi kết thúc bài hát
+            audioPlayer.addEventListener('ended', function() {
+                playIcon.classList.remove('fa-pause');
+                playIcon.classList.add('fa-play');
+                progressBar.style.width = '0%';
+                currentTimeEl.textContent = '00:00';
+            });
+            
+            // Điều chỉnh âm lượng
+            volumeSlider.addEventListener('input', function() {
+                audioPlayer.volume = this.value;
+                
+                // Đổi icon volume
+                if (this.value == 0) {
+                    volumeBtn.classList.remove('fa-volume-up', 'fa-volume-down');
+                    volumeBtn.classList.add('fa-volume-mute');
+                } else if (this.value < 0.5) {
+                    volumeBtn.classList.remove('fa-volume-up', 'fa-volume-mute');
+                    volumeBtn.classList.add('fa-volume-down');
+                } else {
+                    volumeBtn.classList.remove('fa-volume-down', 'fa-volume-mute');
+                    volumeBtn.classList.add('fa-volume-up');
+                }
+            });
+            
+            // Toggle mute
+            volumeBtn.addEventListener('click', function() {
+                if (audioPlayer.volume > 0) {
+                    audioPlayer.volume = 0;
+                    volumeSlider.value = 0;
+                    volumeBtn.classList.remove('fa-volume-up', 'fa-volume-down');
+                    volumeBtn.classList.add('fa-volume-mute');
+                } else {
+                    audioPlayer.volume = 1;
+                    volumeSlider.value = 1;
+                    volumeBtn.classList.remove('fa-volume-mute', 'fa-volume-down');
+                    volumeBtn.classList.add('fa-volume-up');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
