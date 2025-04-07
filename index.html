@@ -215,6 +215,8 @@
             background: linear-gradient(to right, #84fab0, #8fd3f4);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            font-size: 32px;
+            margin-bottom: 10px;
         }
         
         .card-unit {
@@ -409,7 +411,8 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 25px;
+            margin-bottom: 0;
+            margin-top: 15px;
         }
         
         .switch-label {
@@ -757,9 +760,10 @@
                     </div>
                 </div>
 
+                <!-- Relay 1 Card -->
                 <div class="card motor">
                     <div class="card-header">
-                        <span class="card-title">Động cơ</span>
+                        <span class="card-title">Động cơ 1</span>
                         <div class="card-icon">
                             <svg width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -770,10 +774,39 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="card-value" id="motorStatus">TẮT</div>
-                    <div class="card-unit" id="motorSpeed">Tốc độ: 0%</div>
-                    <div class="card-trend">
-                        <span id="motorTrend">--</span>
+                    <div class="card-value" id="relay1Status">TẮT</div>
+                    <div class="card-unit" id="relay1Speed">Tốc độ: 0%</div>
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái</span>
+                        <label class="switch">
+                            <input type="checkbox" id="relay1Toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Relay 2 Card -->
+                <div class="card motor">
+                    <div class="card-header">
+                        <span class="card-title">Động cơ 2</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M13 10H17L12 3L7 10H11V20H13V10Z"
+                                    stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-value" id="relay2Status">TẮT</div>
+                    <div class="card-unit" id="relay2Speed">Tốc độ: 0%</div>
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái</span>
+                        <label class="switch">
+                            <input type="checkbox" id="relay2Toggle">
+                            <span class="slider"></span>
+                        </label>
                     </div>
                 </div>
             </div>
@@ -815,9 +848,12 @@
                         <span class="stat-value" id="minHumid">-- %</span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-label">Trạng thái động cơ</span>
-                        <span class="stat-badge badge-success"
-                            id="motorStatBadge">TẮT</span>
+                        <span class="stat-label">Trạng thái động cơ 1</span>
+                        <span class="stat-badge badge-danger" id="relay1StatBadge">TẮT</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Trạng thái động cơ 2</span>
+                        <span class="stat-badge badge-danger" id="relay2StatBadge">TẮT</span>
                     </div>
                 </div>
             </div>
@@ -832,13 +868,13 @@
                                 stroke-linecap="round"
                                 stroke-linejoin="round" />
                         </svg>
-                        Điều khiển động cơ
+                        Điều khiển động cơ 1
                     </h3>
 
                     <div class="switch-container">
                         <span class="switch-label">Trạng thái động cơ</span>
                         <label class="switch">
-                            <input type="checkbox" id="motorToggle">
+                            <input type="checkbox" id="relay1ControlToggle">
                             <span class="slider"></span>
                         </label>
                     </div>
@@ -846,10 +882,10 @@
                     <div class="speed-control-container">
                         <div class="speed-header">
                             <span class="speed-label">Tốc độ động cơ</span>
-                            <span class="speed-value" id="speedValue">0%</span>
+                            <span class="speed-value" id="relay1SpeedValue">0%</span>
                         </div>
                         <input type="range" class="range-slider"
-                            id="speedControl" min="0" max="100" value="0"
+                            id="relay1SpeedControl" min="0" max="100" value="0"
                             step="1">
                     </div>
                 </div>
@@ -858,23 +894,30 @@
                     <h3 class="control-title">
                         <svg width="20" height="20" viewBox="0 0 24 24"
                             fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z"
+                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z"
                                 stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round"
                                 stroke-linejoin="round" />
                         </svg>
-                        Thông số môi trường
+                        Điều khiển động cơ 2
                     </h3>
 
-                    <div class="gauge-container">
-                        <div class="gauge">
-                            <div class="gauge-body">
-                                <div class="gauge-cover"
-                                    id="comfortIndex">--</div>
-                            </div>
-                            <div class="gauge-label">Chỉ số thoải mái</div>
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái động cơ</span>
+                        <label class="switch">
+                            <input type="checkbox" id="relay2ControlToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="speed-control-container">
+                        <div class="speed-header">
+                            <span class="speed-label">Tốc độ động cơ</span>
+                            <span class="speed-value" id="relay2SpeedValue">0%</span>
                         </div>
+                        <input type="range" class="range-slider"
+                            id="relay2SpeedControl" min="0" max="100" value="0"
+                            step="1">
                     </div>
                 </div>
             </div>
@@ -900,14 +943,14 @@
                         <!-- Dữ liệu lịch sử sẽ được thêm bằng JavaScript -->
                     </tbody>
                 </table>
-                        <!-- Footer section -->
-                        <div style="margin-top: 1cm; text-align: center;">
-                            <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 15px;">
-                            <p style="margin-bottom: 0; font-size: 0.9rem; color: rgba(255,255,255,0.6);">
-                                © 2025 Bản quyền thuộc về LÊ THANH VƯƠNG
-                            </p>
-                        </div>
-          </div>
+            </div>
+
+            <!-- Footer section -->
+            <div style="margin-top: 1cm; text-align: center;">
+                <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 15px;">
+                <p style="margin-bottom: 0; font-size: 0.9rem; color: rgba(255,255,255,0.6);">
+                    © 2025 Bản quyền thuộc về LÊ THANH VƯƠNG
+                </p>
             </div>
         </div>
 
@@ -918,7 +961,7 @@
             authDomain: "webvuongle.firebaseapp.com",
             databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "webvuongle",
-            storageBucket: "webvuongle.firebasestorage.app",
+            storageBucket: "webvuongle.appspot.com",
             messagingSenderId: "72756137917",
             appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
         };
@@ -929,7 +972,8 @@
 
         // Tham chiếu đến các node trong Realtime Database
         const sensorRef = database.ref('sensor_data');
-        const motorRef = database.ref('motor');
+        const relay1Ref = database.ref('relays/relay1');
+        const relay2Ref = database.ref('relays/relay2');
         const historyRef = database.ref('history');
         const statsRef = database.ref('statistics');
 
@@ -944,7 +988,8 @@
         // Biến lưu trữ giá trị trước đó để tính xu hướng
         let prevTemperature = null;
         let prevHumidity = null;
-        let prevMotorSpeed = null;
+        let prevRelay1Speed = null;
+        let prevRelay2Speed = null;
 
         // Khởi tạo biểu đồ
         const ctx = document.getElementById('sensorChart').getContext('2d');
@@ -1055,9 +1100,7 @@
                     easing: 'easeOutQuart'
                 }
             }
-            
         });
-        
 
         // Cập nhật trạng thái kết nối
         const connectionStatus = document.getElementById('connectionStatus');
@@ -1146,47 +1189,91 @@
             }
         });
 
-        // Lắng nghe thay đổi trạng thái động cơ
-        motorRef.on('value', (snapshot) => {
+        // Lắng nghe thay đổi relay 1
+        relay1Ref.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                const motorToggle = document.getElementById('motorToggle');
-                const speedControl = document.getElementById('speedControl');
-                const motorStatusElement = document.getElementById('motorStatus');
-                const motorSpeedElement = document.getElementById('motorSpeed');
-                const motorStatBadge = document.getElementById('motorStatBadge');
+                // Cập nhật trạng thái
+                const relay1StatusElement = document.getElementById('relay1Status');
+                const relay1SpeedElement = document.getElementById('relay1Speed');
+                const relay1StatBadge = document.getElementById('relay1StatBadge');
                 
                 // Cập nhật UI không kích hoạt sự kiện change
-                motorToggle.checked = data.status === 'on';
+                document.getElementById('relay1Toggle').checked = data.status;
+                document.getElementById('relay1ControlToggle').checked = data.status;
                 
                 // Cập nhật tốc độ
-                speedControl.value = data.speed;
-                document.getElementById('speedValue').textContent = data.speed;
-                motorSpeedElement.textContent = `Tốc độ: ${data.speed}%`;
+                document.getElementById('relay1SpeedControl').value = data.speed;
+                document.getElementById('relay1SpeedValue').textContent = data.speed;
+                relay1SpeedElement.textContent = `Tốc độ: ${data.speed}%`;
                 
                 // Cập nhật trạng thái với hiệu ứng
-                if (motorStatusElement.textContent !== (data.status === 'on' ? 'BẬT' : 'TẮT')) {
-                    motorStatusElement.classList.add('glow');
-                    setTimeout(() => motorStatusElement.classList.remove('glow'), 1000);
+                if (relay1StatusElement.textContent !== (data.status ? 'BẬT' : 'TẮT')) {
+                    relay1StatusElement.classList.add('glow');
+                    setTimeout(() => relay1StatusElement.classList.remove('glow'), 1000);
                 }
                 
-                motorStatusElement.textContent = data.status === 'on' ? 'BẬT' : 'TẮT';
+                relay1StatusElement.textContent = data.status ? 'BẬT' : 'TẮT';
                 
                 // Cập nhật badge trạng thái
-                if (data.status === 'on') {
-                    motorStatBadge.textContent = 'BẬT';
-                    motorStatBadge.className = 'stat-badge badge-success';
+                if (data.status) {
+                    relay1StatBadge.textContent = 'BẬT';
+                    relay1StatBadge.className = 'stat-badge badge-success';
                 } else {
-                    motorStatBadge.textContent = 'TẮT';
-                    motorStatBadge.className = 'stat-badge badge-danger';
+                    relay1StatBadge.textContent = 'TẮT';
+                    relay1StatBadge.className = 'stat-badge badge-danger';
                 }
                 
                 // Tính toán xu hướng tốc độ
-                if (prevMotorSpeed !== null && data.status === 'on') {
-                    const speedDiff = data.speed - prevMotorSpeed;
-                    updateMotorTrend(speedDiff);
+                if (prevRelay1Speed !== null && data.status) {
+                    const speedDiff = data.speed - prevRelay1Speed;
+                    updateRelayTrend('relay1', speedDiff);
                 }
-                prevMotorSpeed = data.speed;
+                prevRelay1Speed = data.speed;
+            }
+        });
+
+        // Lắng nghe thay đổi relay 2
+        relay2Ref.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                // Cập nhật trạng thái
+                const relay2StatusElement = document.getElementById('relay2Status');
+                const relay2SpeedElement = document.getElementById('relay2Speed');
+                const relay2StatBadge = document.getElementById('relay2StatBadge');
+                
+                // Cập nhật UI không kích hoạt sự kiện change
+                document.getElementById('relay2Toggle').checked = data.status;
+                document.getElementById('relay2ControlToggle').checked = data.status;
+                
+                // Cập nhật tốc độ
+                document.getElementById('relay2SpeedControl').value = data.speed;
+                document.getElementById('relay2SpeedValue').textContent = data.speed;
+                relay2SpeedElement.textContent = `Tốc độ: ${data.speed}%`;
+                
+                // Cập nhật trạng thái với hiệu ứng
+                if (relay2StatusElement.textContent !== (data.status ? 'BẬT' : 'TẮT')) {
+                    relay2StatusElement.classList.add('glow');
+                    setTimeout(() => relay2StatusElement.classList.remove('glow'), 1000);
+                }
+                
+                relay2StatusElement.textContent = data.status ? 'BẬT' : 'TẮT';
+                
+                // Cập nhật badge trạng thái
+                if (data.status) {
+                    relay2StatBadge.textContent = 'BẬT';
+                    relay2StatBadge.className = 'stat-badge badge-success';
+                } else {
+                    relay2StatBadge.textContent = 'TẮT';
+                    relay2StatBadge.className = 'stat-badge badge-danger';
+                }
+                
+                // Tính toán xu hướng tốc độ
+                if (prevRelay2Speed !== null && data.status) {
+                    const speedDiff = data.speed - prevRelay2Speed;
+                    updateRelayTrend('relay2', speedDiff);
+                }
+                prevRelay2Speed = data.speed;
             }
         });
 
@@ -1217,36 +1304,84 @@
             });
         });
 
-        // Xử lý sự kiện bật/tắt động cơ
-        document.getElementById('motorToggle').addEventListener('change', (e) => {
-            const status = e.target.checked ? 'on' : 'off';
-            motorRef.update({
+        // Xử lý sự kiện bật/tắt relay 1
+        document.getElementById('relay1Toggle').addEventListener('change', (e) => {
+            const status = e.target.checked;
+            relay1Ref.update({
                 status: status,
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
             // Thêm vào lịch sử
             historyRef.push({
-                action: 'Thay đổi trạng thái động cơ',
-                value: status === 'on' ? 'BẬT' : 'TẮT',
+                action: 'Thay đổi trạng thái động cơ 1',
+                value: status ? 'BẬT' : 'TẮT',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
 
-        // Xử lý sự kiện điều chỉnh tốc độ
-        document.getElementById('speedControl').addEventListener('input', (e) => {
+        // Xử lý sự kiện bật/tắt relay 2
+        document.getElementById('relay2Toggle').addEventListener('change', (e) => {
+            const status = e.target.checked;
+            relay2Ref.update({
+                status: status,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Thêm vào lịch sử
+            historyRef.push({
+                action: 'Thay đổi trạng thái động cơ 2',
+                value: status ? 'BẬT' : 'TẮT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        // Xử lý sự kiện bật/tắt relay 1 từ control panel
+        document.getElementById('relay1ControlToggle').addEventListener('change', (e) => {
+            const status = e.target.checked;
+            relay1Ref.update({
+                status: status,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Thêm vào lịch sử
+            historyRef.push({
+                action: 'Thay đổi trạng thái động cơ 1',
+                value: status ? 'BẬT' : 'TẮT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        // Xử lý sự kiện bật/tắt relay 2 từ control panel
+        document.getElementById('relay2ControlToggle').addEventListener('change', (e) => {
+            const status = e.target.checked;
+            relay2Ref.update({
+                status: status,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            
+            // Thêm vào lịch sử
+            historyRef.push({
+                action: 'Thay đổi trạng thái động cơ 2',
+                value: status ? 'BẬT' : 'TẮT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        // Xử lý sự kiện điều chỉnh tốc độ relay 1
+        document.getElementById('relay1SpeedControl').addEventListener('input', (e) => {
             const speed = e.target.value;
-            document.getElementById('speedValue').textContent = speed;
+            document.getElementById('relay1SpeedValue').textContent = speed;
             
             // Hiệu ứng khi thay đổi giá trị
-            const speedValueElement = document.getElementById('speedValue');
+            const speedValueElement = document.getElementById('relay1SpeedValue');
             speedValueElement.classList.add('pulse');
             setTimeout(() => speedValueElement.classList.remove('pulse'), 500);
             
             // Chỉ cập nhật lên Firebase khi người dùng ngừng kéo thanh trượt
             clearTimeout(window.speedTimeout);
             window.speedTimeout = setTimeout(() => {
-                motorRef.update({
+                relay1Ref.update({
                     speed: parseInt(speed),
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
@@ -1254,7 +1389,37 @@
                 // Thêm vào lịch sử nếu tốc độ thay đổi đáng kể
                 if (Math.abs(parseInt(speed) - parseInt(e.target.dataset.lastSpeed || 0)) > 5) {
                     historyRef.push({
-                        action: 'Điều chỉnh tốc độ động cơ',
+                        action: 'Điều chỉnh tốc độ động cơ 1',
+                        value: `${speed}%`,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    e.target.dataset.lastSpeed = speed;
+                }
+            }, 500);
+        });
+
+        // Xử lý sự kiện điều chỉnh tốc độ relay 2
+        document.getElementById('relay2SpeedControl').addEventListener('input', (e) => {
+            const speed = e.target.value;
+            document.getElementById('relay2SpeedValue').textContent = speed;
+            
+            // Hiệu ứng khi thay đổi giá trị
+            const speedValueElement = document.getElementById('relay2SpeedValue');
+            speedValueElement.classList.add('pulse');
+            setTimeout(() => speedValueElement.classList.remove('pulse'), 500);
+            
+            // Chỉ cập nhật lên Firebase khi người dùng ngừng kéo thanh trượt
+            clearTimeout(window.speedTimeout);
+            window.speedTimeout = setTimeout(() => {
+                relay2Ref.update({
+                    speed: parseInt(speed),
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                // Thêm vào lịch sử nếu tốc độ thay đổi đáng kể
+                if (Math.abs(parseInt(speed) - parseInt(e.target.dataset.lastSpeed || 0) > 5) {
+                    historyRef.push({
+                        action: 'Điều chỉnh tốc độ động cơ 2',
                         value: `${speed}%`,
                         timestamp: firebase.database.ServerValue.TIMESTAMP
                     });
@@ -1300,19 +1465,19 @@
             }
         }
 
-        // Hàm cập nhật xu hướng động cơ
-        function updateMotorTrend(diff) {
-            const motorTrendElement = document.getElementById('motorTrend');
+        // Hàm cập nhật xu hướng relay
+        function updateRelayTrend(relayId, diff) {
+            const relayTrendElement = document.getElementById(`${relayId}Trend`);
             
             if (diff > 0) {
-                motorTrendElement.textContent = `+${diff}%`;
-                motorTrendElement.className = 'trend-up';
+                relayTrendElement.textContent = `+${diff}%`;
+                relayTrendElement.className = 'trend-up';
             } else if (diff < 0) {
-                motorTrendElement.textContent = `${diff}%`;
-                motorTrendElement.className = 'trend-down';
+                relayTrendElement.textContent = `${diff}%`;
+                relayTrendElement.className = 'trend-down';
             } else {
-                motorTrendElement.textContent = '0%';
-                motorTrendElement.className = 'trend-neutral';
+                relayTrendElement.textContent = '0%';
+                relayTrendElement.className = 'trend-neutral';
             }
         }
 
