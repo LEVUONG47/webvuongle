@@ -1010,7 +1010,6 @@
             const relay1Ref = database.ref('relays/relay1');
             const relay2Ref = database.ref('relays/relay2');
             const historyRef = database.ref('history');
-            
             // Lắng nghe relay 1
             relay1Ref.on('value', (snapshot) => {
                 const data = snapshot.val();
@@ -1071,6 +1070,19 @@
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
             });
+            // Thêm phần này trước khi khởi tạo biểu đồ
+let prevTemperature = null;
+let prevHumidity = null;
+let prevRelay1Speed = null;
+let prevRelay2Speed = null;
+
+// Dữ liệu biểu đồ ban đầu
+const chartData = {
+    labels: [],
+    temperature: [],
+    humidity: [],
+    comfortIndex: []
+};
 
         // Khởi tạo biểu đồ
         const ctx = document.getElementById('sensorChart').getContext('2d');
@@ -1553,7 +1565,7 @@
                 });
                 
                 // Thêm vào lịch sử nếu tốc độ thay đổi đáng kể
-                if (Math.abs(parseInt(speed) - parseInt(e.target.dataset.lastSpeed || 0) > 5) {
+                if (Math.abs(parseInt(speed) - parseInt(e.target.dataset.lastSpeed || 0) > 5)) {
                     historyRef.push({
                         action: 'Điều chỉnh tốc độ động cơ 2 (Thủ công)',
                         value: `${speed}%`,
