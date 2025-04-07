@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giám sát IoT - Dashboard Thông Minh</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Giám sát IoT - Dashboard Thông Minh</title>
+        <script
+            src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+        <script
+            src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+        <style>
         :root {
             --primary: #4361ee;
             --secondary: #3a0ca3;
@@ -713,285 +717,360 @@
             background: rgba(46, 204, 113, 0.2);
         }
     </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <div class="header-left">
-                <div class="logo">IoT</div>
-                <h1>Giám sát Thông Minh</h1>
-            </div>
-            <div style="display: flex; align-items: center;">
-                <div class="connection-status">
-                    <div class="status-indicator" id="connectionStatus"></div>
-                    <span class="status-text" id="statusText">Đang kết nối...</span>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <div class="header-left">
+                    <div class="logo">IoT</div>
+                    <h1>Giám sát Thông Minh</h1>
                 </div>
-                <div class="power-status" id="powerStatus">
-                    <div class="status-indicator"></div>
-                    <span class="status-text">Kiểm tra nguồn...</span>
+                <div style="display: flex; align-items: center;">
+                    <div class="connection-status">
+                        <div class="status-indicator"
+                            id="connectionStatus"></div>
+                        <span class="status-text" id="statusText">Đang kết
+                            nối...</span>
+                    </div>
+                    <div class="power-status" id="powerStatus">
+                        <div class="status-indicator"></div>
+                        <span class="status-text">Kiểm tra nguồn...</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="last-update" id="lastUpdate">Cập nhật lần cuối:
+                --/--/---- --:--:--</div>
+
+            <div class="dashboard">
+                <div class="card temperature">
+                    <div class="card-header">
+                        <span class="card-title">Nhiệt độ</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 22C14.7614 22 17 19.7614 17 17C17 15.3644 16.2143 13.9121 15.0005 13.0005V5C15.0005 3.34315 13.6574 2 12.0005 2C10.3437 2 9.00052 3.34315 9.00052 5V13.0005C7.78672 13.9121 7 15.3644 7 17C7 19.7614 9.23858 22 12 22Z"
+                                    stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-value" id="temperature">--</div>
+                    <div class="card-unit">°C</div>
+                    <div class="card-trend">
+                        <span id="tempTrend">--</span>
+                        <span id="tempTrendIcon">→</span>
+                    </div>
+                </div>
+
+                <div class="card humidity">
+                    <div class="card-header">
+                        <span class="card-title">Độ ẩm</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z"
+                                    stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-value" id="humidity">--</div>
+                    <div class="card-unit">%</div>
+                    <div class="card-trend">
+                        <span id="humidTrend">--</span>
+                        <span id="humidTrendIcon">→</span>
+                    </div>
+                </div>
+
+                <!-- Card động cơ 1 -->
+                <div class="card motor">
+                    <div class="card-header">
+                        <span class="card-title">Động cơ 1</span>
+                        <div class="card-icon">⚙️</div>
+                    </div>
+                    <div class="card-value" id="motor1Status">TẮT</div>
+                    <div class="card-unit" id="motor1Speed">Tốc độ: 0%</div>
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái</span>
+                        <label class="switch">
+                            <input type="checkbox" id="motor1Toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Card động cơ 2 -->
+                <div class="card motor">
+                    <div class="card-header">
+                        <span class="card-title">Động cơ 2</span>
+                        <div class="card-icon">⚙️</div>
+                    </div>
+                    <div class="card-value" id="motor2Status">TẮT</div>
+                    <div class="card-unit" id="motor2Speed">Tốc độ: 0%</div>
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái</span>
+                        <label class="switch">
+                            <input type="checkbox" id="motor2Toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
-        </header>
 
-        <div class="last-update" id="lastUpdate">Cập nhật lần cuối: --/--/---- --:--:--</div>
+            <div class="chart-section">
+                <div class="main-chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm</div>
+                        <div class="chart-actions">
+                            <button class="chart-btn active" id="chartDay">24
+                                giờ</button>
+                            <button class="chart-btn" id="chartWeek">7
+                                ngày</button>
+                            <button class="chart-btn" id="chartMonth">30
+                                ngày</button>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="sensorChart"></canvas>
+                    </div>
+                </div>
 
-        <div class="dashboard">
-            <div class="card temperature">
-                <div class="card-header">
-                    <span class="card-title">Nhiệt độ</span>
-                    <div class="card-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 22C14.7614 22 17 19.7614 17 17C17 15.3644 16.2143 13.9121 15.0005 13.0005V5C15.0005 3.34315 13.6574 2 12.0005 2C10.3437 2 9.00052 3.34315 9.00052 5V13.0005C7.78672 13.9121 7 15.3644 7 17C7 19.7614 9.23858 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <div class="stats-container">
+                    <div class="stats-header">Thống kê</div>
+                    <div class="stat-item">
+                        <span class="stat-label">Nhiệt độ cao nhất</span>
+                        <span class="stat-value" id="maxTemp">-- °C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Nhiệt độ thấp nhất</span>
+                        <span class="stat-value" id="minTemp">-- °C</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Độ ẩm cao nhất</span>
+                        <span class="stat-value" id="maxHumid">-- %</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Độ ẩm thấp nhất</span>
+                        <span class="stat-value" id="minHumid">-- %</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Trạng thái động cơ 1</span>
+                        <span class="stat-badge badge-danger"
+                            id="relay1StatBadge">TẮT</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Trạng thái động cơ 2</span>
+                        <span class="stat-badge badge-danger"
+                            id="relay2StatBadge">TẮT</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Chế độ điều khiển</span>
+                        <span class="stat-value" id="controlMode">Tự động</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-panel">
+                    <h3 class="control-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z"
+                                stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
+                        Điều khiển động cơ 1
+                    </h3>
+
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái động cơ</span>
+                        <label class="switch">
+                            <input type="checkbox" id="relay1ControlToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="speed-control-container">
+                        <div class="speed-header">
+                            <span class="speed-label">Tốc độ động cơ</span>
+                            <span class="speed-value"
+                                id="relay1SpeedValue">0%</span>
+                        </div>
+                        <input type="range" class="range-slider"
+                            id="relay1SpeedControl" min="0" max="100" value="0"
+                            step="1">
+                    </div>
+
+                    <div
+                        style="margin-top: 20px; display: flex; justify-content: space-between;">
+                        <button class="chart-btn" id="relay1AutoBtn"
+                            style="width: 48%;">Tự động</button>
+                        <button class="chart-btn active" id="relay1ManualBtn"
+                            style="width: 48%;">Thủ công</button>
                     </div>
                 </div>
-                <div class="card-value" id="temperature">--</div>
-                <div class="card-unit">°C</div>
-                <div class="card-trend">
-                    <span id="tempTrend">--</span>
-                    <span id="tempTrendIcon">→</span>
-                </div>
-            </div>
 
-            <div class="card humidity">
-                <div class="card-header">
-                    <span class="card-title">Độ ẩm</span>
-                    <div class="card-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <div class="control-panel">
+                    <h3 class="control-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z"
+                                stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round" />
                         </svg>
+                        Điều khiển động cơ 2
+                    </h3>
+
+                    <div class="switch-container">
+                        <span class="switch-label">Trạng thái động cơ</span>
+                        <label class="switch">
+                            <input type="checkbox" id="relay2ControlToggle">
+                            <span class="slider"></span>
+                        </label>
                     </div>
-                </div>
-                <div class="card-value" id="humidity">--</div>
-                <div class="card-unit">%</div>
-                <div class="card-trend">
-                    <span id="humidTrend">--</span>
-                    <span id="humidTrendIcon">→</span>
+
+                    <div class="speed-control-container">
+                        <div class="speed-header">
+                            <span class="speed-label">Tốc độ động cơ</span>
+                            <span class="speed-value"
+                                id="relay2SpeedValue">0%</span>
+                        </div>
+                        <input type="range" class="range-slider"
+                            id="relay2SpeedControl" min="0" max="100" value="0"
+                            step="1">
+                    </div>
+
+                    <div
+                        style="margin-top: 20px; display: flex; justify-content: space-between;">
+                        <button class="chart-btn" id="relay2AutoBtn"
+                            style="width: 48%;">Tự động</button>
+                        <button class="chart-btn active" id="relay2ManualBtn"
+                            style="width: 48%;">Thủ công</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Relay 1 Card -->
-            <div class="card motor">
-                <div class="card-header">
-                    <span class="card-title">Động cơ 1</span>
-                    <div class="card-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
+            <div class="history-section">
+                <div class="history-header">
+                    <div class="history-title">Lịch sử thao tác</div>
+                    <div class="history-actions">
+                        <button class="history-btn">Xem tất cả</button>
+                        <button class="history-btn">Làm mới</button>
                     </div>
                 </div>
-                <div class="card-value" id="relay1Status">TẮT</div>
-                <div class="card-unit" id="relay1Speed">Tốc độ: 0%</div>
-                <div class="switch-container">
-                    <span class="switch-label">Trạng thái</span>
-                    <label class="switch">
-                        <input type="checkbox" id="relay1Toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Thao tác</th>
+                            <th>Giá trị</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        <!-- Dữ liệu lịch sử sẽ được thêm bằng JavaScript -->
+                    </tbody>
+                </table>
             </div>
 
-            <!-- Relay 2 Card -->
-            <div class="card motor">
-                <div class="card-header">
-                    <span class="card-title">Động cơ 2</span>
-                    <div class="card-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                </div>
-                <div class="card-value" id="relay2Status">TẮT</div>
-                <div class="card-unit" id="relay2Speed">Tốc độ: 0%</div>
-                <div class="switch-container">
-                    <span class="switch-label">Trạng thái</span>
-                    <label class="switch">
-                        <input type="checkbox" id="relay2Toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+            <!-- Footer section -->
+            <div style="margin-top: 1cm; text-align: center;">
+                <hr
+                    style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 15px;">
+                <p
+                    style="margin-bottom: 0; font-size: 0.9rem; color: rgba(255,255,255,0.6);">
+                    © 2025 Bản quyền thuộc về LÊ THANH VƯƠNG
+                </p>
             </div>
         </div>
 
-        <div class="chart-section">
-            <div class="main-chart-container">
-                <div class="chart-header">
-                    <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm</div>
-                    <div class="chart-actions">
-                        <button class="chart-btn active" id="chartDay">24 giờ</button>
-                        <button class="chart-btn" id="chartWeek">7 ngày</button>
-                        <button class="chart-btn" id="chartMonth">30 ngày</button>
-                    </div>
-                </div>
-                <div class="chart-wrapper">
-                    <canvas id="sensorChart"></canvas>
-                </div>
-            </div>
-
-            <div class="stats-container">
-                <div class="stats-header">Thống kê</div>
-                <div class="stat-item">
-                    <span class="stat-label">Nhiệt độ cao nhất</span>
-                    <span class="stat-value" id="maxTemp">-- °C</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Nhiệt độ thấp nhất</span>
-                    <span class="stat-value" id="minTemp">-- °C</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Độ ẩm cao nhất</span>
-                    <span class="stat-value" id="maxHumid">-- %</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Độ ẩm thấp nhất</span>
-                    <span class="stat-value" id="minHumid">-- %</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Trạng thái động cơ 1</span>
-                    <span class="stat-badge badge-danger" id="relay1StatBadge">TẮT</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Trạng thái động cơ 2</span>
-                    <span class="stat-badge badge-danger" id="relay2StatBadge">TẮT</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">Chế độ điều khiển</span>
-                    <span class="stat-value" id="controlMode">Tự động</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="control-section">
-            <div class="control-panel">
-                <h3 class="control-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 10H17L12 3L7 10H11V20H13V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    Điều khiển động cơ 1
-                </h3>
-
-                <div class="switch-container">
-                    <span class="switch-label">Trạng thái động cơ</span>
-                    <label class="switch">
-                        <input type="checkbox" id="relay1ControlToggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="speed-control-container">
-                    <div class="speed-header">
-                        <span class="speed-label">Tốc độ động cơ</span>
-                        <span class="speed-value" id="relay1SpeedValue">0%</span>
-                    </div>
-                    <input type="range" class="range-slider" id="relay1SpeedControl" min="0" max="100" value="0" step="1">
-                </div>
-
-                <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-                    <button class="chart-btn" id="relay1AutoBtn" style="width: 48%;">Tự động</button>
-                    <button class="chart-btn active" id="relay1ManualBtn" style="width: 48%;">Thủ công</button>
-                </div>
-            </div>
-
-            <div class="control-panel">
-                <h3 class="control-title">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13 10H17L12 3L7 10H11V20H13V10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                    Điều khiển động cơ 2
-                </h3>
-
-                <div class="switch-container">
-                    <span class="switch-label">Trạng thái động cơ</span>
-                    <label class="switch">
-                        <input type="checkbox" id="relay2ControlToggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                <div class="speed-control-container">
-                    <div class="speed-header">
-                        <span class="speed-label">Tốc độ động cơ</span>
-                        <span class="speed-value" id="relay2SpeedValue">0%</span>
-                    </div>
-                    <input type="range" class="range-slider" id="relay2SpeedControl" min="0" max="100" value="0" step="1">
-                </div>
-
-                <div style="margin-top: 20px; display: flex; justify-content: space-between;">
-                    <button class="chart-btn" id="relay2AutoBtn" style="width: 48%;">Tự động</button>
-                    <button class="chart-btn active" id="relay2ManualBtn" style="width: 48%;">Thủ công</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="history-section">
-            <div class="history-header">
-                <div class="history-title">Lịch sử thao tác</div>
-                <div class="history-actions">
-                    <button class="history-btn">Xem tất cả</button>
-                    <button class="history-btn">Làm mới</button>
-                </div>
-            </div>
-
-            <table class="history-table">
-                <thead>
-                    <tr>
-                        <th>Thời gian</th>
-                        <th>Thao tác</th>
-                        <th>Giá trị</th>
-                    </tr>
-                </thead>
-                <tbody id="historyTable">
-                    <!-- Dữ liệu lịch sử sẽ được thêm bằng JavaScript -->
-                </tbody>
-            </table>
-        </div>
-
-        <!-- Footer section -->
-        <div style="margin-top: 1cm; text-align: center;">
-            <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 15px;">
-            <p style="margin-bottom: 0; font-size: 0.9rem; color: rgba(255,255,255,0.6);">
-                © 2025 Bản quyền thuộc về LÊ THANH VƯƠNG
-            </p>
-        </div>
-    </div>
-
-    <script>
-        // Cấu hình Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
-            authDomain: "webvuongle.firebaseapp.com",
-            databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "webvuongle",
-            storageBucket: "webvuongle.appspot.com",
-            messagingSenderId: "72756137917",
-            appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
-        };
-
-        // Khởi tạo Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-
-        // Tham chiếu đến các node trong Realtime Database
-        const sensorRef = database.ref('sensor_data');
-        const relay1Ref = database.ref('relays/relay1');
-        const relay2Ref = database.ref('relays/relay2');
-        const historyRef = database.ref('history');
-        const statsRef = database.ref('statistics');
-        const systemRef = database.ref('system');
-
-        // Biến lưu trữ dữ liệu biểu đồ
-        let chartData = {
-            labels: [],
-            temperature: [],
-            humidity: [],
-            comfortIndex: []
-        };
-
-        // Biến lưu trữ giá trị trước đó để tính xu hướng
-        let prevTemperature = null;
-        let prevHumidity = null;
-        let prevRelay1Speed = null;
-        let prevRelay2Speed = null;
+        <script>
+            // Khởi tạo Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
+                authDomain: "webvuongle.firebaseapp.com",
+                databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "webvuongle",
+                storageBucket: "webvuongle.appspot.com",
+                messagingSenderId: "72756137917",
+                appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+            
+            // Tham chiếu database
+            const sensorRef = database.ref('sensor_data');
+            const relay1Ref = database.ref('relays/relay1');
+            const relay2Ref = database.ref('relays/relay2');
+            const historyRef = database.ref('history');
+            
+            // Lắng nghe relay 1
+            relay1Ref.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('motor1Status').textContent = data.status ? 'BẬT' : 'TẮT';
+                    document.getElementById('motor1Speed').textContent = `Tốc độ: ${data.speed || 0}%`;
+                    document.getElementById('motor1Toggle').checked = data.status;
+                    
+                    // Hiệu ứng khi thay đổi
+                    if (data.status) {
+                        document.getElementById('motor1Status').classList.add('glow');
+                        setTimeout(() => document.getElementById('motor1Status').classList.remove('glow'), 1000);
+                    }
+                }
+            });
+            
+            // Lắng nghe relay 2
+            relay2Ref.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    document.getElementById('motor2Status').textContent = data.status ? 'BẬT' : 'TẮT';
+                    document.getElementById('motor2Speed').textContent = `Tốc độ: ${data.speed || 0}%`;
+                    document.getElementById('motor2Toggle').checked = data.status;
+                    
+                    if (data.status) {
+                        document.getElementById('motor2Status').classList.add('glow');
+                        setTimeout(() => document.getElementById('motor2Status').classList.remove('glow'), 1000);
+                    }
+                }
+            });
+            
+            // Xử lý toggle relay 1
+            document.getElementById('motor1Toggle').addEventListener('change', (e) => {
+                const status = e.target.checked;
+                relay1Ref.update({
+                    status: status,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                historyRef.push({
+                    action: 'Thay đổi trạng thái động cơ 1',
+                    value: status ? 'BẬT' : 'TẮT',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+            
+            // Xử lý toggle relay 2
+            document.getElementById('motor2Toggle').addEventListener('change', (e) => {
+                const status = e.target.checked;
+                relay2Ref.update({
+                    status: status,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                
+                historyRef.push({
+                    action: 'Thay đổi trạng thái động cơ 2',
+                    value: status ? 'BẬT' : 'TẮT',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
 
         // Khởi tạo biểu đồ
         const ctx = document.getElementById('sensorChart').getContext('2d');
@@ -1692,5 +1771,5 @@
             return `${hours}:${minutes}`;
         }
     </script>
-</body>
+    </body>
 </html>
