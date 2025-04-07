@@ -119,15 +119,6 @@
             gap: 8px;
         }
         
-        .last-update::before {
-            content: "";
-            display: block;
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent);
-            border-radius: 50%;
-        }
-        
         .dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -245,6 +236,64 @@
             color: rgba(255, 255, 255, 0.5);
         }
         
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .switch-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 32px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(28px);
+        }
+        
         .chart-section {
             display: grid;
             grid-template-columns: 1fr 350px;
@@ -278,31 +327,6 @@
             font-size: 18px;
             font-weight: 600;
             color: var(--light);
-        }
-        
-        .chart-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .chart-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .chart-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .chart-btn.active {
-            background: var(--primary);
-            color: white;
         }
         
         .chart-wrapper {
@@ -362,11 +386,6 @@
             color: var(--success);
         }
         
-        .badge-warning {
-            background: rgba(243, 156, 18, 0.2);
-            color: var(--warning);
-        }
-        
         .badge-danger {
             background: rgba(247, 37, 133, 0.2);
             color: var(--danger);
@@ -398,72 +417,6 @@
             font-weight: 600;
             color: var(--light);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .control-title i {
-            color: var(--accent);
-        }
-        
-        .switch-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 0;
-            margin-top: 15px;
-        }
-        
-        .switch-label {
-            font-size: 16px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-        }
-        
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 32px;
-        }
-        
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 24px;
-            width: 24px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .slider {
-            background: linear-gradient(to right, var(--primary), var(--accent));
-        }
-        
-        input:checked + .slider:before {
-            transform: translateX(28px);
         }
         
         .speed-control-container {
@@ -495,11 +448,6 @@
             background: #333;
             outline: none;
             -webkit-appearance: none;
-            transition: all 0.3s ease;
-        }
-        
-        .range-slider:hover {
-            background: #3a3a3a;
         }
         
         .range-slider::-webkit-slider-thumb {
@@ -511,64 +459,6 @@
             background: var(--accent);
             cursor: pointer;
             box-shadow: 0 0 10px rgba(76, 201, 240, 0.5);
-            transition: all 0.2s ease;
-        }
-        
-        .range-slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(76, 201, 240, 0.8);
-        }
-        
-        .gauge-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-        }
-        
-        .gauge {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin-bottom: 20px;
-        }
-        
-        .gauge-body {
-            width: 100%;
-            height: 100%;
-            background: conic-gradient(
-                #f72585 0% 25%,
-                #f39c12 25% 50%,
-                #4cc9f0 50% 75%,
-                #2ecc71 75% 100%
-            );
-            border-radius: 50%;
-            position: relative;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .gauge-cover {
-            width: 75%;
-            height: 75%;
-            background: var(--card-bg);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 600;
-            color: var(--light);
-            z-index: 2;
-        }
-        
-        .gauge-label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 10px;
         }
         
         .history-section {
@@ -592,26 +482,6 @@
             color: var(--light);
         }
         
-        .history-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .history-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            color: rgba(255, 255, 255, 0.8);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        
-        .history-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
         .history-table {
             width: 100%;
             border-collapse: collapse;
@@ -633,88 +503,18 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
-        .history-table tr:last-child td {
-            border-bottom: none;
+        .highlight {
+            animation: highlight 0.5s ease;
         }
         
-        .history-action {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .action-status {
-            background: rgba(76, 201, 240, 0.2);
-            color: var(--accent);
-        }
-        
-        .action-control {
-            background: rgba(243, 156, 18, 0.2);
-            color: var(--warning);
-        }
-        
-        .action-alert {
-            background: rgba(247, 37, 133, 0.2);
-            color: var(--danger);
-        }
-        
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(76, 201, 240, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(76, 201, 240, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(76, 201, 240, 0);
-            }
+        @keyframes highlight {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         .glow {
             text-shadow: 0 0 10px rgba(76, 201, 240, 0.7);
-        }
-        
-        /* Animation for card values */
-        @keyframes highlight {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        
-        .highlight {
-            animation: highlight 0.5s ease;
-        }
-
-        /* Power status indicator */
-        .power-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-            margin-left: 15px;
-        }
-
-        .power-status.alert {
-            background: rgba(247, 37, 133, 0.2);
-        }
-
-        .power-status.normal {
-            background: rgba(46, 204, 113, 0.2);
         }
     </style>
     </head>
@@ -725,17 +525,10 @@
                     <div class="logo">IoT</div>
                     <h1>Giám sát Thông Minh</h1>
                 </div>
-                <div style="display: flex; align-items: center;">
-                    <div class="connection-status">
-                        <div class="status-indicator"
-                            id="connectionStatus"></div>
-                        <span class="status-text" id="statusText">Đang kết
-                            nối...</span>
-                    </div>
-                    <div class="power-status" id="powerStatus">
-                        <div class="status-indicator"></div>
-                        <span class="status-text">Kiểm tra nguồn...</span>
-                    </div>
+                <div class="connection-status">
+                    <div class="status-indicator" id="connectionStatus"></div>
+                    <span class="status-text" id="statusText">Đang kết
+                        nối...</span>
                 </div>
             </header>
 
@@ -787,7 +580,6 @@
                     </div>
                 </div>
 
-                <!-- Card động cơ 1 -->
                 <div class="card motor">
                     <div class="card-header">
                         <span class="card-title">Động cơ 1</span>
@@ -804,7 +596,6 @@
                     </div>
                 </div>
 
-                <!-- Card động cơ 2 -->
                 <div class="card motor">
                     <div class="card-header">
                         <span class="card-title">Động cơ 2</span>
@@ -826,14 +617,6 @@
                 <div class="main-chart-container">
                     <div class="chart-header">
                         <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm</div>
-                        <div class="chart-actions">
-                            <button class="chart-btn active" id="chartDay">24
-                                giờ</button>
-                            <button class="chart-btn" id="chartWeek">7
-                                ngày</button>
-                            <button class="chart-btn" id="chartMonth">30
-                                ngày</button>
-                        </div>
                     </div>
                     <div class="chart-wrapper">
                         <canvas id="sensorChart"></canvas>
@@ -868,26 +651,12 @@
                         <span class="stat-badge badge-danger"
                             id="relay2StatBadge">TẮT</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Chế độ điều khiển</span>
-                        <span class="stat-value" id="controlMode">Tự động</span>
-                    </div>
                 </div>
             </div>
 
             <div class="control-section">
                 <div class="control-panel">
-                    <h3 class="control-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z"
-                                stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        Điều khiển động cơ 1
-                    </h3>
-
+                    <h3 class="control-title">Điều khiển động cơ 1</h3>
                     <div class="switch-container">
                         <span class="switch-label">Trạng thái động cơ</span>
                         <label class="switch">
@@ -895,7 +664,6 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-
                     <div class="speed-control-container">
                         <div class="speed-header">
                             <span class="speed-label">Tốc độ động cơ</span>
@@ -906,28 +674,10 @@
                             id="relay1SpeedControl" min="0" max="100" value="0"
                             step="1">
                     </div>
-
-                    <div
-                        style="margin-top: 20px; display: flex; justify-content: space-between;">
-                        <button class="chart-btn" id="relay1AutoBtn"
-                            style="width: 48%;">Tự động</button>
-                        <button class="chart-btn active" id="relay1ManualBtn"
-                            style="width: 48%;">Thủ công</button>
-                    </div>
                 </div>
 
                 <div class="control-panel">
-                    <h3 class="control-title">
-                        <svg width="20" height="20" viewBox="0 0 24 24"
-                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13 10H17L12 3L7 10H11V20H13V10Z"
-                                stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round"
-                                stroke-linejoin="round" />
-                        </svg>
-                        Điều khiển động cơ 2
-                    </h3>
-
+                    <h3 class="control-title">Điều khiển động cơ 2</h3>
                     <div class="switch-container">
                         <span class="switch-label">Trạng thái động cơ</span>
                         <label class="switch">
@@ -935,7 +685,6 @@
                             <span class="slider"></span>
                         </label>
                     </div>
-
                     <div class="speed-control-container">
                         <div class="speed-header">
                             <span class="speed-label">Tốc độ động cơ</span>
@@ -946,26 +695,13 @@
                             id="relay2SpeedControl" min="0" max="100" value="0"
                             step="1">
                     </div>
-
-                    <div
-                        style="margin-top: 20px; display: flex; justify-content: space-between;">
-                        <button class="chart-btn" id="relay2AutoBtn"
-                            style="width: 48%;">Tự động</button>
-                        <button class="chart-btn active" id="relay2ManualBtn"
-                            style="width: 48%;">Thủ công</button>
-                    </div>
                 </div>
             </div>
 
             <div class="history-section">
                 <div class="history-header">
                     <div class="history-title">Lịch sử thao tác</div>
-                    <div class="history-actions">
-                        <button class="history-btn">Xem tất cả</button>
-                        <button class="history-btn">Làm mới</button>
-                    </div>
                 </div>
-
                 <table class="history-table">
                     <thead>
                         <tr>
@@ -980,7 +716,6 @@
                 </table>
             </div>
 
-            <!-- Footer section -->
             <div style="margin-top: 1cm; text-align: center;">
                 <hr
                     style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 15px;">
@@ -992,98 +727,38 @@
         </div>
 
         <script>
-            // Khởi tạo Firebase
-            const firebaseConfig = {
-                apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
-                authDomain: "webvuongle.firebaseapp.com",
-                databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
-                projectId: "webvuongle",
-                storageBucket: "webvuongle.appspot.com",
-                messagingSenderId: "72756137917",
-                appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
-            };
-            firebase.initializeApp(firebaseConfig);
-            const database = firebase.database();
-            
-            // Tham chiếu database
-            const sensorRef = database.ref('sensor_data');
-            const relay1Ref = database.ref('relays/relay1');
-            const relay2Ref = database.ref('relays/relay2');
-            const historyRef = database.ref('history');
-            // Lắng nghe relay 1
-            relay1Ref.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('motor1Status').textContent = data.status ? 'BẬT' : 'TẮT';
-                    document.getElementById('motor1Speed').textContent = `Tốc độ: ${data.speed || 0}%`;
-                    document.getElementById('motor1Toggle').checked = data.status;
-                    
-                    // Hiệu ứng khi thay đổi
-                    if (data.status) {
-                        document.getElementById('motor1Status').classList.add('glow');
-                        setTimeout(() => document.getElementById('motor1Status').classList.remove('glow'), 1000);
-                    }
-                }
-            });
-            
-            // Lắng nghe relay 2
-            relay2Ref.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    document.getElementById('motor2Status').textContent = data.status ? 'BẬT' : 'TẮT';
-                    document.getElementById('motor2Speed').textContent = `Tốc độ: ${data.speed || 0}%`;
-                    document.getElementById('motor2Toggle').checked = data.status;
-                    
-                    if (data.status) {
-                        document.getElementById('motor2Status').classList.add('glow');
-                        setTimeout(() => document.getElementById('motor2Status').classList.remove('glow'), 1000);
-                    }
-                }
-            });
-            
-            // Xử lý toggle relay 1
-            document.getElementById('motor1Toggle').addEventListener('change', (e) => {
-                const status = e.target.checked;
-                relay1Ref.update({
-                    status: status,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                historyRef.push({
-                    action: 'Thay đổi trạng thái động cơ 1',
-                    value: status ? 'BẬT' : 'TẮT',
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-            });
-            
-            // Xử lý toggle relay 2
-            document.getElementById('motor2Toggle').addEventListener('change', (e) => {
-                const status = e.target.checked;
-                relay2Ref.update({
-                    status: status,
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-                
-                historyRef.push({
-                    action: 'Thay đổi trạng thái động cơ 2',
-                    value: status ? 'BẬT' : 'TẮT',
-                    timestamp: firebase.database.ServerValue.TIMESTAMP
-                });
-            });
-            // Thêm phần này trước khi khởi tạo biểu đồ
-let prevTemperature = null;
-let prevHumidity = null;
-let prevRelay1Speed = null;
-let prevRelay2Speed = null;
-
-// Dữ liệu biểu đồ ban đầu
-const chartData = {
-    labels: [],
-    temperature: [],
-    humidity: [],
-    comfortIndex: []
-};
-
+        // Khởi tạo Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
+            authDomain: "webvuongle.firebaseapp.com",
+            databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "webvuongle",
+            storageBucket: "webvuongle.appspot.com",
+            messagingSenderId: "72756137917",
+            appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        // Tham chiếu database
+        const sensorRef = database.ref('sensor_data');
+        const relay1Ref = database.ref('relays/relay1');
+        const relay2Ref = database.ref('relays/relay2');
+        const historyRef = database.ref('history');
+        
+        // Biến lưu giá trị trước đó
+        let prevTemperature = null;
+        let prevHumidity = null;
+        let prevRelay1Speed = null;
+        let prevRelay2Speed = null;
+        
+        // Dữ liệu biểu đồ
+        const chartData = {
+            labels: [],
+            temperature: [],
+            humidity: []
+        };
+        
         // Khởi tạo biểu đồ
         const ctx = document.getElementById('sensorChart').getContext('2d');
         const sensorChart = new Chart(ctx, {
@@ -1098,11 +773,7 @@ const chartData = {
                         backgroundColor: 'rgba(255, 154, 158, 0.1)',
                         borderWidth: 2,
                         tension: 0.3,
-                        fill: true,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#ff9a9e',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        fill: true
                     },
                     {
                         label: 'Độ ẩm (%)',
@@ -1111,11 +782,7 @@ const chartData = {
                         backgroundColor: 'rgba(161, 196, 253, 0.1)',
                         borderWidth: 2,
                         tension: 0.3,
-                        fill: true,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#a1c4fd',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
+                        fill: true
                     }
                 ]
             },
@@ -1126,34 +793,7 @@ const chartData = {
                     legend: {
                         position: 'top',
                         labels: {
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            font: {
-                                size: 14
-                            },
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(30, 30, 30, 0.9)',
-                        titleColor: '#fff',
-                        bodyColor: 'rgba(255, 255, 255, 0.8)',
-                        borderColor: 'rgba(255, 255, 255, 0.1)',
-                        borderWidth: 1,
-                        padding: 12,
-                        usePointStyle: true,
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                if (context.parsed.y !== null) {
-                                    label += context.parsed.y.toFixed(1) + (context.datasetIndex === 0 ? '°C' : '%');
-                                }
-                                return label;
-                            }
+                            color: 'rgba(255, 255, 255, 0.8)'
                         }
                     }
                 },
@@ -1161,100 +801,39 @@ const chartData = {
                     y: {
                         beginAtZero: false,
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                            drawBorder: false
+                            color: 'rgba(255, 255, 255, 0.05)'
                         },
                         ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            font: {
-                                size: 12
-                            }
+                            color: 'rgba(255, 255, 255, 0.6)'
                         }
                     },
                     x: {
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.05)',
-                            drawBorder: false
+                            color: 'rgba(255, 255, 255, 0.05)'
                         },
                         ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            font: {
-                                size: 12
-                            }
+                            color: 'rgba(255, 255, 255, 0.6)'
                         }
                     }
-                },
-                interaction: {
-                    intersect: false,
-                    mode: 'index'
-                },
-                animation: {
-                    duration: 1000,
-                    easing: 'easeOutQuart'
                 }
             }
         });
-
-        // Cập nhật trạng thái kết nối
-        const connectionStatus = document.getElementById('connectionStatus');
-        const statusText = document.getElementById('statusText');
         
+        // Cập nhật trạng thái kết nối
         database.ref('.info/connected').on('value', (snapshot) => {
+            const connectionStatus = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            
             if (snapshot.val() === true) {
                 connectionStatus.classList.add('connected');
                 statusText.textContent = 'Đã kết nối';
-                statusText.style.color = '#2ecc71';
             } else {
                 connectionStatus.classList.remove('connected');
                 statusText.textContent = 'Mất kết nối';
-                statusText.style.color = '#f72585';
             }
         });
-
-        // Kiểm tra trạng thái nguồn
-        function checkPowerStatus() {
-            systemRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data && data.power_status !== undefined) {
-                    const powerStatusElement = document.getElementById('powerStatus');
-                    
-                    if (data.power_status) {
-                        powerStatusElement.className = 'power-status normal';
-                        powerStatusElement.innerHTML = `
-                            <div class="status-indicator connected"></div>
-                            <span class="status-text">Có nguồn</span>
-                        `;
-                    } else {
-                        powerStatusElement.className = 'power-status alert';
-                        powerStatusElement.innerHTML = `
-                            <div class="status-indicator"></div>
-                            <span class="status-text">Mất nguồn</span>
-                        `;
-                    }
-                    
-                    // Disable điều khiển nếu mất nguồn
-                    const controls = [
-                        'relay1Toggle', 'relay2Toggle', 
-                        'relay1ControlToggle', 'relay2ControlToggle',
-                        'relay1SpeedControl', 'relay2SpeedControl',
-                        'relay1AutoBtn', 'relay1ManualBtn',
-                        'relay2AutoBtn', 'relay2ManualBtn'
-                    ];
-                    
-                    controls.forEach(id => {
-                        const element = document.getElementById(id);
-                        if (element) {
-                            element.disabled = !data.power_status;
-                        }
-                    });
-                }
-            });
-        }
-
-        // Gọi hàm kiểm tra nguồn
-        checkPowerStatus();
-
-        // Lắng nghe thay đổi dữ liệu cảm biến
+        
+        // Lắng nghe dữ liệu cảm biến
         sensorRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -1298,71 +877,35 @@ const chartData = {
                 chartData.temperature.push(data.temperature);
                 chartData.humidity.push(data.humidity);
                 
-                // Tính chỉ số thoải mái (Heat Index)
-                const comfortIndex = calculateComfortIndex(data.temperature, data.humidity);
-                chartData.comfortIndex.push(comfortIndex);
-                updateComfortIndex(comfortIndex);
-                
                 if (chartData.labels.length > 20) {
                     chartData.labels.shift();
                     chartData.temperature.shift();
                     chartData.humidity.shift();
-                    chartData.comfortIndex.shift();
                 }
                 
                 sensorChart.update();
             }
         });
-
-        // Lắng nghe thay đổi thống kê
-        statsRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                document.getElementById('maxTemp').textContent = `${data.maxTemp.toFixed(1)} °C`;
-                document.getElementById('minTemp').textContent = `${data.minTemp.toFixed(1)} °C`;
-                document.getElementById('maxHumid').textContent = `${data.maxHumid.toFixed(1)} %`;
-                document.getElementById('minHumid').textContent = `${data.minHumid.toFixed(1)} %`;
-            }
-        });
-
-        // Lắng nghe thay đổi relay 1
+        
+        // Lắng nghe relay 1
         relay1Ref.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Cập nhật trạng thái
-                const relay1StatusElement = document.getElementById('relay1Status');
-                const relay1SpeedElement = document.getElementById('relay1Speed');
-                const relay1StatBadge = document.getElementById('relay1StatBadge');
-                
-                // Cập nhật UI không kích hoạt sự kiện change
-                document.getElementById('relay1Toggle').checked = data.status;
+                document.getElementById('motor1Status').textContent = data.status ? 'BẬT' : 'TẮT';
+                document.getElementById('motor1Speed').textContent = `Tốc độ: ${data.speed || 0}%`;
+                document.getElementById('motor1Toggle').checked = data.status;
                 document.getElementById('relay1ControlToggle').checked = data.status;
-                
-                // Cập nhật tốc độ
                 document.getElementById('relay1SpeedControl').value = data.speed;
                 document.getElementById('relay1SpeedValue').textContent = data.speed;
-                relay1SpeedElement.textContent = `Tốc độ: ${data.speed}%`;
-                
-                // Cập nhật trạng thái với hiệu ứng
-                if (relay1StatusElement.textContent !== (data.status ? 'BẬT' : 'TẮT')) {
-                    relay1StatusElement.classList.add('glow');
-                    setTimeout(() => relay1StatusElement.classList.remove('glow'), 1000);
-                }
-                
-                relay1StatusElement.textContent = data.status ? 'BẬT' : 'TẮT';
                 
                 // Cập nhật badge trạng thái
+                const relay1StatBadge = document.getElementById('relay1StatBadge');
                 if (data.status) {
                     relay1StatBadge.textContent = 'BẬT';
                     relay1StatBadge.className = 'stat-badge badge-success';
                 } else {
                     relay1StatBadge.textContent = 'TẮT';
                     relay1StatBadge.className = 'stat-badge badge-danger';
-                }
-                
-                // Cập nhật chế độ điều khiển
-                if (data.manual !== undefined) {
-                    updateControlMode('relay1', data.manual);
                 }
                 
                 // Tính toán xu hướng tốc độ
@@ -1373,45 +916,26 @@ const chartData = {
                 prevRelay1Speed = data.speed;
             }
         });
-
-        // Lắng nghe thay đổi relay 2
+        
+        // Lắng nghe relay 2
         relay2Ref.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
-                // Cập nhật trạng thái
-                const relay2StatusElement = document.getElementById('relay2Status');
-                const relay2SpeedElement = document.getElementById('relay2Speed');
-                const relay2StatBadge = document.getElementById('relay2StatBadge');
-                
-                // Cập nhật UI không kích hoạt sự kiện change
-                document.getElementById('relay2Toggle').checked = data.status;
+                document.getElementById('motor2Status').textContent = data.status ? 'BẬT' : 'TẮT';
+                document.getElementById('motor2Speed').textContent = `Tốc độ: ${data.speed || 0}%`;
+                document.getElementById('motor2Toggle').checked = data.status;
                 document.getElementById('relay2ControlToggle').checked = data.status;
-                
-                // Cập nhật tốc độ
                 document.getElementById('relay2SpeedControl').value = data.speed;
                 document.getElementById('relay2SpeedValue').textContent = data.speed;
-                relay2SpeedElement.textContent = `Tốc độ: ${data.speed}%`;
-                
-                // Cập nhật trạng thái với hiệu ứng
-                if (relay2StatusElement.textContent !== (data.status ? 'BẬT' : 'TẮT')) {
-                    relay2StatusElement.classList.add('glow');
-                    setTimeout(() => relay2StatusElement.classList.remove('glow'), 1000);
-                }
-                
-                relay2StatusElement.textContent = data.status ? 'BẬT' : 'TẮT';
                 
                 // Cập nhật badge trạng thái
+                const relay2StatBadge = document.getElementById('relay2StatBadge');
                 if (data.status) {
                     relay2StatBadge.textContent = 'BẬT';
                     relay2StatBadge.className = 'stat-badge badge-success';
                 } else {
                     relay2StatBadge.textContent = 'TẮT';
                     relay2StatBadge.className = 'stat-badge badge-danger';
-                }
-                
-                // Cập nhật chế độ điều khiển
-                if (data.manual !== undefined) {
-                    updateControlMode('relay2', data.manual);
                 }
                 
                 // Tính toán xu hướng tốc độ
@@ -1422,7 +946,7 @@ const chartData = {
                 prevRelay2Speed = data.speed;
             }
         });
-
+        
         // Lắng nghe lịch sử thao tác
         historyRef.limitToLast(5).on('value', (snapshot) => {
             const historyTable = document.getElementById('historyTable');
@@ -1432,228 +956,118 @@ const chartData = {
                 const action = childSnapshot.val();
                 const row = document.createElement('tr');
                 
-                // Xác định loại action để áp dụng style phù hợp
-                let actionClass = 'action-status';
-                if (action.action.includes('động cơ')) {
-                    actionClass = 'action-control';
-                } else if (action.action.includes('cảnh báo')) {
-                    actionClass = 'action-alert';
-                }
-                
                 row.innerHTML = `
                     <td>${formatDateTime(new Date(action.timestamp))}</td>
-                    <td><span class="history-action ${actionClass}">${action.action}</span></td>
+                    <td>${action.action}</td>
                     <td>${action.value}</td>
                 `;
                 
                 historyTable.prepend(row);
             });
         });
-
+        
         // Xử lý sự kiện bật/tắt relay 1
-        document.getElementById('relay1Toggle').addEventListener('change', (e) => {
+        document.getElementById('motor1Toggle').addEventListener('change', (e) => {
             const status = e.target.checked;
             relay1Ref.update({
                 status: status,
-                manual: true, // Đánh dấu là điều khiển thủ công
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
             historyRef.push({
-                action: 'Thay đổi trạng thái động cơ 1 (Thủ công)',
+                action: 'Thay đổi trạng thái động cơ 1',
                 value: status ? 'BẬT' : 'TẮT',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
-
+        
         // Xử lý sự kiện bật/tắt relay 2
-        document.getElementById('relay2Toggle').addEventListener('change', (e) => {
+        document.getElementById('motor2Toggle').addEventListener('change', (e) => {
             const status = e.target.checked;
             relay2Ref.update({
                 status: status,
-                manual: true, // Đánh dấu là điều khiển thủ công
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
             historyRef.push({
-                action: 'Thay đổi trạng thái động cơ 2 (Thủ công)',
-                value: status ? 'BẬT' : 'TẮT',
+                action: 'Thay đổi trạng thái động cơ 2',
+                value: status ? 'BẮT' : 'TẮT',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
-
+        
         // Xử lý sự kiện bật/tắt relay 1 từ control panel
         document.getElementById('relay1ControlToggle').addEventListener('change', (e) => {
             const status = e.target.checked;
             relay1Ref.update({
                 status: status,
-                manual: true, // Đánh dấu là điều khiển thủ công
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
             historyRef.push({
-                action: 'Thay đổi trạng thái động cơ 1 (Thủ công)',
+                action: 'Thay đổi trạng thái động cơ 1 (Control Panel)',
                 value: status ? 'BẬT' : 'TẮT',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
-
+        
         // Xử lý sự kiện bật/tắt relay 2 từ control panel
         document.getElementById('relay2ControlToggle').addEventListener('change', (e) => {
             const status = e.target.checked;
             relay2Ref.update({
                 status: status,
-                manual: true, // Đánh dấu là điều khiển thủ công
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
             historyRef.push({
-                action: 'Thay đổi trạng thái động cơ 2 (Thủ công)',
+                action: 'Thay đổi trạng thái động cơ 2 (Control Panel)',
                 value: status ? 'BẬT' : 'TẮT',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
-
+        
         // Xử lý sự kiện điều chỉnh tốc độ relay 1
         document.getElementById('relay1SpeedControl').addEventListener('input', (e) => {
             const speed = e.target.value;
             document.getElementById('relay1SpeedValue').textContent = speed;
             
-            // Hiệu ứng khi thay đổi giá trị
-            const speedValueElement = document.getElementById('relay1SpeedValue');
-            speedValueElement.classList.add('pulse');
-            setTimeout(() => speedValueElement.classList.remove('pulse'), 500);
-            
-            // Chỉ cập nhật lên Firebase khi người dùng ngừng kéo thanh trượt
+            // Chỉ cập nhật lên Firebase khi ngừng kéo thanh trượt
             clearTimeout(window.speedTimeout);
             window.speedTimeout = setTimeout(() => {
                 relay1Ref.update({
                     speed: parseInt(speed),
-                    manual: true, // Đánh dấu là điều khiển thủ công
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 
-                // Thêm vào lịch sử nếu tốc độ thay đổi đáng kể
-                if (Math.abs(parseInt(speed) - parseInt(e.target.dataset.lastSpeed || 0)) > 5) {
-                    historyRef.push({
-                        action: 'Điều chỉnh tốc độ động cơ 1 (Thủ công)',
-                        value: `${speed}%`,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    e.target.dataset.lastSpeed = speed;
-                }
+                historyRef.push({
+                    action: 'Điều chỉnh tốc độ động cơ 1',
+                    value: `${speed}%`,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
             }, 500);
         });
-
+        
         // Xử lý sự kiện điều chỉnh tốc độ relay 2
         document.getElementById('relay2SpeedControl').addEventListener('input', (e) => {
             const speed = e.target.value;
             document.getElementById('relay2SpeedValue').textContent = speed;
             
-            // Hiệu ứng khi thay đổi giá trị
-            const speedValueElement = document.getElementById('relay2SpeedValue');
-            speedValueElement.classList.add('pulse');
-            setTimeout(() => speedValueElement.classList.remove('pulse'), 500);
-            
-            // Chỉ cập nhật lên Firebase khi người dùng ngừng kéo thanh trượt
+            // Chỉ cập nhật lên Firebase khi ngừng kéo thanh trượt
             clearTimeout(window.speedTimeout);
             window.speedTimeout = setTimeout(() => {
                 relay2Ref.update({
                     speed: parseInt(speed),
-                    manual: true, // Đánh dấu là điều khiển thủ công
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 
-                // Thêm vào lịch sử nếu tốc độ thay đổi đáng kể
-                if (Math.abs(parseInt(speed) - parseInt(e.target.dataset.lastSpeed || 0) > 5)) {
-                    historyRef.push({
-                        action: 'Điều chỉnh tốc độ động cơ 2 (Thủ công)',
-                        value: `${speed}%`,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP
-                    });
-                    e.target.dataset.lastSpeed = speed;
-                }
+                historyRef.push({
+                    action: 'Điều chỉnh tốc độ động cơ 2',
+                    value: `${speed}%`,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
             }, 500);
         });
-
-        // Xử lý chuyển đổi chế độ điều khiển relay 1
-        document.getElementById('relay1AutoBtn').addEventListener('click', () => {
-            relay1Ref.update({
-                manual: false,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            historyRef.push({
-                action: 'Chuyển chế độ động cơ 1 sang Tự động',
-                value: '',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            updateControlButtons('relay1', false);
-        });
-
-        document.getElementById('relay1ManualBtn').addEventListener('click', () => {
-            relay1Ref.update({
-                manual: true,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            historyRef.push({
-                action: 'Chuyển chế độ động cơ 1 sang Thủ công',
-                value: '',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            updateControlButtons('relay1', true);
-        });
-
-        // Xử lý chuyển đổi chế độ điều khiển relay 2
-        document.getElementById('relay2AutoBtn').addEventListener('click', () => {
-            relay2Ref.update({
-                manual: false,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            historyRef.push({
-                action: 'Chuyển chế độ động cơ 2 sang Tự động',
-                value: '',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            updateControlButtons('relay2', false);
-        });
-
-        document.getElementById('relay2ManualBtn').addEventListener('click', () => {
-            relay2Ref.update({
-                manual: true,
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            historyRef.push({
-                action: 'Chuyển chế độ động cơ 2 sang Thủ công',
-                value: '',
-                timestamp: firebase.database.ServerValue.TIMESTAMP
-            });
-            
-            updateControlButtons('relay2', true);
-        });
-
-        // Xử lý sự kiện chọn khoảng thời gian biểu đồ
-        document.getElementById('chartDay').addEventListener('click', () => {
-            updateChartTimeRange('day');
-            setActiveChartButton('chartDay');
-        });
         
-        document.getElementById('chartWeek').addEventListener('click', () => {
-            updateChartTimeRange('week');
-            setActiveChartButton('chartWeek');
-        });
-        
-        document.getElementById('chartMonth').addEventListener('click', () => {
-            updateChartTimeRange('month');
-            setActiveChartButton('chartMonth');
-        });
-
         // Hàm cập nhật xu hướng
         function updateTrend(type, diff) {
             const trendElement = document.getElementById(`${type}Trend`);
@@ -1674,7 +1088,7 @@ const chartData = {
                 trendIconElement.className = trendClass;
             }
         }
-
+        
         // Hàm cập nhật xu hướng relay
         function updateRelayTrend(relayId, diff) {
             const relayTrendElement = document.getElementById(`${relayId}Trend`);
@@ -1690,80 +1104,7 @@ const chartData = {
                 relayTrendElement.className = 'trend-neutral';
             }
         }
-
-        // Hàm cập nhật chế độ điều khiển
-        function updateControlMode(relayId, isManual) {
-            const autoBtn = document.getElementById(`${relayId}AutoBtn`);
-            const manualBtn = document.getElementById(`${relayId}ManualBtn`);
-            
-            if (isManual) {
-                autoBtn.classList.remove('active');
-                manualBtn.classList.add('active');
-                document.getElementById('controlMode').textContent = 'Thủ công';
-            } else {
-                autoBtn.classList.add('active');
-                manualBtn.classList.remove('active');
-                document.getElementById('controlMode').textContent = 'Tự động';
-            }
-        }
-
-        // Hàm cập nhật nút điều khiển
-        function updateControlButtons(relayId, isManual) {
-            const autoBtn = document.getElementById(`${relayId}AutoBtn`);
-            const manualBtn = document.getElementById(`${relayId}ManualBtn`);
-            
-            if (isManual) {
-                autoBtn.classList.remove('active');
-                manualBtn.classList.add('active');
-            } else {
-                autoBtn.classList.add('active');
-                manualBtn.classList.remove('active');
-            }
-        }
-
-        // Hàm tính chỉ số thoải mái (Heat Index)
-        function calculateComfortIndex(temp, humidity) {
-            // Công thức đơn giản hóa chỉ số thoải mái
-            const comfort = temp + 0.3 * humidity;
-            return Math.min(Math.max(comfort, 0), 100); // Giới hạn trong khoảng 0-100
-        }
-
-        // Hàm cập nhật chỉ số thoải mái
-        function updateComfortIndex(index) {
-            const comfortElement = document.getElementById('comfortIndex');
-            if (comfortElement) {
-                comfortElement.textContent = Math.round(index);
-                
-                // Đổi màu dựa trên giá trị
-                if (index > 75) {
-                    comfortElement.style.color = '#f72585'; // Nóng
-                } else if (index > 50) {
-                    comfortElement.style.color = '#4cc9f0'; // Mát
-                } else {
-                    comfortElement.style.color = '#2ecc71'; // Dễ chịu
-                }
-            }
-        }
-
-        // Hàm cập nhật khoảng thời gian biểu đồ
-        function updateChartTimeRange(range) {
-            // Trong thực tế, bạn sẽ tải dữ liệu mới từ Firebase dựa trên khoảng thời gian
-            // Ở đây chỉ là ví dụ minh họa
-            console.log(`Đã chọn khoảng thời gian: ${range}`);
-            
-            // Cập nhật tiêu đề biểu đồ
-            document.querySelector('.chart-title').textContent = 
-                `Biểu đồ Nhiệt độ & Độ ẩm ${range === 'day' ? '24 giờ' : range === 'week' ? '7 ngày' : '30 ngày'}`;
-        }
-
-        // Hàm đặt nút biểu đồ active
-        function setActiveChartButton(buttonId) {
-            document.querySelectorAll('.chart-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById(buttonId).classList.add('active');
-        }
-
+        
         // Hàm định dạng thời gian
         function formatDateTime(date) {
             const day = date.getDate().toString().padStart(2, '0');
