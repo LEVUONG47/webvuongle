@@ -971,6 +971,7 @@
             const status = e.target.checked;
             relay1Ref.update({
                 status: status,
+                manual: true, // Đánh dấu là điều khiển thủ công
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
@@ -980,18 +981,18 @@
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
-        
         // Xử lý sự kiện bật/tắt relay 2
         document.getElementById('motor2Toggle').addEventListener('change', (e) => {
             const status = e.target.checked;
             relay2Ref.update({
                 status: status,
+                manual: true, // Đánh dấu là điều khiển thủ công
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
             
             historyRef.push({
                 action: 'Thay đổi trạng thái động cơ 2',
-                value: status ? 'BẮT' : 'TẮT',
+                value: status ? 'BẬT' : 'TẮT',
                 timestamp: firebase.database.ServerValue.TIMESTAMP
             });
         });
@@ -1031,11 +1032,11 @@
             const speed = e.target.value;
             document.getElementById('relay1SpeedValue').textContent = speed;
             
-            // Chỉ cập nhật lên Firebase khi ngừng kéo thanh trượt
             clearTimeout(window.speedTimeout);
             window.speedTimeout = setTimeout(() => {
                 relay1Ref.update({
                     speed: parseInt(speed),
+                    manual: true, // Đánh dấu là điều khiển thủ công
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 
@@ -1052,11 +1053,11 @@
             const speed = e.target.value;
             document.getElementById('relay2SpeedValue').textContent = speed;
             
-            // Chỉ cập nhật lên Firebase khi ngừng kéo thanh trượt
             clearTimeout(window.speedTimeout);
             window.speedTimeout = setTimeout(() => {
                 relay2Ref.update({
                     speed: parseInt(speed),
+                    manual: true, // Đánh dấu là điều khiển thủ công
                     timestamp: firebase.database.ServerValue.TIMESTAMP
                 });
                 
