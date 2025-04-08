@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
     <head>
@@ -10,562 +9,551 @@
         <script
             src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
         <link
             href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
             rel="stylesheet">
         <link rel="stylesheet"
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <style>
-        :root {
-            --primary: #4361ee;
-            --secondary: #3a0ca3;
-            --accent: #4cc9f0;
-            --danger: #f72585;
-            --success: #2ecc71;
-            --warning: #f39c12;
-            --dark: #1a1a1a;
-            --darker: #121212;
-            --light: #f8f9fa;
-            --card-bg: #252525;
-            --card-hover: #2e2e2e;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-        
-        body {
-            background-color: var(--darker);
-            color: var(--light);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .weather .card-value {
-            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .weather-icon {
-            font-size: 60px;
-            text-align: center;
-            margin: 15px 0;
-            color: #4cc9f0;
-        }
-        
-        .weather-icon .fa-sun {
-            color: #f39c12;
-        }
-        
-        .weather-icon .fa-cloud-rain {
-            color: #4361ee;
-        }
-        
-        .weather-icon .fa-cloud {
-            color: #7f8c8d;
-        }
-        
-        .logo {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--accent), var(--primary));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        
-        h1 {
-            color: var(--light);
-            font-size: 24px;
-            font-weight: 600;
-            background: linear-gradient(to right, var(--accent), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .connection-status {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 8px 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(5px);
-        }
-        
-        .status-indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #6c757d;
-        }
-        
-        .status-indicator.connected {
-            background-color: var(--success);
-            box-shadow: 0 0 10px var(--success);
-        }
-        
-        .status-text {
-            font-size: 14px;
-            font-weight: 500;
-        }
-        
-        .last-update {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .card {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .card:hover {
-            transform: translateY(-5px);
-            background: var(--card-hover);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-        }
-        .weather .card-value {
-            font-size: 24px;
-            margin-bottom: 15px;
-            text-transform: capitalize;
-        }
-        
-        .weather-icon {
-            font-size: 48px;
-            text-align: center;
-            margin: 15px 0;
-            color: #4cc9f0;
-        }
-        
-        .weather-icon i {
-            transition: all 0.5s ease;
-        }
-        .card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(to right, var(--primary), var(--accent));
-        }
-        
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .card-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--accent);
-        }
-        
-        .card-value {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 5px;
-            background: linear-gradient(to right, var(--light), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-        
-        .temperature .card-value {
-            background: linear-gradient(to right, #ff9a9e, #fad0c4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .humidity .card-value {
-            background: linear-gradient(to right, #a1c4fd, #c2e9fb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        
-        .motor .card-value {
-            background: linear-gradient(to right, #84fab0, #8fd3f4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-        
-        .card-unit {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.6);
-            font-weight: 500;
-        }
-        
-        .card-trend {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 10px;
-            font-size: 13px;
-        }
-        
-        .trend-up {
-            color: var(--danger);
-        }
-        
-        .trend-down {
-            color: var(--success);
-        }
-        
-        .trend-neutral {
-            color: rgba(255, 255, 255, 0.5);
-        }
-        
-        .chart-section {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .main-chart-container {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            height: 400px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .chart-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-        }
-        
-        .chart-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--light);
-        }
-        
-        .chart-wrapper {
-            height: calc(100% - 60px);
-            position: relative;
-        }
-        
-        .stats-container {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .stats-header {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--light);
-            margin-bottom: 20px;
-        }
-        
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .stat-item:last-child {
-            border-bottom: none;
-        }
-        
-        .stat-label {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .stat-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--light);
-        }
-        
-        .stat-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        
-        .badge-success {
-            background: rgba(46, 204, 113, 0.2);
-            color: var(--success);
-        }
-        
-        .badge-danger {
-            background: rgba(247, 37, 133, 0.2);
-            color: var(--danger);
-        }
-        
-        .control-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        @media (max-width: 768px) {
-            .control-section {
-                grid-template-columns: 1fr;
+            :root {
+                --primary: #5e60ce;
+                --secondary: #4ea8de;
+                --accent: #48cae4;
+                --danger: #ff006e;
+                --success: #06d6a0;
+                --warning: #ffd60a;
+                --dark: #0d1b2a;
+                --darker: #1b263b;
+                --light: #e0e1dd;
+                --card-bg: rgba(27, 38, 59, 0.85);
+                --card-hover: rgba(40, 54, 80, 0.9);
+                --glass-bg: rgba(255, 255, 255, 0.1);
             }
-        }
-        
-        .control-panel {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .control-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--light);
-            margin-bottom: 20px;
-        }
-        
-        .history-section {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .history-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--light);
-        }
-        
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        
-        .history-table th {
-            text-align: left;
-            padding: 12px 15px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 500;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .history-table td {
-            padding: 12px 15px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .highlight {
-            animation: highlight 0.5s ease;
-        }
-        
-        @keyframes highlight {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .footer {
-            margin-top: 30px;
-            text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 14px;
-        }
-        
-        /* Phần CSS mới cho điều khiển động cơ */
-        .led-indicator {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background-color: #6c757d;
-            display: inline-block;
-            margin-right: 10px;
-            position: relative;
-            box-shadow: 0 0 5px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .led-indicator.on {
-            background-color: #2ecc71;
-            box-shadow: 0 0 10px #2ecc71;
-        }
-        
-        .led-indicator.off {
-            background-color: #e74c3c;
-        }
-        
-        .mode-selector {
-            display: flex;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-            padding: 5px;
-            margin-top: 15px;
-        }
-        
-        .mode-option {
-            flex: 1;
-            text-align: center;
-            padding: 8px 0;
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        
-        .mode-option.active {
-            background: var(--primary);
-            color: white;
-        }
-        
-        .status-container {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-        }
-        
-        .status-label {
-            font-size: 14px;
-            color: rgba(255,255,255,0.8);
-        }
-        
-        .last-change {
-            font-size: 12px;
-            color: rgba(255,255,255,0.5);
-            margin-top: 5px;
-        }
-        
-        /* Thêm animation cho LED */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
-            50% { box-shadow: 0 0 15px rgba(46, 204, 113, 0.8); }
-            100% { box-shadow: 0 0 5px rgba(46, 204, 113, 0.5); }
-        }
-        
-        .led-indicator.pulse {
-            animation: pulse 1.5s infinite;
-        }
-        
-        /* Nút điều khiển */
-        .control-btn {
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 15px;
-            width: 100%;
-        }
-        
-        .btn-on {
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .btn-off {
-            background-color: var(--danger);
-            color: white;
-        }
-        
-        .btn-on:hover {
-            background-color: #27ae60;
-            transform: translateY(-2px);
-        }
-        
-        .btn-off:hover {
-            background-color: #c0392b;
-            transform: translateY(-2px);
-        }
-    </style>
+
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Inter', sans-serif;
+            }
+
+            body {
+                background: var(--dark);
+                color: var(--light);
+                min-height: 100vh;
+                padding: 30px;
+                overflow-x: hidden;
+                position: relative;
+                cursor: none; /* Ẩn con trỏ mặc định */
+            }
+
+            #particles-js {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: -1;
+                background: linear-gradient(135deg, var(--dark), var(--darker));
+                animation: gradientShift 15s infinite alternate;
+            }
+
+            @keyframes gradientShift {
+                0% { background: linear-gradient(135deg, var(--dark), var(--darker)); }
+                50% { background: linear-gradient(135deg, var(--darker), var(--primary)); }
+                100% { background: linear-gradient(135deg, var(--dark), var(--secondary)); }
+            }
+
+            .container {
+                max-width: 1400px;
+                margin: 0 auto;
+                position: relative;
+                z-index: 1;
+            }
+
+            /* Custom Cursor */
+            .custom-cursor {
+                position: fixed;
+                width: 20px;
+                height: 20px;
+                background: radial-gradient(circle, var(--accent) 20%, transparent 80%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 999;
+                transform: translate(-50%, -50%);
+                transition: transform 0.1s ease;
+            }
+
+            .custom-cursor.hover {
+                transform: translate(-50%, -50%) scale(1.5);
+                background: radial-gradient(circle, var(--primary) 20%, transparent 80%);
+            }
+
+            /* Header */
+            header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 40px;
+                padding: 20px;
+                background: var(--glass-bg);
+                border-radius: 20px;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 20px rgba(94, 96, 206, 0.2);
+            }
+
+            .header-left {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .logo {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, var(--primary), var(--accent));
+                border-radius: 15px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                font-weight: 700;
+                color: white;
+                box-shadow: 0 0 15px var(--accent);
+                animation: glowPulse 2s infinite;
+            }
+
+            @keyframes glowPulse {
+                0% { box-shadow: 0 0 15px var(--accent); }
+                50% { box-shadow: 0 0 25px var(--accent); }
+                100% { box-shadow: 0 0 15px var(--accent); }
+            }
+
+            h1 {
+                font-size: 28px;
+                font-weight: 700;
+                background: linear-gradient(90deg, var(--accent), var(--primary));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .connection-status {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                background: var(--glass-bg);
+                padding: 10px 20px;
+                border-radius: 25px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            }
+
+            .status-indicator {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background-color: #6c757d;
+                transition: all 0.3s ease;
+            }
+
+            .status-indicator.connected {
+                background-color: var(--success);
+                box-shadow: 0 0 15px var(--success);
+            }
+
+            .status-text {
+                font-size: 15px;
+                font-weight: 500;
+            }
+
+            .last-update {
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.7);
+                margin-bottom: 30px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            /* Dashboard Cards */
+            .dashboard {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+                margin-bottom: 40px;
+            }
+
+            .card {
+                background: var(--card-bg);
+                border-radius: 20px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+                transition: transform 0.4s ease;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(5px);
+                transform-style: preserve-3d;
+            }
+
+            .card:hover {
+                transform: translateY(-8px) rotateX(5deg) rotateY(5deg);
+                background: var(--card-hover);
+                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35), 0 0 20px var(--accent);
+            }
+
+            .card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 5px;
+                background: linear-gradient(90deg, var(--primary), var(--accent));
+                opacity: 0.8;
+            }
+
+            .card-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 25px;
+            }
+
+            .card-title {
+                font-size: 18px;
+                font-weight: 600;
+                color: rgba(255, 255, 255, 0.9);
+                text-transform: uppercase;
+                letter-spacing: 1px;
+            }
+
+            .card-icon {
+                width: 45px;
+                height: 45px;
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 22px;
+                background: var(--glass-bg);
+                color: var(--accent);
+                transition: all 0.3s ease;
+                box-shadow: 0 0 10px var(--accent);
+            }
+
+            .card:hover .card-icon {
+                transform: scale(1.1) rotate(15deg);
+            }
+
+            .card-value {
+                font-size: 48px;
+                font-weight: 800;
+                margin-bottom: 8px;
+                background: linear-gradient(90deg, var(--light), var(--accent));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+
+            .temperature .card-value {
+                background: linear-gradient(90deg, #ff6b6b, #ffe66d);
+            }
+
+            .humidity .card-value {
+                background: linear-gradient(90deg, #4ea8de, #90e0ef);
+            }
+
+            .motor .card-value {
+                background: linear-gradient(90deg, #06d6a0, #48cae4);
+                font-size: 36px;
+                margin-bottom: 15px;
+            }
+
+            .card-unit {
+                font-size: 16px;
+                color: rgba(255, 255, 255, 0.7);
+                font-weight: 500;
+            }
+
+            .card-trend {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 12px;
+                font-size: 14px;
+            }
+
+            .trend-up { color: var(--danger); }
+            .trend-down { color: var(--success); }
+            .trend-neutral { color: rgba(255, 255, 255, 0.6); }
+
+            /* Chart Section */
+            .chart-section {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 25px;
+                margin-bottom: 40px;
+            }
+
+            .main-chart-container {
+                background: var(--card-bg);
+                border-radius: 20px;
+                padding: 30px;
+                height: 450px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 20px var(--primary);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(5px);
+            }
+
+            .chart-header {
+                margin-bottom: 30px;
+            }
+
+            .chart-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--light);
+                text-shadow: 0 0 10px var(--accent);
+            }
+
+            /* Control Section */
+            .control-section {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 25px;
+                margin-bottom: 40px;
+            }
+
+            .weather-icon {
+                font-size: 60px;
+                text-align: center;
+                margin: 20px 0;
+                color: var(--accent);
+                transition: all 0.5s ease;
+                text-shadow: 0 0 15px var(--accent);
+            }
+
+            .weather-icon .fa-sun { color: #ffd60a; }
+            .weather-icon .fa-cloud-rain { color: #4ea8de; }
+            .weather-icon .fa-cloud { color: #778da9; }
+
+            /* LED Indicator */
+            .led-indicator {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                background-color: #6c757d;
+                margin-right: 12px;
+                box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+                transition: all 0.4s ease;
+            }
+
+            .led-indicator.on {
+                background-color: var(--success);
+                box-shadow: 0 0 20px var(--success), 0 0 30px var(--success);
+            }
+
+            .led-indicator.off {
+                background-color: var(--danger);
+                box-shadow: 0 0 10px var(--danger);
+            }
+
+            .led-indicator.pulse {
+                animation: pulse 1.5s infinite;
+            }
+
+            @keyframes pulse {
+                0% { box-shadow: 0 0 5px var(--success); }
+                50% { box-shadow: 0 0 25px var(--success); }
+                100% { box-shadow: 0 0 5px var(--success); }
+            }
+
+            /* Mode Selector */
+            .mode-selector {
+                display: flex;
+                background: var(--glass-bg);
+                border-radius: 25px;
+                padding: 6px;
+                margin-top: 20px;
+                backdrop-filter: blur(5px);
+                box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+            }
+
+            .mode-option {
+                flex: 1;
+                text-align: center;
+                padding: 10px 0;
+                border-radius: 20px;
+                cursor: pointer;
+                font-size: 15px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .mode-option.active {
+                background: var(--primary);
+                color: white;
+                box-shadow: 0 0 15px var(--primary);
+            }
+
+            /* Control Buttons */
+            .control-btn {
+                padding: 12px 25px;
+                border-radius: 10px;
+                border: none;
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 20px;
+                width: 100%;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .control-btn::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 0;
+                height: 0;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                transition: width 0.6s ease, height 0.6s ease;
+            }
+
+            .control-btn:hover::after {
+                width: 200%;
+                height: 200%;
+            }
+
+            .btn-on {
+                background: var(--success);
+                color: white;
+                box-shadow: 0 0 15px var(--success);
+            }
+
+            .btn-off {
+                background: var(--danger);
+                color: white;
+                box-shadow: 0 0 15px var(--danger);
+            }
+
+            .btn-on:hover {
+                background: #05b585;
+                transform: translateY(-3px);
+                box-shadow: 0 0 25px var(--success);
+            }
+
+            .btn-off:hover {
+                background: #d90429;
+                transform: translateY(-3px);
+                box-shadow: 0 0 25px var(--danger);
+            }
+
+            /* History Section */
+            .history-section {
+                background: var(--card-bg);
+                border-radius: 20px;
+                padding: 30px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25), 0 0 20px var(--primary);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                backdrop-filter: blur(5px);
+            }
+
+            .history-title {
+                font-size: 20px;
+                font-weight: 700;
+                color: var(--light);
+                text-shadow: 0 0 10px var(--accent);
+                margin-bottom: 25px;
+            }
+
+            .history-table th {
+                font-size: 15px;
+                color: rgba(255, 255, 255, 0.8);
+                padding: 15px;
+            }
+
+            .history-table td {
+                font-size: 14px;
+                color: rgba(255, 255, 255, 0.9);
+                padding: 15px;
+                transition: all 0.3s ease;
+            }
+
+            .history-table tr:hover td {
+                color: var(--accent);
+                text-shadow: 0 0 10px var(--accent);
+            }
+
+            /* Footer */
+            .footer {
+                margin-top: 40px;
+                padding-top: 25px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 15px;
+                text-shadow: 0 0 5px var(--light);
+            }
+
+            /* Loading Overlay */
+            .loading-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: var(--dark);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                opacity: 1;
+                transition: opacity 0.5s ease;
+            }
+
+            .loading-spinner {
+                width: 60px;
+                height: 60px;
+                border: 5px solid var(--accent);
+                border-top: 5px solid transparent;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                box-shadow: 0 0 20px var(--accent);
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .dashboard, .control-section {
+                    grid-template-columns: 1fr;
+                }
+                .card-value {
+                    font-size: 40px;
+                }
+                .card {
+                    padding: 20px;
+                }
+            }
+        </style>
     </head>
     <body>
+        <div id="particles-js"></div>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
+        </div>
+        <div class="custom-cursor" id="customCursor"></div>
         <div class="container">
             <header>
                 <div class="header-left">
@@ -634,14 +622,12 @@
                             <i class="fas fa-cog"></i>
                         </div>
                     </div>
-
                     <div class="mode-selector" id="relay1ModeSelector">
                         <div class="mode-option active" data-mode="auto">Tự
                             động</div>
                         <div class="mode-option" data-mode="manual">Thủ
                             công</div>
                     </div>
-
                     <div class="status-container">
                         <div class="led-indicator off" id="motor1Led"></div>
                         <span class="status-label">Trạng thái: <span
@@ -649,7 +635,6 @@
                     </div>
                     <div class="last-change" id="motor1LastChange">Lần cuối:
                         --/--/---- --:--:--</div>
-
                     <div id="relay1ManualControl" style="display: none;">
                         <button class="control-btn btn-on"
                             id="relay1OnBtn">BẬT</button>
@@ -665,14 +650,12 @@
                             <i class="fas fa-cog"></i>
                         </div>
                     </div>
-
                     <div class="mode-selector" id="relay2ModeSelector">
                         <div class="mode-option active" data-mode="auto">Tự
                             động</div>
                         <div class="mode-option" data-mode="manual">Thủ
                             công</div>
                     </div>
-
                     <div class="status-container">
                         <div class="led-indicator off" id="motor2Led"></div>
                         <span class="status-label">Trạng thái: <span
@@ -680,7 +663,6 @@
                     </div>
                     <div class="last-change" id="motor2LastChange">Lần cuối:
                         --/--/---- --:--:--</div>
-
                     <div id="relay2ManualControl" style="display: none;">
                         <button class="control-btn btn-on"
                             id="relay2OnBtn">BẬT</button>
@@ -725,7 +707,6 @@
                         --/--/---- --:--:--</div>
                 </div>
 
-                <!-- Trong phần HTML, sửa panel dự báo mưa -->
                 <div class="card weather">
                     <div class="card-header">
                         <span class="card-title">Dự báo mưa</span>
@@ -770,524 +751,448 @@
         </div>
 
         <script>
-        // Khởi tạo Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
-            authDomain: "webvuongle.firebaseapp.com",
-            databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "webvuongle",
-            storageBucket: "webvuongle.appspot.com",
-            messagingSenderId: "72756137917",
-            appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        
-        // Tham chiếu database
-        const sensorRef = database.ref('sensor_data');
-        const relay1Ref = database.ref('relays/relay1');
-        const relay2Ref = database.ref('relays/relay2');
-        const historyRef = database.ref('history');
-        
-        // Biến lưu giá trị trước đó
-        let prevTemperature = null;
-        let prevHumidity = null;
-        
-        // Dữ liệu biểu đồ
-        const chartData = {
-            labels: [],
-            temperature: [],
-            humidity: []
-        };
-        
-        // Khởi tạo biểu đồ
-        const ctx = document.getElementById('sensorChart').getContext('2d');
-        const sensorChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: chartData.labels,
-                datasets: [
-                    {
-                        label: 'Nhiệt độ (°C)',
-                        data: chartData.temperature,
-                        borderColor: '#ff9a9e',
-                        backgroundColor: 'rgba(255, 154, 158, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Độ ẩm (%)',
-                        data: chartData.humidity,
-                        borderColor: '#a1c4fd',
-                        backgroundColor: 'rgba(161, 196, 253, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: {
-                            color: 'rgba(255, 255, 255, 0.8)'
-                        }
-                    }
+            // Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#48cae4' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: false },
+                    move: { enable: true, speed: 2, direction: 'none', random: true }
                 },
-                scales: {
-                    y: {
-                        beginAtZero: false,
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                    modes: { repulse: { distance: 100 }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+
+            // Custom Cursor
+            const cursor = document.getElementById('customCursor');
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.pageX + 'px';
+                cursor.style.top = e.pageY + 'px';
+            });
+            document.querySelectorAll('.card, button, .mode-option').forEach(el => {
+                el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+            });
+
+            // Hiệu ứng loading
+            window.addEventListener('load', () => {
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                setTimeout(() => {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 500);
+                }, 1000);
+            });
+
+            // Khởi tạo Firebase
+            const firebaseConfig = {
+                apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
+                authDomain: "webvuongle.firebaseapp.com",
+                databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
+                projectId: "webvuongle",
+                storageBucket: "webvuongle.appspot.com",
+                messagingSenderId: "72756137917",
+                appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
+            };
+            firebase.initializeApp(firebaseConfig);
+            const database = firebase.database();
+
+            const sensorRef = database.ref('sensor_data');
+            const relay1Ref = database.ref('relays/relay1');
+            const relay2Ref = database.ref('relays/relay2');
+            const historyRef = database.ref('history');
+
+            let prevTemperature = null;
+            let prevHumidity = null;
+
+            const chartData = {
+                labels: [],
+                temperature: [],
+                humidity: []
+            };
+
+            const ctx = document.getElementById('sensorChart').getContext('2d');
+            const sensorChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: [
+                        {
+                            label: 'Nhiệt độ (°C)',
+                            data: chartData.temperature,
+                            borderColor: '#ff6b6b',
+                            backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#ff6b6b',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 7,
+                            pointHoverBackgroundColor: '#ff6b6b'
                         },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)'
+                        {
+                            label: 'Độ ẩm (%)',
+                            data: chartData.humidity,
+                            borderColor: '#4ea8de',
+                            backgroundColor: 'rgba(78, 168, 222, 0.2)',
+                            borderWidth: 3,
+                            tension: 0.4,
+                            fill: true,
+                            pointRadius: 5,
+                            pointBackgroundColor: '#4ea8de',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 7,
+                            pointHoverBackgroundColor: '#4ea8de'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.9)',
+                                font: { size: 14, weight: '600' }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(27, 38, 59, 0.9)',
+                            titleFont: { size: 14 },
+                            bodyFont: { size: 12 },
+                            padding: 10,
+                            cornerRadius: 8
                         }
                     },
-                    x: {
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.05)'
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.8)', font: { size: 12 } }
                         },
-                        ticks: {
-                            color: 'rgba(255, 255, 255, 0.6)'
+                        x: {
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.8)', font: { size: 12 } }
+                        }
+                    },
+                    animation: {
+                        duration: 1500,
+                        easing: 'easeOutBounce',
+                        onComplete: function () {
+                            this.options.animation.duration = 1000; // Giảm thời gian cho các lần sau
                         }
                     }
                 }
-            }
-        });
-        
-        // Cập nhật trạng thái kết nối
-        database.ref('.info/connected').on('value', (snapshot) => {
-            const connectionStatus = document.getElementById('connectionStatus');
-            const statusText = document.getElementById('statusText');
-            
-            if (snapshot.val() === true) {
-                connectionStatus.classList.add('connected');
-                statusText.textContent = 'Đã kết nối';
-            } else {
-                connectionStatus.classList.remove('connected');
-                statusText.textContent = 'Mất kết nối';
-            }
-        });
-        
-        // Lắng nghe dữ liệu cảm biến
-        sensorRef.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                // Cập nhật giá trị nhiệt độ, độ ẩm
-                const tempElement = document.getElementById('temperature');
-                const humidElement = document.getElementById('humidity');
-                
-                // Hiệu ứng khi giá trị thay đổi
-                if (tempElement.textContent !== '--' && tempElement.textContent !== data.temperature.toFixed(1)) {
-                    tempElement.classList.add('highlight');
-                    setTimeout(() => tempElement.classList.remove('highlight'), 500);
-                }
-                tempElement.textContent = data.temperature.toFixed(1);
-                
-                if (humidElement.textContent !== '--' && humidElement.textContent !== data.humidity.toFixed(1)) {
-                    humidElement.classList.add('highlight');
-                    setTimeout(() => humidElement.classList.remove('highlight'), 500);
-                }
-                humidElement.textContent = data.humidity.toFixed(1);
-                
-                // Tính toán xu hướng
-                if (prevTemperature !== null) {
-                    const tempDiff = data.temperature - prevTemperature;
-                    updateTrend('temp', tempDiff);
-                }
-                
-                if (prevHumidity !== null) {
-                    const humidDiff = data.humidity - prevHumidity;
-                    updateTrend('humid', humidDiff);
-                }
-                
-                prevTemperature = data.temperature;
-                prevHumidity = data.humidity;
-                
-                // Cập nhật thời gian
-                const now = new Date();
-                document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
-                
-                // Thêm dữ liệu vào biểu đồ (giới hạn 20 điểm)
-                chartData.labels.push(formatTime(now));
-                chartData.temperature.push(data.temperature);
-                chartData.humidity.push(data.humidity);
-                
-                if (chartData.labels.length > 20) {
-                    chartData.labels.shift();
-                    chartData.temperature.shift();
-                    chartData.humidity.shift();
-                }
-                
-                sensorChart.update();
-                updateRainForecast(data.humidity);
-                // Cập nhật trạng thái thời tiết
-updateWeatherStatus(data.temperature, data.humidity);
-            }
-        });
-        function updateWeatherStatus(temp, humid) {
-            const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
-            const weatherStatus = document.getElementById('weatherStatus');
-            const weatherTemp = document.getElementById('weatherTemp');
-            const weatherHumid = document.getElementById('weatherHumid');
-            
-            // Cập nhật giá trị
-            weatherTemp.textContent = temp.toFixed(1);
-            weatherHumid.textContent = humid.toFixed(1);
-            
-            // Xác định biểu tượng và trạng thái thời tiết
-            let icon, status;
-            
-            if (humid > 80) {
-                if (temp > 30) {
-                    icon = 'fa-poo-storm';
-                    status = 'Nóng ẩm';
-                } else {
-                    icon = 'fa-cloud-rain';
-                    status = 'Mưa';
-                }
-            } else if (temp > 30) {
-                icon = 'fa-sun';
-                status = 'Nóng';
-            } else if (temp < 15) {
-                icon = 'fa-snowflake';
-                status = 'Lạnh';
-            } else {
-                icon = 'fa-cloud-sun';
-                status = 'Ôn hòa';
-            }
-            
-            // Cập nhật hiển thị
-            weatherIcon.className = `fas ${icon}`;
-            weatherStatus.textContent = status;
-            
-            // Cập nhật thời gian
-            document.getElementById('weatherLastUpdate').textContent = 
-                `Cập nhật: ${formatDateTime(new Date())}`;
-        }
-        // Sửa hàm updateRainForecast
-function updateRainForecast(humidity) {
-    const rainForecast = document.getElementById('rainForecast');
-    const rainIcon = document.getElementById('rainIcon').firstElementChild;
-    const currentHumidity = document.getElementById('currentHumidity');
-    const rainLastUpdate = document.getElementById('rainLastUpdate');
-    
-    currentHumidity.textContent = humidity.toFixed(1);
-    
-    let forecastText = '';
-    let iconClass = '';
-    
-    if (humidity >= 80) {
-        forecastText = 'KHẢ NĂNG MƯA CAO';
-        iconClass = 'fa-cloud-rain';
-    } else if (humidity >= 60) {
-        forecastText = 'CÓ THỂ MƯA';
-        iconClass = 'fa-cloud';
-    } else {
-        forecastText = 'ÍT KHẢ NĂNG MƯA';
-        iconClass = 'fa-sun';
-    }
-    
-    rainForecast.textContent = forecastText;
-    rainIcon.className = `fas ${iconClass}`;
-    
-    const now = new Date();
-    rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(now)}`;
-}
-        
-        // Lắng nghe relay 1 - Phiên bản cải tiến
-        relay1Ref.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const motor1Led = document.getElementById('motor1Led');
-                const motor1StatusText = document.getElementById('motor1StatusText');
-                const motor1Status = document.getElementById('motor1Status');
-                const controlMotor1Led = document.getElementById('controlMotor1Led');
-                const controlMotor1StatusText = document.getElementById('controlMotor1StatusText');
-                const manualControl = document.getElementById('relay1ManualControl');
-                
-                // Cập nhật trạng thái LED
-                if (data.status) {
-                    motor1Led.classList.remove('off');
-                    motor1Led.classList.add('on', 'pulse');
-                    motor1StatusText.textContent = 'BẬT';
-                    motor1Status.textContent = 'BẬT';
-                    controlMotor1Led.classList.remove('off');
-                    controlMotor1Led.classList.add('on', 'pulse');
-                    controlMotor1StatusText.textContent = 'BẬT';
-                } else {
-                    motor1Led.classList.remove('on', 'pulse');
-                    motor1Led.classList.add('off');
-                    motor1StatusText.textContent = 'TẮT';
-                    motor1Status.textContent = 'TẮT';
-                    controlMotor1Led.classList.remove('on', 'pulse');
-                    controlMotor1Led.classList.add('off');
-                    controlMotor1StatusText.textContent = 'TẮT';
-                }
-                
-                // Cập nhật chế độ
-                const modeOptions = document.querySelectorAll('#relay1ModeSelector .mode-option');
-                modeOptions.forEach(option => {
-                    option.classList.remove('active');
-                    if ((option.dataset.mode === 'auto' && !data.manual) || 
-                        (option.dataset.mode === 'manual' && data.manual)) {
-                        option.classList.add('active');
-                    }
-                });
-                
-                // Hiển thị nút điều khiển thủ công nếu ở chế độ manual
-                if (data.manual) {
-                    manualControl.style.display = 'block';
-                } else {
-                    manualControl.style.display = 'none';
-                }
-                
-                // Cập nhật thời gian thay đổi
-                if (data.timestamp) {
-                    const lastChangeElement = document.getElementById('motor1LastChange');
-                    lastChangeElement.textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
-                }
-            }
-        });
-
-        // Lắng nghe relay 2 - Phiên bản cải tiến
-        relay2Ref.on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (data) {
-                const motor2Led = document.getElementById('motor2Led');
-                const motor2StatusText = document.getElementById('motor2StatusText');
-                const motor2Status = document.getElementById('motor2Status');
-                const controlMotor2Led = document.getElementById('controlMotor2Led');
-                const controlMotor2StatusText = document.getElementById('controlMotor2StatusText');
-                const manualControl = document.getElementById('relay2ManualControl');
-                
-                // Cập nhật trạng thái LED
-                if (data.status) {
-                    motor2Led.classList.remove('off');
-                    motor2Led.classList.add('on', 'pulse');
-                    motor2StatusText.textContent = 'BẬT';
-                    motor2Status.textContent = 'BẬT';
-                    controlMotor2Led.classList.remove('off');
-                    controlMotor2Led.classList.add('on', 'pulse');
-                    controlMotor2StatusText.textContent = 'BẬT';
-                } else {
-                    motor2Led.classList.remove('on', 'pulse');
-                    motor2Led.classList.add('off');
-                    motor2StatusText.textContent = 'TẮT';
-                    motor2Status.textContent = 'TẮT';
-                    controlMotor2Led.classList.remove('on', 'pulse');
-                    controlMotor2Led.classList.add('off');
-                    controlMotor2StatusText.textContent = 'TẮT';
-                }
-                
-                // Cập nhật chế độ
-                const modeOptions = document.querySelectorAll('#relay2ModeSelector .mode-option');
-                modeOptions.forEach(option => {
-                    option.classList.remove('active');
-                    if ((option.dataset.mode === 'auto' && !data.manual) || 
-                        (option.dataset.mode === 'manual' && data.manual)) {
-                        option.classList.add('active');
-                    }
-                });
-                
-                // Hiển thị nút điều khiển thủ công nếu ở chế độ manual
-                if (data.manual) {
-                    manualControl.style.display = 'block';
-                } else {
-                    manualControl.style.display = 'none';
-                }
-                
-                // Cập nhật thời gian thay đổi
-                if (data.timestamp) {
-                    const lastChangeElement = document.getElementById('motor2LastChange');
-                    lastChangeElement.textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
-                }
-            }
-        });
-
-        // Lắng nghe lịch sử thao tác
-        historyRef.limitToLast(5).on('value', (snapshot) => {
-            const historyTable = document.getElementById('historyTable');
-            historyTable.innerHTML = '';
-            
-            snapshot.forEach((childSnapshot) => {
-                const action = childSnapshot.val();
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${formatDateTime(new Date(action.timestamp))}</td>
-                    <td>${action.action}</td>
-                    <td>${action.value}</td>
-                `;
-                
-                historyTable.prepend(row);
             });
-        });
-        
-        // Xử lý sự kiện chọn chế độ cho relay 1
-        // Xử lý sự kiện chọn chế độ cho relay 1
-document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
-    option.addEventListener('click', () => {
-        const mode = option.dataset.mode;
-        const isManual = mode === 'manual';
-        
-        // Cập nhật giao diện trước
-        document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => {
-            opt.classList.remove('active');
-        });
-        option.classList.add('active');
-        
-        // Hiển thị hoặc ẩn nút điều khiển thủ công
-        document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
-        
-        // Cập nhật lên Firebase
-        relay1Ref.update({
-            manual: isManual,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        
-        // Thêm vào lịch sử
-        historyRef.push({
-            action: 'Thay đổi chế độ động cơ 1',
-            value: isManual ? 'Thủ công' : 'Tự động',
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-    });
-});
 
-// Xử lý sự kiện chọn chế độ cho relay 2
-document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
-    option.addEventListener('click', () => {
-        const mode = option.dataset.mode;
-        const isManual = mode === 'manual';
-        
-        // Cập nhật giao diện trước
-        document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => {
-            opt.classList.remove('active');
-        });
-        option.classList.add('active');
-        
-        // Hiển thị hoặc ẩn nút điều khiển thủ công
-        document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
-        
-        // Cập nhật lên Firebase
-        relay2Ref.update({
-            manual: isManual,
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-        
-        // Thêm vào lịch sử
-        historyRef.push({
-            action: 'Thay đổi chế độ động cơ 2',
-            value: isManual ? 'Thủ công' : 'Tự động',
-            timestamp: firebase.database.ServerValue.TIMESTAMP
-        });
-    });
-});
+            database.ref('.info/connected').on('value', (snapshot) => {
+                const connectionStatus = document.getElementById('connectionStatus');
+                const statusText = document.getElementById('statusText');
+                if (snapshot.val() === true) {
+                    connectionStatus.classList.add('connected');
+                    statusText.textContent = 'Đã kết nối';
+                } else {
+                    connectionStatus.classList.remove('connected');
+                    statusText.textContent = 'Mất kết nối';
+                }
+            });
 
-// Thêm sự kiện cho nút bật/tắt thủ công relay 1
-document.getElementById('relay1OnBtn').addEventListener('click', () => {
-    relay1Ref.update({
-        status: true,
-        manual: true,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-    
-    historyRef.push({
-        action: 'Bật thủ công động cơ 1',
-        value: 'BẬT',
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-});
+            sensorRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const tempElement = document.getElementById('temperature');
+                    const humidElement = document.getElementById('humidity');
+                    if (tempElement.textContent !== '--' && tempElement.textContent !== data.temperature.toFixed(1)) {
+                        tempElement.classList.add('highlight');
+                        setTimeout(() => tempElement.classList.remove('highlight'), 500);
+                    }
+                    tempElement.textContent = data.temperature.toFixed(1);
+                    if (humidElement.textContent !== '--' && humidElement.textContent !== data.humidity.toFixed(1)) {
+                        humidElement.classList.add('highlight');
+                        setTimeout(() => humidElement.classList.remove('highlight'), 500);
+                    }
+                    humidElement.textContent = data.humidity.toFixed(1);
+                    if (prevTemperature !== null) {
+                        const tempDiff = data.temperature - prevTemperature;
+                        updateTrend('temp', tempDiff);
+                    }
+                    if (prevHumidity !== null) {
+                        const humidDiff = data.humidity - prevHumidity;
+                        updateTrend('humid', humidDiff);
+                    }
+                    prevTemperature = data.temperature;
+                    prevHumidity = data.humidity;
+                    const now = new Date();
+                    document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
+                    chartData.labels.push(formatTime(now));
+                    chartData.temperature.push(data.temperature);
+                    chartData.humidity.push(data.humidity);
+                    if (chartData.labels.length > 20) {
+                        chartData.labels.shift();
+                        chartData.temperature.shift();
+                        chartData.humidity.shift();
+                    }
+                    sensorChart.update();
+                    updateRainForecast(data.humidity);
+                    updateWeatherStatus(data.temperature, data.humidity);
+                }
+            });
 
-document.getElementById('relay1OffBtn').addEventListener('click', () => {
-    relay1Ref.update({
-        status: false,
-        manual: true,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-    
-    historyRef.push({
-        action: 'Tắt thủ công động cơ 1',
-        value: 'TẮT',
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-});
+            function updateWeatherStatus(temp, humid) {
+                const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
+                const weatherStatus = document.getElementById('weatherStatus');
+                const weatherTemp = document.getElementById('weatherTemp');
+                const weatherHumid = document.getElementById('weatherHumid');
+                weatherTemp.textContent = temp.toFixed(1);
+                weatherHumid.textContent = humid.toFixed(1);
+                let icon, status;
+                if (humid > 80) {
+                    if (temp > 30) {
+                        icon = 'fa-poo-storm';
+                        status = 'Nóng ẩm';
+                    } else {
+                        icon = 'fa-cloud-rain';
+                        status = 'Mưa';
+                    }
+                } else if (temp > 30) {
+                    icon = 'fa-sun';
+                    status = 'Nóng';
+                } else if (temp < 15) {
+                    icon = 'fa-snowflake';
+                    status = 'Lạnh';
+                } else {
+                    icon = 'fa-cloud-sun';
+                    status = 'Ôn hòa';
+                }
+                weatherIcon.className = `fas ${icon}`;
+                weatherStatus.textContent = status;
+                document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+            }
 
-// Thêm sự kiện cho nút bật/tắt thủ công relay 2
-document.getElementById('relay2OnBtn').addEventListener('click', () => {
-    relay2Ref.update({
-        status: true,
-        manual: true,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-    
-    historyRef.push({
-        action: 'Bật thủ công động cơ 2',
-        value: 'BẬT',
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-});
+            function updateRainForecast(humidity) {
+                const rainForecast = document.getElementById('rainForecast');
+                const rainIcon = document.getElementById('rainIcon').firstElementChild;
+                const currentHumidity = document.getElementById('currentHumidity');
+                const rainLastUpdate = document.getElementById('rainLastUpdate');
+                currentHumidity.textContent = humidity.toFixed(1);
+                let forecastText = '';
+                let iconClass = '';
+                if (humidity >= 80) {
+                    forecastText = 'KHẢ NĂNG MƯA CAO';
+                    iconClass = 'fa-cloud-rain';
+                } else if (humidity >= 60) {
+                    forecastText = 'CÓ THỂ MƯA';
+                    iconClass = 'fa-cloud';
+                } else {
+                    forecastText = 'ÍT KHẢ NĂNG MƯA';
+                    iconClass = 'fa-sun';
+                }
+                rainForecast.textContent = forecastText;
+                rainIcon.className = `fas ${iconClass}`;
+                const now = new Date();
+                rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(now)}`;
+            }
 
-document.getElementById('relay2OffBtn').addEventListener('click', () => {
-    relay2Ref.update({
-        status: false,
-        manual: true,
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-    
-    historyRef.push({
-        action: 'Tắt thủ công động cơ 2',
-        value: 'TẮT',
-        timestamp: firebase.database.ServerValue.TIMESTAMP
-    });
-});
+            relay1Ref.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const motor1Led = document.getElementById('motor1Led');
+                    const motor1StatusText = document.getElementById('motor1StatusText');
+                    const manualControl = document.getElementById('relay1ManualControl');
+                    if (data.status) {
+                        motor1Led.classList.remove('off');
+                        motor1Led.classList.add('on', 'pulse');
+                        motor1StatusText.textContent = 'BẬT';
+                    } else {
+                        motor1Led.classList.remove('on', 'pulse');
+                        motor1Led.classList.add('off');
+                        motor1StatusText.textContent = 'TẮT';
+                    }
+                    const modeOptions = document.querySelectorAll('#relay1ModeSelector .mode-option');
+                    modeOptions.forEach(option => {
+                        option.classList.remove('active');
+                        if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
+                            option.classList.add('active');
+                        }
+                    });
+                    manualControl.style.display = data.manual ? 'block' : 'none';
+                    if (data.timestamp) {
+                        document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
+                    }
+                }
+            });
 
-        
+            relay2Ref.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const motor2Led = document.getElementById('motor2Led');
+                    const motor2StatusText = document.getElementById('motor2StatusText');
+                    const manualControl = document.getElementById('relay2ManualControl');
+                    if (data.status) {
+                        motor2Led.classList.remove('off');
+                        motor2Led.classList.add('on', 'pulse');
+                        motor2StatusText.textContent = 'BẬT';
+                    } else {
+                        motor2Led.classList.remove('on', 'pulse');
+                        motor2Led.classList.add('off');
+                        motor2StatusText.textContent = 'TẮT';
+                    }
+                    const modeOptions = document.querySelectorAll('#relay2ModeSelector .mode-option');
+                    modeOptions.forEach(option => {
+                        option.classList.remove('active');
+                        if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
+                            option.classList.add('active');
+                        }
+                    });
+                    manualControl.style.display = data.manual ? 'block' : 'none';
+                    if (data.timestamp) {
+                        document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
+                    }
+                }
+            });
 
-        // Hàm cập nhật xu hướng
-        function updateTrend(type, diff) {
-            const trendElement = document.getElementById(`${type}Trend`);
-            const trendIconElement = document.getElementById(`${type}TrendIcon`);
-            const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
-            
-            trendElement.textContent = Math.abs(diff).toFixed(1);
-            trendElement.className = trendClass;
-            
-            if (diff > 0) {
-                trendIconElement.textContent = '↑';
-                trendIconElement.className = trendClass;
-            } else if (diff < 0) {
-                trendIconElement.textContent = '↓';
-                trendIconElement.className = trendClass;
-            } else {
-                trendIconElement.textContent = '→';
+            historyRef.limitToLast(5).on('value', (snapshot) => {
+                const historyTable = document.getElementById('historyTable');
+                historyTable.innerHTML = '';
+                snapshot.forEach((childSnapshot) => {
+                    const action = childSnapshot.val();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${formatDateTime(new Date(action.timestamp))}</td>
+                        <td>${action.action}</td>
+                        <td>${action.value}</td>
+                    `;
+                    historyTable.prepend(row);
+                });
+            });
+
+            document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const mode = option.dataset.mode;
+                    const isManual = mode === 'manual';
+                    document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
+                    relay1Ref.update({
+                        manual: isManual,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    historyRef.push({
+                        action: 'Thay đổi chế độ động cơ 1',
+                        value: isManual ? 'Thủ công' : 'Tự động',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                });
+            });
+
+            document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    const mode = option.dataset.mode;
+                    const isManual = mode === 'manual';
+                    document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
+                    relay2Ref.update({
+                        manual: isManual,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    historyRef.push({
+                        action: 'Thay đổi chế độ động cơ 2',
+                        value: isManual ? 'Thủ công' : 'Tự động',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    });
+                });
+            });
+
+            document.getElementById('relay1OnBtn').addEventListener('click', () => {
+                relay1Ref.update({
+                    status: true,
+                    manual: true,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                historyRef.push({
+                    action: 'Bật thủ công động cơ 1',
+                    value: 'BẬT',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+
+            document.getElementById('relay1OffBtn').addEventListener('click', () => {
+                relay1Ref.update({
+                    status: false,
+                    manual: true,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                historyRef.push({
+                    action: 'Tắt thủ công động cơ 1',
+                    value: 'TẮT',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+
+            document.getElementById('relay2OnBtn').addEventListener('click', () => {
+                relay2Ref.update({
+                    status: true,
+                    manual: true,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                historyRef.push({
+                    action: 'Bật thủ công động cơ 2',
+                    value: 'BẬT',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+
+            document.getElementById('relay2OffBtn').addEventListener('click', () => {
+                relay2Ref.update({
+                    status: false,
+                    manual: true,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                historyRef.push({
+                    action: 'Tắt thủ công động cơ 2',
+                    value: 'TẮT',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+
+            function updateTrend(type, diff) {
+                const trendElement = document.getElementById(`${type}Trend`);
+                const trendIconElement = document.getElementById(`${type}TrendIcon`);
+                const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
+                trendElement.textContent = Math.abs(diff).toFixed(1);
+                trendElement.className = trendClass;
+                trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
                 trendIconElement.className = trendClass;
             }
-        }
-        
-        // Hàm định dạng thời gian
-        function formatDateTime(date) {
-            const day = date.getDate().toString().padStart(2, '0');
-            const month = (date.getMonth() + 1).toString().padStart(2, '0');
-            const year = date.getFullYear();
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            const seconds = date.getSeconds().toString().padStart(2, '0');
-            
-            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-        }
-        
-        function formatTime(date) {
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-            
-            return `${hours}:${minutes}`;
-        }
-    </script>
+
+            function formatDateTime(date) {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                const seconds = date.getSeconds().toString().padStart(2, '0');
+                return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+            }
+
+            function formatTime(date) {
+                const hours = date.getHours().toString().padStart(2, '0');
+                const minutes = date.getMinutes().toString().padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+        </script>
     </body>
 </html>
