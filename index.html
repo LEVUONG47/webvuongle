@@ -8,27 +8,38 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #3498db;    /* Xanh dương dịu */
-            --secondary: #2ecc71;  /* Xanh lá tươi */
-            --accent: #e74c3c;     /* Đỏ nhẹ nhàng */
-            --background: #ecf0f1; /* Nền sáng hơn */
-            --text: #2c3e50;       /* Văn bản đậm */
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --card-hover: rgba(240, 248, 255, 0.95);
+            --primary: #1e90ff;
+            --secondary: #00cc99;
+            --accent: #ff4757;
+            --background: #f0f4f8;
+            --text: #2d3436;
+            --card-bg: rgba(255, 255, 255, 0.95);
             --glass-bg: rgba(255, 255, 255, 0.2);
-            --success: #27ae60;
-            --danger: #c0392b;
+            --success: #00b894;
+            --danger: #d63031;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary: #55efc4;
+            --secondary: #81ecec;
+            --accent: #fab1a0;
+            --background: #2d3436;
+            --text: #dfe6e9;
+            --card-bg: rgba(45, 52, 54, 0.95);
+            --glass-bg: rgba(45, 52, 54, 0.2);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -38,7 +49,7 @@
             padding: 20px;
             overflow-x: hidden;
             position: relative;
-            cursor: none;
+            transition: var(--transition);
         }
 
         #particles-js {
@@ -48,7 +59,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: linear-gradient(135deg, #d5dce0, #ecf0f1);
+            background: linear-gradient(135deg, var(--background), #dfe6e9);
         }
 
         .container {
@@ -58,33 +69,16 @@
             z-index: 1;
         }
 
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, var(--accent) 20%, transparent 80%);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s ease;
-        }
-
-        .custom-cursor.hover {
-            transform: translate(-50%, -50%) scale(1.5);
-            background: radial-gradient(circle, var(--primary) 20%, transparent 80%);
-        }
-
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 30px;
-            padding: 15px;
+            padding: 15px 25px;
             background: var(--glass-bg);
-            border-radius: 15px;
+            border-radius: 20px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow);
         }
 
         .header-left {
@@ -94,23 +88,41 @@
         }
 
         .logo {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             background: var(--primary);
-            border-radius: 10px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
+            font-size: 24px;
             font-weight: 700;
             color: white;
-            box-shadow: 0 0 10px var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            transition: var(--transition);
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 600;
             color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(20deg);
         }
 
         .connection-status {
@@ -119,21 +131,21 @@
             gap: 10px;
             padding: 8px 15px;
             background: var(--glass-bg);
-            border-radius: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
         }
 
         .status-indicator {
-            width: 10px;
-            height: 10px;
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background-color: #bdc3c7;
-            transition: all 0.3s ease;
+            background-color: #b2bec3;
+            transition: var(--transition);
         }
 
         .status-indicator.connected {
             background-color: var(--success);
-            box-shadow: 0 0 10px var(--success);
+            box-shadow: 0 0 12px var(--success);
         }
 
         .status-text {
@@ -142,33 +154,49 @@
         }
 
         .last-update {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text);
             opacity: 0.8;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .card.updated {
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-            background: var(--card-hover);
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card-header {
@@ -179,7 +207,7 @@
         }
 
         .card-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text);
             text-transform: uppercase;
@@ -194,42 +222,42 @@
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 8px;
             font-size: 12px;
             white-space: nowrap;
             z-index: 10;
         }
 
         .card-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             background: var(--glass-bg);
             color: var(--primary);
-            transition: transform 0.3s ease;
+            transition: var(--transition);
         }
 
         .card:hover .card-icon {
-            transform: scale(1.1);
+            transform: rotate(10deg) scale(1.1);
         }
 
         .card-value {
-            font-size: 40px;
+            font-size: 48px;
             font-weight: 700;
             margin-bottom: 5px;
             color: var(--primary);
         }
 
-        .temperature .card-value { color: #e74c3c; }
-        .humidity .card-value { color: #3498db; }
-        .motor .card-value { color: #2ecc71; font-size: 32px; }
+        .temperature .card-value { color: var(--accent); }
+        .humidity .card-value { color: var(--primary); }
+        .motor .card-value { color: var(--secondary); font-size: 36px; }
 
         .card-unit {
-            font-size: 14px;
+            font-size: 16px;
             color: var(--text);
             opacity: 0.7;
         }
@@ -237,29 +265,30 @@
         .card-trend {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            margin-top: 10px;
+            gap: 8px;
+            font-size: 14px;
+            margin-top: 15px;
         }
 
-        .trend-up { color: var(--danger); }
+        .trend-up { color: var(--accent); }
         .trend-down { color: var(--success); }
         .trend-neutral { color: var(--text); }
 
         .chart-section {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .main-chart-container {
             background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            height: 400px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            height: 450px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
 
         .chart-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: var(--text);
             margin-bottom: 20px;
@@ -267,30 +296,40 @@
 
         .control-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
         .weather-icon {
-            font-size: 50px;
+            font-size: 60px;
             text-align: center;
-            margin: 15px 0;
+            margin: 20px 0;
             color: var(--primary);
-            transition: transform 0.3s ease;
+            transition: var(--transition);
+            animation: bounce 2s infinite;
         }
 
-        .weather-icon:hover {
-            transform: scale(1.1);
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            font-size: 14px;
+            margin-top: 10px;
         }
 
         .led-indicator {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background-color: #bdc3c7;
-            margin-right: 10px;
-            transition: all 0.3s ease;
+            background-color: #b2bec3;
+            margin-right: 12px;
+            transition: var(--transition);
         }
 
         .led-indicator.on {
@@ -300,42 +339,42 @@
 
         .led-indicator.off {
             background-color: var(--danger);
-            box-shadow: 0 0 10px var(--danger);
+            box-shadow: 0 0 15px var(--danger);
         }
 
         .mode-selector {
             display: flex;
             background: var(--glass-bg);
-            border-radius: 20px;
-            padding: 5px;
-            margin-top: 15px;
+            border-radius: 25px;
+            padding: 6px;
+            margin-top: 20px;
         }
 
         .mode-option {
             flex: 1;
             text-align: center;
-            padding: 10px;
-            border-radius: 15px;
+            padding: 12px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .mode-option.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 0 10px var(--primary);
+            box-shadow: 0 0 12px var(--primary);
         }
 
         .control-btn {
-            padding: 12px 20px;
-            border-radius: 10px;
+            padding: 14px 25px;
+            border-radius: 12px;
             border: none;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 15px;
+            transition: var(--transition);
+            margin-top: 20px;
             width: 100%;
             text-transform: uppercase;
         }
@@ -351,35 +390,36 @@
         }
 
         .control-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .history-section {
             background: var(--card-bg);
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
 
         .history-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: var(--text);
             margin-bottom: 20px;
         }
 
         .history-table th {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text);
-            padding: 10px;
+            padding: 12px;
         }
 
         .history-table td {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text);
-            padding: 10px;
-            transition: color 0.3s ease;
+            padding: 12px;
+            transition: var(--transition);
         }
 
         .history-table tr:hover td {
@@ -387,12 +427,34 @@
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             padding-top: 20px;
             border-top: 1px solid rgba(0, 0, 0, 0.1);
             color: var(--text);
             font-size: 14px;
             opacity: 0.8;
+            text-align: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            color: var(--text);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .loading-overlay {
@@ -416,10 +478,10 @@
         }
 
         .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--primary);
-            border-top: 4px solid transparent;
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--primary);
+            border-top: 5px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -435,13 +497,13 @@
                 gap: 20px;
             }
             .card-value {
-                font-size: 32px;
+                font-size: 36px;
             }
             .card {
-                padding: 15px;
+                padding: 20px;
             }
             .control-btn {
-                padding: 10px 15px;
+                padding: 12px 20px;
                 font-size: 14px;
             }
         }
@@ -452,7 +514,7 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
     </div>
-    <div class="custom-cursor" id="customCursor"></div>
+    <div class="notification" id="notification"></div>
     <div class="container">
         <header>
             <div class="header-left">
@@ -462,6 +524,7 @@
             <div class="connection-status">
                 <div class="status-indicator" id="connectionStatus"></div>
                 <span class="status-text" id="statusText">Đang kết nối...</span>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
             </div>
         </header>
 
@@ -508,7 +571,7 @@
                     <div class="card-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
                         </svg>
                     </div>
                 </div>
@@ -572,11 +635,9 @@
                     <i class="fas fa-question"></i>
                 </div>
                 <div class="card-value" id="weatherStatus">--</div>
-                <div class="status-container">
-                    <span class="status-label">Nhiệt độ: <span id="weatherTemp">--</span>°C</span>
-                </div>
-                <div class="status-container">
-                    <span class="status-label">Độ ẩm: <span id="weatherHumid">--</span>%</span>
+                <div class="weather-details">
+                    <span>Nhiệt độ: <span id="weatherTemp">--</span>°C</span>
+                    <span>Độ ẩm: <span id="weatherHumid">--</span>%</span>
                 </div>
                 <div class="last-change" id="weatherLastUpdate">Cập nhật: --/--/---- --:--:--</div>
             </div>
@@ -592,8 +653,9 @@
                     <i class="fas fa-question"></i>
                 </div>
                 <div class="card-value" id="rainForecast">--</div>
-                <div class="status-container">
-                    <span class="status-label">Độ ẩm hiện tại: <span id="currentHumidity">--</span>%</span>
+                <div class="weather-details">
+                    <span>Độ ẩm: <span id="currentHumidity">--</span>%</span>
+                    <span>Xác suất: <span id="rainProbability">--</span>%</span>
                 </div>
                 <div class="last-change" id="rainLastUpdate">Cập nhật: --/--/---- --:--:--</div>
             </div>
@@ -623,7 +685,7 @@
         particlesJS('particles-js', {
             particles: {
                 number: { value: 50, density: { enable: true, value_area: 800 } },
-                color: { value: '#3498db' },
+                color: { value: '#1e90ff' },
                 shape: { type: 'circle' },
                 opacity: { value: 0.5, random: true },
                 size: { value: 3, random: true },
@@ -637,30 +699,34 @@
             retina_detect: true
         });
 
-        // Custom Cursor
-        const cursor = document.getElementById('customCursor');
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.pageX + 'px';
-            cursor.style.top = e.pageY + 'px';
-        });
-        document.querySelectorAll('.card, button, .mode-option').forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        // Chuyển đổi chủ đề sáng/tối
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
         });
 
-        // Ẩn loading overlay sau khi trang tải xong
+        // Ẩn loading overlay
         const loadingOverlay = document.getElementById('loadingOverlay');
         function hideLoadingOverlay() {
             loadingOverlay.classList.add('hidden');
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-            }, 500); // Đợi hiệu ứng opacity hoàn tất
+            setTimeout(() => loadingOverlay.style.display = 'none', 500);
         }
+        window.addEventListener('load', () => setTimeout(hideLoadingOverlay, 1000));
 
-        // Kiểm tra khi trang đã tải xong
-        window.addEventListener('load', () => {
-            setTimeout(hideLoadingOverlay, 1000); // Ẩn sau 1 giây để chắc chắn
-        });
+        // Thông báo
+        const notification = document.getElementById('notification');
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
 
         // Khởi tạo Firebase
         const firebaseConfig = {
@@ -672,16 +738,9 @@
             messagingSenderId: "72756137917",
             appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
         };
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            console.log("Firebase initialized successfully");
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-            hideLoadingOverlay(); // Ẩn overlay nếu có lỗi
-        }
-
+        firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
         const sensorRef = database.ref('sensor_data');
         const relay1Ref = database.ref('relays/relay1');
         const relay2Ref = database.ref('relays/relay2');
@@ -689,6 +748,8 @@
 
         let prevTemperature = null;
         let prevHumidity = null;
+        let prevMotor1Status = null;
+        let prevMotor2Status = null;
 
         const chartData = {
             labels: [],
@@ -705,8 +766,8 @@
                     {
                         label: 'Nhiệt độ (°C)',
                         data: chartData.temperature,
-                        borderColor: '#e74c3c',
-                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        borderColor: '#ff4757',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
@@ -715,8 +776,8 @@
                     {
                         label: 'Độ ẩm (%)',
                         data: chartData.humidity,
-                        borderColor: '#3498db',
-                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        borderColor: '#1e90ff',
+                        backgroundColor: 'rgba(30, 144, 255, 0.1)',
                         borderWidth: 2,
                         tension: 0.4,
                         fill: true,
@@ -728,37 +789,43 @@
                 responsive: true,
                 maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'top', labels: { color: '#2c3e50', font: { size: 14 } } },
-                    tooltip: { backgroundColor: 'rgba(44, 62, 80, 0.9)', padding: 10 }
+                    legend: { position: 'top', labels: { color: '#2d3436', font: { size: 14 } } },
+                    tooltip: { backgroundColor: 'rgba(45, 52, 54, 0.9)', padding: 10 }
                 },
                 scales: {
-                    y: { beginAtZero: false, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2c3e50' } },
-                    x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2c3e50' } }
+                    y: { beginAtZero: false, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } },
+                    x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } }
                 }
             }
         });
 
-        // Cập nhật biểu đồ mỗi 5 giây
         setInterval(() => sensorChart.update(), 5000);
 
-        // Kiểm tra trạng thái kết nối Firebase
         database.ref('.info/connected').on('value', (snapshot) => {
             const connectionStatus = document.getElementById('connectionStatus');
             const statusText = document.getElementById('statusText');
             if (snapshot.val() === true) {
                 connectionStatus.classList.add('connected');
                 statusText.textContent = 'Đã kết nối';
-                hideLoadingOverlay(); // Ẩn overlay khi kết nối thành công
+                hideLoadingOverlay();
             } else {
                 connectionStatus.classList.remove('connected');
                 statusText.textContent = 'Mất kết nối';
             }
         });
 
-        // Lắng nghe dữ liệu từ sensor
         sensorRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
+                const tempCard = document.querySelector('.temperature');
+                const humidCard = document.querySelector('.humidity');
+                tempCard.classList.add('updated');
+                humidCard.classList.add('updated');
+                setTimeout(() => {
+                    tempCard.classList.remove('updated');
+                    humidCard.classList.remove('updated');
+                }, 500);
+
                 document.getElementById('temperature').textContent = data.temperature.toFixed(1);
                 document.getElementById('humidity').textContent = data.humidity.toFixed(1);
                 if (prevTemperature !== null) {
@@ -784,9 +851,6 @@
                 updateRainForecast(data.humidity);
                 updateWeatherStatus(data.temperature, data.humidity);
             }
-        }, (error) => {
-            console.error("Error fetching sensor data:", error);
-            hideLoadingOverlay(); // Ẩn overlay nếu có lỗi
         });
 
         function updateWeatherStatus(temp, humid) {
@@ -824,28 +888,38 @@
             const rainForecast = document.getElementById('rainForecast');
             const rainIcon = document.getElementById('rainIcon').firstElementChild;
             const currentHumidity = document.getElementById('currentHumidity');
+            const rainProbability = document.getElementById('rainProbability');
             const rainLastUpdate = document.getElementById('rainLastUpdate');
             currentHumidity.textContent = humidity.toFixed(1);
             let forecastText = '';
             let iconClass = '';
+            let probability = 0;
             if (humidity >= 80) {
                 forecastText = 'KHẢ NĂNG MƯA CAO';
                 iconClass = 'fa-cloud-rain';
+                probability = 90;
             } else if (humidity >= 60) {
                 forecastText = 'CÓ THỂ MƯA';
                 iconClass = 'fa-cloud';
+                probability = 60;
             } else {
                 forecastText = 'ÍT KHẢ NĂNG MƯA';
                 iconClass = 'fa-sun';
+                probability = 10;
             }
             rainForecast.textContent = forecastText;
             rainIcon.className = `fas ${iconClass}`;
+            rainProbability.textContent = probability;
             rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
         }
 
         relay1Ref.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
+                const motor1Card = document.querySelectorAll('.motor')[0];
+                motor1Card.classList.add('updated');
+                setTimeout(() => motor1Card.classList.remove('updated'), 500);
+
                 const motor1Led = document.getElementById('motor1Led');
                 const motor1StatusText = document.getElementById('motor1StatusText');
                 const manualControl = document.getElementById('relay1ManualControl');
@@ -858,6 +932,10 @@
                     motor1Led.classList.add('off');
                     motor1StatusText.textContent = 'TẮT';
                 }
+                if (prevMotor1Status !== null && prevMotor1Status !== data.status) {
+                    showNotification(`Động cơ 1 đã ${data.status ? 'BẬT' : 'TẮT'}`);
+                }
+                prevMotor1Status = data.status;
                 const modeOptions = document.querySelectorAll('#relay1ModeSelector .mode-option');
                 modeOptions.forEach(option => {
                     option.classList.remove('active');
@@ -875,6 +953,10 @@
         relay2Ref.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
+                const motor2Card = document.querySelectorAll('.motor')[1];
+                motor2Card.classList.add('updated');
+                setTimeout(() => motor2Card.classList.remove('updated'), 500);
+
                 const motor2Led = document.getElementById('motor2Led');
                 const motor2StatusText = document.getElementById('motor2StatusText');
                 const manualControl = document.getElementById('relay2ManualControl');
@@ -887,6 +969,10 @@
                     motor2Led.classList.add('off');
                     motor2StatusText.textContent = 'TẮT';
                 }
+                if (prevMotor2Status !== null && prevMotor2Status !== data.status) {
+                    showNotification(`Động cơ 2 đã ${data.status ? 'BẬT' : 'TẮT'}`);
+                }
+                prevMotor2Status = data.status;
                 const modeOptions = document.querySelectorAll('#relay2ModeSelector .mode-option');
                 modeOptions.forEach(option => {
                     option.classList.remove('active');
