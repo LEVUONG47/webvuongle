@@ -410,6 +410,11 @@
             transition: opacity 0.5s ease;
         }
 
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .loading-spinner {
             width: 50px;
             height: 50px;
@@ -528,7 +533,7 @@
                     <div class="card-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
                         </svg>
                     </div>
                 </div>
@@ -614,6 +619,7 @@
     </div>
 
     <script>
+        // Khởi tạo Particles.js
         particlesJS('particles-js', {
             particles: {
                 number: { value: 50, density: { enable: true, value_area: 800 } },
@@ -625,11 +631,13 @@
                 move: { enable: true, speed: 1.5, direction: 'none', random: true }
             },
             interactivity: {
-                detect LinX: { enable: false }
+                detect_on: 'canvas',
+                events: { onhover: { enable: false }, onclick: { enable: false } }
             },
             retina_detect: true
         });
 
+        // Custom Cursor
         const cursor = document.getElementById('customCursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.pageX + 'px';
@@ -640,14 +648,21 @@
             el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
         });
 
-        window.addEventListener('load', () => {
-            const loadingOverlay = document.getElementById('loadingOverlay');
+        // Ẩn loading overlay sau khi trang tải xong
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        function hideLoadingOverlay() {
+            loadingOverlay.classList.add('hidden');
             setTimeout(() => {
-                loadingOverlay.style.opacity = '0';
-                setTimeout(() => loadingOverlay.style.display = 'none', 500);
-            }, 1000);
+                loadingOverlay.style.display = 'none';
+            }, 500); // Đợi hiệu ứng opacity hoàn tất
+        }
+
+        // Kiểm tra khi trang đã tải xong
+        window.addEventListener('load', () => {
+            setTimeout(hideLoadingOverlay, 1000); // Ẩn sau 1 giây để chắc chắn
         });
 
+        // Khởi tạo Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
             authDomain: "webvuongle.firebaseapp.com",
@@ -657,9 +672,16 @@
             messagingSenderId: "72756137917",
             appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
         };
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
 
+        try {
+            firebase.initializeApp(firebaseConfig);
+            console.log("Firebase initialized successfully");
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            hideLoadingOverlay(); // Ẩn overlay nếu có lỗi
+        }
+
+        const database = firebase.database();
         const sensorRef = database.ref('sensor_data');
         const relay1Ref = database.ref('relays/relay1');
         const relay2Ref = database.ref('relays/relay2');
@@ -716,20 +738,24 @@
             }
         });
 
+        // Cập nhật biểu đồ mỗi 5 giây
         setInterval(() => sensorChart.update(), 5000);
 
+        // Kiểm tra trạng thái kết nối Firebase
         database.ref('.info/connected').on('value', (snapshot) => {
             const connectionStatus = document.getElementById('connectionStatus');
             const statusText = document.getElementById('statusText');
             if (snapshot.val() === true) {
                 connectionStatus.classList.add('connected');
                 statusText.textContent = 'Đã kết nối';
+                hideLoadingOverlay(); // Ẩn overlay khi kết nối thành công
             } else {
                 connectionStatus.classList.remove('connected');
                 statusText.textContent = 'Mất kết nối';
             }
         });
 
+        // Lắng nghe dữ liệu từ sensor
         sensorRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
@@ -758,6 +784,9 @@
                 updateRainForecast(data.humidity);
                 updateWeatherStatus(data.temperature, data.humidity);
             }
+        }, (error) => {
+            console.error("Error fetching sensor data:", error);
+            hideLoadingOverlay(); // Ẩn overlay nếu có lỗi
         });
 
         function updateWeatherStatus(temp, humid) {
