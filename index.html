@@ -1,521 +1,45 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giám sát IoT - Bảng điều khiển Thông minh</title>
-    <script type="module">
-      // Import Firebase v9 modules
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-      import { getDatabase, ref, onValue, update, push, set, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
-      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics.js";
-      
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
-        authDomain: "webvuongle.firebaseapp.com",
-        databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "webvuongle",
-        storageBucket: "webvuongle.firebasestorage.app",
-        messagingSenderId: "72756137917",
-        appId: "1:72756137917:web:c67f01f04c4f18a520ccd4",
-        measurementId: "G-SCZS6DKEG1"
-      };
-
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const analytics = getAnalytics(app);
-      const database = getDatabase(app);
-
-      // Biến lưu trữ lịch sử
-      const historyData = [];
-
-      // Thêm một lắng nghe sự kiện kết nối để xử lý trạng thái kết nối
-      const connectedRef = ref(database, '.info/connected');
-      onValue(connectedRef, (snap) => {
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        const connectionStatus = document.getElementById('connectionStatus');
-        const statusText = document.getElementById('statusText');
-        
-        if (snap.val() === true) {
-          console.log("Đã kết nối với Firebase!");
-          
-          // Ẩn overlay loading
-          loadingOverlay.style.opacity = '0';
-          setTimeout(() => loadingOverlay.style.display = 'none', 500);
-          
-          // Cập nhật trạng thái kết nối
-          connectionStatus.classList.add('connected');
-          statusText.textContent = 'Đã kết nối';
-          
-          // Bắt đầu lắng nghe dữ liệu khi đã kết nối thành công
-          setupDataListeners();
-        } else {
-          console.log("Đã mất kết nối với Firebase");
-          
-          // Hiển thị thông báo khi mất kết nối
-          connectionStatus.classList.remove('connected');
-          statusText.textContent = 'Mất kết nối';
-        }
-      });
-
-      // Chuyển các listener ra ngoài để chỉ gọi khi đã kết nối thành công
-      function setupDataListeners() {
-        let prevTemperature = null;
-        let prevHumidity = null;
-
-        const chartData = {
-            labels: [],
-            temperature: [],
-            humidity: []
-        };
-
-        try {
-          const ctx = document.getElementById('sensorChart').getContext('2d');
-          const sensorChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                  labels: chartData.labels,
-                  datasets: [
-                      {
-                          label: 'Nhiệt độ (°C)',
-                          data: chartData.temperature,
-                          borderColor: '#ff2d75',
-                          backgroundColor: 'rgba(255, 45, 117, 0.1)',
-                          borderWidth: 3,
-                          tension: 0.3,
-                          fill: true,
-                          pointRadius: 4,
-                          pointBackgroundColor: '#ff2d75',
-                          pointHoverRadius: 6
-                      },
-                      {
-                          label: 'Độ ẩm (%)',
-                          data: chartData.humidity,
-                          borderColor: '#00c6ff',
-                          backgroundColor: 'rgba(0, 198, 255, 0.1)',
-                          borderWidth: 3,
-                          tension: 0.3,
-                          fill: true,
-                          pointRadius: 4,
-                          pointBackgroundColor: '#00c6ff',
-                          pointHoverRadius: 6
-                      }
-                  ]
-              },
-              options: {
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                      legend: { 
-                          position: 'top', 
-                          labels: { 
-                              color: '#e2e8f0', 
-                              font: { size: 14 },
-                              padding: 20,
-                              usePointStyle: true,
-                              pointStyle: 'circle'
-                          } 
-                      },
-                      tooltip: { 
-                          backgroundColor: 'rgba(30, 41, 59, 0.95)', 
-                          padding: 15,
-                          borderColor: 'rgba(148, 163, 184, 0.2)',
-                          borderWidth: 1,
-                          titleColor: '#e2e8f0',
-                          bodyColor: '#e2e8f0',
-                          titleFont: { size: 14 },
-                          bodyFont: { size: 13 },
-                          cornerRadius: 12,
-                          displayColors: true,
-                          boxPadding: 5
-                      }
-                  },
-                  scales: {
-                      y: { 
-                          beginAtZero: false, 
-                          grid: { 
-                              color: 'rgba(148, 163, 184, 0.1)' 
-                          }, 
-                          ticks: { 
-                              color: '#94a3b8',
-                              font: { size: 12 }
-                          } 
-                      },
-                      x: { 
-                          grid: { 
-                              color: 'rgba(148, 163, 184, 0.1)' 
-                          }, 
-                          ticks: { 
-                              color: '#94a3b8',
-                              font: { size: 12 }
-                          } 
-                      }
-                  },
-                  interaction: {
-                      intersect: false,
-                      mode: 'index'
-                  }
-              }
-          });
-
-          setInterval(() => sensorChart.update(), 5000);
-
-          // Listen for sensor data changes
-          const sensorDataRef = ref(database, 'sensor_data');
-          onValue(sensorDataRef, (snapshot) => {
-              const data = snapshot.val();
-              const now = new Date();
-
-              if (data) {
-                  document.getElementById('temperature').textContent = data.temperature.toFixed(1);
-                  document.getElementById('humidity').textContent = data.humidity.toFixed(1);
-
-                  if (prevTemperature !== null) {
-                      const tempDiff = data.temperature - prevTemperature;
-                      updateTrend('temp', tempDiff);
-                  }
-                  if (prevHumidity !== null) {
-                      const humidDiff = data.humidity - prevHumidity;
-                      updateTrend('humid', humidDiff);
-                  }
-                  prevTemperature = data.temperature;
-                  prevHumidity = data.humidity;
-
-                  document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
-                  chartData.labels.push(formatTime(now));
-                  chartData.temperature.push(data.temperature);
-                  chartData.humidity.push(data.humidity);
-
-                  if (chartData.labels.length > 20) {
-                      chartData.labels.shift();
-                      chartData.temperature.shift();
-                      chartData.humidity.shift();
-                  }
-
-                  updateRainForecast(data.humidity);
-                  updateWeatherStatus(data.temperature, data.humidity);
-              }
-          }, (error) => {
-              console.error("Lỗi khi đọc dữ liệu sensor_data:", error);
-          });
-
-          // Listen for relay status changes
-          const relaysRef = ref(database, 'relays');
-          onValue(relaysRef, (snapshot) => {
-              const data = snapshot.val();
-              const now = new Date();
-
-              if (data) {
-                  // Relay 1
-                  const motor1Led = document.getElementById('motor1Led');
-                  const motor1StatusText = document.getElementById('motor1StatusText');
-                  const manualControl1 = document.getElementById('relay1ManualControl');
-                  if (data.relay1.status) {
-                      motor1Led.classList.remove('off');
-                      motor1Led.classList.add('on');
-                      motor1StatusText.textContent = 'BẬT';
-                  } else {
-                      motor1Led.classList.remove('on');
-                      motor1Led.classList.add('off');
-                      motor1StatusText.textContent = 'TẮT';
-                  }
-                  const modeOptions1 = document.querySelectorAll('#relay1ModeSelector .mode-option');
-                  modeOptions1.forEach(option => {
-                      option.classList.remove('active');
-                      if ((option.dataset.mode === 'auto' && !data.relay1.manual) || (option.dataset.mode === 'manual' && data.relay1.manual)) {
-                          option.classList.add('active');
-                      }
-                  });
-                  manualControl1.style.display = data.relay1.manual ? 'block' : 'none';
-                  document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(now)}`;
-
-                  // Relay 2
-                  const motor2Led = document.getElementById('motor2Led');
-                  const motor2StatusText = document.getElementById('motor2StatusText');
-                  const manualControl2 = document.getElementById('relay2ManualControl');
-                  if (data.relay2.status) {
-                      motor2Led.classList.remove('off');
-                      motor2Led.classList.add('on');
-                      motor2StatusText.textContent = 'BẬT';
-                  } else {
-                      motor2Led.classList.remove('on');
-                      motor2Led.classList.add('off');
-                      motor2StatusText.textContent = 'TẮT';
-                  }
-                  const modeOptions2 = document.querySelectorAll('#relay2ModeSelector .mode-option');
-                  modeOptions2.forEach(option => {
-                      option.classList.remove('active');
-                      if ((option.dataset.mode === 'auto' && !data.relay2.manual) || (option.dataset.mode === 'manual' && data.relay2.manual)) {
-                          option.classList.add('active');
-                      }
-                  });
-                  manualControl2.style.display = data.relay2.manual ? 'block' : 'none';
-                  document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(now)}`;
-              }
-          }, (error) => {
-              console.error("Lỗi khi đọc dữ liệu relays:", error);
-          });
-
-          // Listen for history changes
-          const historyRef = ref(database, 'history');
-          const limitedHistoryRef = limitToLast(historyRef, 5);
-          onValue(limitedHistoryRef, (snapshot) => {
-              const historyTable = document.getElementById('historyTable');
-              historyTable.innerHTML = ''; // Clear existing rows
-              
-              snapshot.forEach((childSnapshot) => {
-                  const record = childSnapshot.val();
-                  addHistory(record.action, record.value);
-              });
-          }, (error) => {
-              console.error("Lỗi khi đọc dữ liệu history:", error);
-          });
-
-          // Thiết lập sự kiện click cho các button
-          setupButtonEvents();
-        } catch (error) {
-          console.error("Lỗi khi thiết lập biểu đồ hoặc listener:", error);
-        }
-      }
-
-      function setupButtonEvents() {
-        document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const mode = option.dataset.mode;
-                const isManual = mode === 'manual';
-                document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
-                
-                // Update relay1 mode in Firebase
-                update(ref(database, 'relays/relay1'), {
-                    manual: isManual
-                }).catch(error => console.error("Lỗi khi cập nhật chế độ relay1:", error));
-                
-                addHistory('Thay đổi chế độ động cơ 1', isManual ? 'Thủ công' : 'Tự động');
-            });
-        });
-
-        document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const mode = option.dataset.mode;
-                const isManual = mode === 'manual';
-                document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
-                
-                // Update relay2 mode in Firebase
-                update(ref(database, 'relays/relay2'), {
-                    manual: isManual
-                }).catch(error => console.error("Lỗi khi cập nhật chế độ relay2:", error));
-                
-                addHistory('Thay đổi chế độ động cơ 2', isManual ? 'Thủ công' : 'Tự động');
-            });
-        });
-
-        document.getElementById('relay1OnBtn').addEventListener('click', () => {
-            update(ref(database, 'relays/relay1'), {
-                status: true,
-                speed: 100
-            }).catch(error => console.error("Lỗi khi bật relay1:", error));
-            
-            // Add to history
-            const newHistoryRef = push(ref(database, 'history'));
-            set(newHistoryRef, {
-                action: 'Bật thủ công động cơ 1',
-                value: 'BẬT',
-                timestamp: Date.now()
-            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-        });
-
-        document.getElementById('relay1OffBtn').addEventListener('click', () => {
-            update(ref(database, 'relays/relay1'), {
-                status: false,
-                speed: 0
-            }).catch(error => console.error("Lỗi khi tắt relay1:", error));
-            
-            // Add to history
-            const newHistoryRef = push(ref(database, 'history'));
-            set(newHistoryRef, {
-                action: 'Tắt thủ công động cơ 1',
-                value: 'TẮT',
-                timestamp: Date.now()
-            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-        });
-
-        document.getElementById('relay2OnBtn').addEventListener('click', () => {
-            update(ref(database, 'relays/relay2'), {
-                status: true,
-                speed: 100
-            }).catch(error => console.error("Lỗi khi bật relay2:", error));
-            
-            // Add to history
-            const newHistoryRef = push(ref(database, 'history'));
-            set(newHistoryRef, {
-                action: 'Bật thủ công động cơ 2',
-                value: 'BẬT',
-                timestamp: Date.now()
-            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-        });
-
-        document.getElementById('relay2OffBtn').addEventListener('click', () => {
-            update(ref(database, 'relays/relay2'), {
-                status: false,
-                speed: 0
-            }).catch(error => console.error("Lỗi khi tắt relay2:", error));
-            
-            // Add to history
-            const newHistoryRef = push(ref(database, 'history'));
-            set(newHistoryRef, {
-                action: 'Tắt thủ công động cơ 2',
-                value: 'TẮT',
-                timestamp: Date.now()
-            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-        });
-      }
-
-      function updateWeatherStatus(temp, humid) {
-          const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
-          const weatherStatus = document.getElementById('weatherStatus');
-          const weatherTemp = document.getElementById('weatherTemp');
-          const weatherHumid = document.getElementById('weatherHumid');
-          weatherTemp.textContent = temp.toFixed(1);
-          weatherHumid.textContent = humid.toFixed(1);
-          let icon, status;
-          if (humid > 80) {
-              if (temp > 30) {
-                  icon = 'fa-poo-storm';
-                  status = 'NÓNG ẨM';
-              } else {
-                  icon = 'fa-cloud-rain';
-                  status = 'MƯA';
-              }
-          } else if (temp > 30) {
-              icon = 'fa-sun';
-              status = 'NÓNG';
-          } else if (temp < 15) {
-              icon = 'fa-snowflake';
-              status = 'LẠNH';
-          } else {
-              icon = 'fa-cloud-sun';
-              status = 'ÔN HÒA';
-          }
-          weatherIcon.className = `fas ${icon}`;
-          weatherStatus.textContent = status;
-          document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
-      }
-
-      function updateRainForecast(humidity) {
-          const rainForecast = document.getElementById('rainForecast');
-          const rainIcon = document.getElementById('rainIcon').firstElementChild;
-          const currentHumidity = document.getElementById('currentHumidity');
-          const rainLastUpdate = document.getElementById('rainLastUpdate');
-          currentHumidity.textContent = humidity.toFixed(1);
-          let forecastText = '';
-          let iconClass = '';
-          if (humidity >= 80) {
-              forecastText = 'KHẢ NĂNG MƯA CAO';
-              iconClass = 'fa-cloud-rain';
-          } else if (humidity >= 60) {
-              forecastText = 'CÓ THỂ MƯA';
-              iconClass = 'fa-cloud';
-          } else {
-              forecastText = 'ÍT KHẢ NĂNG MƯA';
-              iconClass = 'fa-sun';
-          }
-          rainForecast.textContent = forecastText;
-          rainIcon.className = `fas ${iconClass}`;
-          rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
-      }
-
-      function addHistory(action, value) {
-          const historyTable = document.getElementById('historyTable');
-          const now = new Date();
-          const row = document.createElement('tr');
-          row.innerHTML = `
-              <td>${formatDateTime(now)}</td>
-              <td>${action}</td>
-              <td>${value}</td>
-          `;
-          historyTable.prepend(row);
-          
-          // Giữ chỉ 5 bản ghi mới nhất
-          if (historyTable.children.length > 5) {
-              historyTable.removeChild(historyTable.lastChild);
-          }
-          
-          // Cập nhật historyData (nếu cần sử dụng ở nơi khác)
-          historyData.push({ action, value, timestamp: now.getTime() });
-          if (historyData.length > 5) {
-              historyData.shift();
-          }
-      }
-
-      function updateTrend(type, diff) {
-          try {
-              const trendElement = document.getElementById(`${type}Trend`);
-              const trendIconElement = document.getElementById(`${type}TrendIcon`);
-              const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
-              trendElement.textContent = Math.abs(diff).toFixed(1);
-              trendElement.className = trendClass;
-              trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
-              trendIconElement.className = trendClass;
-          } catch (error) {
-              console.error("Lỗi khi cập nhật xu hướng:", error);
-          }
-      }
-
-      function formatDateTime(date) {
-          const day = date.getDate().toString().padStart(2, '0');
-          const month = (date.getMonth() + 1).toString().padStart(2, '0');
-          const year = date.getFullYear();
-          const hours = date.getHours().toString().padStart(2, '0');
-          const minutes = date.getMinutes().toString().padStart(2, '0');
-          const seconds = date.getSeconds().toString().padStart(2, '0');
-          return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-      }
-
-      function formatTime(date) {
-          const hours = date.getHours().toString().padStart(2, '0');
-          const minutes = date.getMinutes().toString().padStart(2, '0');
-          return `${hours}:${minutes}`;
-      }
-
-      // Thêm xử lý lỗi tổng thể
-      window.addEventListener('error', function(event) {
-          console.error('Lỗi JavaScript:', event.message, 'tại', event.filename, ':', event.lineno);
-          alert('Đã xảy ra lỗi: ' + event.message);
-      });
-    </script>
+    <title>Giám sát IoT - Dashboard Thông Minh</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet">
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #00c6ff;       /* Xanh dương neon */
-            --secondary: #00ff88;     /* Xanh lá neon */
-            --accent: #ff2d75;       /* Hồng neon */
-            --background: #0f172a;   /* Nền tối */
-            --text: #e2e8f0;         /* Văn bản sáng */
-            --card-bg: rgba(30, 41, 59, 0.8);
-            --card-hover: rgba(51, 65, 85, 0.8);
-            --glass-bg: rgba(15, 23, 42, 0.7);
-            --success: #00ff88;
-            --danger: #ff2d75;
-            --warning: #ffcc00;
-            --info: #00c6ff;
-            --border: rgba(148, 163, 184, 0.2);
+            --primary: #1e90ff;
+            --secondary: #00cc99;
+            --accent: #ff4757;
+            --background: #f0f4f8;
+            --text: #2d3436;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --glass-bg: rgba(255, 255, 255, 0.2);
+            --success: #00b894;
+            --danger: #d63031;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        [data-theme="dark"] {
+            --primary: #55efc4;
+            --secondary: #81ecec;
+            --accent: #fab1a0;
+            --background: #2d3436;
+            --text: #dfe6e9;
+            --card-bg: rgba(45, 52, 54, 0.95);
+            --glass-bg: rgba(45, 52, 54, 0.2);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
@@ -525,6 +49,17 @@
             padding: 20px;
             overflow-x: hidden;
             position: relative;
+            transition: var(--transition);
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(135deg, var(--background), #dfe6e9);
         }
 
         .container {
@@ -540,11 +75,10 @@
             align-items: center;
             margin-bottom: 30px;
             padding: 15px 25px;
-            background: var(--card-bg);
-            border-radius: 16px;
+            background: var(--glass-bg);
+            border-radius: 20px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
         }
 
         .header-left {
@@ -554,25 +88,41 @@
         }
 
         .logo {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, var(--primary), var(--info));
-            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: 700;
             color: white;
             box-shadow: 0 0 15px var(--primary);
+            transition: var(--transition);
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 600;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: var(--glass-bg);
+            border: none;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--text);
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover {
+            background: var(--primary);
+            color: white;
+            transform: rotate(20deg);
         }
 
         .connection-status {
@@ -581,30 +131,21 @@
             gap: 10px;
             padding: 8px 15px;
             background: var(--glass-bg);
-            border-radius: 20px;
-            box-shadow: 0 0 15px rgba(0, 198, 255, 0.1);
-            border: 1px solid var(--border);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
         }
 
         .status-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background-color: #64748b;
-            transition: all 0.3s ease;
-            position: relative;
+            background-color: #b2bec3;
+            transition: var(--transition);
         }
 
         .status-indicator.connected {
             background-color: var(--success);
-            box-shadow: 0 0 10px var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+            box-shadow: 0 0 12px var(--success);
         }
 
         .status-text {
@@ -613,53 +154,49 @@
         }
 
         .last-update {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text);
             opacity: 0.8;
-            margin-bottom: 20px;
-            text-align: right;
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease;
         }
 
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(0, 198, 255, 0.1), rgba(0, 255, 136, 0.1));
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .card.updated {
+            animation: pulse 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
-            background: var(--card-hover);
-        }
-
-        .card:hover::before {
-            opacity: 1;
+            transform: translateY(-10px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
         .card-header {
@@ -670,11 +207,10 @@
         }
 
         .card-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: var(--text);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
             position: relative;
         }
 
@@ -686,60 +222,42 @@
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 6px 12px;
+            border-radius: 8px;
             font-size: 12px;
             white-space: nowrap;
             z-index: 10;
         }
 
         .card-icon {
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(0, 198, 255, 0.1);
+            background: var(--glass-bg);
             color: var(--primary);
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0, 198, 255, 0.2);
+            transition: var(--transition);
         }
 
         .card:hover .card-icon {
-            transform: scale(1.1);
-            background: rgba(0, 198, 255, 0.2);
-            box-shadow: 0 0 15px rgba(0, 198, 255, 0.2);
+            transform: rotate(10deg) scale(1.1);
         }
 
         .card-value {
-            font-size: 42px;
+            font-size: 48px;
             font-weight: 700;
             margin-bottom: 5px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary);
         }
 
-        .temperature .card-value { 
-            background: linear-gradient(to right, #ff2d75, #ff8a00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .humidity .card-value { 
-            background: linear-gradient(to right, #00c6ff, #0072ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .motor .card-value { 
-            font-size: 34px;
-            background: linear-gradient(to right, var(--secondary), #00cc88);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+        .temperature .card-value { color: var(--accent); }
+        .humidity .card-value { color: var(--primary); }
+        .motor .card-value { color: var(--secondary); font-size: 36px; }
 
         .card-unit {
-            font-size: 14px;
+            font-size: 16px;
             color: var(--text);
             opacity: 0.7;
         }
@@ -747,231 +265,196 @@
         .card-trend {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 13px;
-            margin-top: 10px;
+            gap: 8px;
+            font-size: 14px;
+            margin-top: 15px;
         }
 
-        .trend-up { color: var(--danger); }
+        .trend-up { color: var(--accent); }
         .trend-down { color: var(--success); }
-        .trend-neutral { color: var(--text); opacity: 0.7; }
+        .trend-neutral { color: var(--text); }
 
         .chart-section {
-            margin-bottom: 30px;
+            margin-bottom: 40px;
         }
 
         .main-chart-container {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 25px;
-            height: 420px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
+            height: 450px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
 
         .chart-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: var(--text);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .chart-title i {
-            color: var(--primary);
         }
 
         .control-section {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
         }
 
         .weather-icon {
             font-size: 60px;
             text-align: center;
-            margin: 15px 0;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 0 10px rgba(0, 198, 255, 0.3));
-            transition: all 0.3s ease;
+            margin: 20px 0;
+            color: var(--primary);
+            transition: var(--transition);
+            animation: bounce 2s infinite;
         }
 
-        .weather-icon:hover {
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 15px rgba(0, 198, 255, 0.5));
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .weather-details {
+            display: flex;
+            justify-content: space-around;
+            font-size: 14px;
+            margin-top: 10px;
         }
 
         .led-indicator {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background-color: #64748b;
-            margin-right: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            display: inline-block;
-            vertical-align: middle;
+            background-color: #b2bec3;
+            margin-right: 12px;
+            transition: var(--transition);
         }
 
         .led-indicator.on {
             background-color: var(--success);
             box-shadow: 0 0 15px var(--success);
-            animation: pulse 2s infinite;
         }
 
         .led-indicator.off {
             background-color: var(--danger);
-            box-shadow: 0 0 10px var(--danger);
+            box-shadow: 0 0 15px var(--danger);
         }
 
         .mode-selector {
             display: flex;
-            background: rgba(30, 41, 59, 0.8);
-            border-radius: 20px;
-            padding: 5px;
-            margin-top: 15px;
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            border-radius: 25px;
+            padding: 6px;
+            margin-top: 20px;
         }
 
         .mode-option {
             flex: 1;
             text-align: center;
-            padding: 10px;
-            border-radius: 15px;
+            padding: 12px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .mode-option.active {
-            background: linear-gradient(135deg, var(--primary), var(--info));
+            background: var(--primary);
             color: white;
-            box-shadow: 0 0 15px rgba(0, 198, 255, 0.3);
+            box-shadow: 0 0 12px var(--primary);
         }
 
         .control-btn {
-            padding: 12px 20px;
+            padding: 14px 25px;
             border-radius: 12px;
             border: none;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 15px;
+            transition: var(--transition);
+            margin-top: 20px;
             width: 100%;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 14px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .btn-on {
-            background: linear-gradient(135deg, var(--success), #00cc88);
+            background: var(--success);
             color: white;
         }
 
         .btn-off {
-            background: linear-gradient(135deg, var(--danger), #ff0066);
+            background: var(--danger);
             color: white;
         }
 
         .control-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
-            opacity: 0.9;
-        }
-
-        .control-btn:active {
-            transform: translateY(1px);
-        }
-
-        .status-container {
-            margin: 10px 0;
-            padding: 10px;
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-        .status-label {
-            font-size: 14px;
-            color: var(--text);
-        }
-
-        .last-change {
-            font-size: 13px;
-            color: var(--text);
-            opacity: 0.7;
-            margin-top: 10px;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .history-section {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 20px;
             padding: 25px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border);
-            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
         }
 
         .history-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 600;
             color: var(--text);
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .history-title i {
-            color: var(--primary);
-        }
-
-        .history-table {
-            width: 100%;
-            border-collapse: collapse;
         }
 
         .history-table th {
-            font-size: 14px;
+            font-size: 15px;
             color: var(--text);
             padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-            opacity: 0.8;
         }
 
         .history-table td {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text);
             padding: 12px;
-            border-bottom: 1px solid var(--border);
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .history-table tr:hover td {
-            background: rgba(0, 198, 255, 0.1);
             color: var(--primary);
         }
 
-        .history-table tr:last-child td {
-            border-bottom: none;
-        }
-
         .footer {
-            margin-top: 30px;
+            margin-top: 40px;
             padding-top: 20px;
-            border-top: 1px solid var(--border);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             color: var(--text);
             font-size: 14px;
             opacity: 0.8;
             text-align: center;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            font-size: 14px;
+            color: var(--text);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: var(--transition);
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .loading-overlay {
@@ -982,7 +465,6 @@
             height: 100%;
             background: var(--background);
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 9999;
@@ -990,24 +472,18 @@
             transition: opacity 0.5s ease;
         }
 
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .loading-spinner {
             width: 60px;
             height: 60px;
-            border: 4px solid rgba(0, 198, 255, 0.3);
-            border-top: 4px solid var(--primary);
+            border: 5px solid var(--primary);
+            border-top: 5px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        .loading-text {
-            color: var(--text);
-            font-size: 16px;
-            margin-top: 15px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 600;
         }
 
         @keyframes spin {
@@ -1015,21 +491,6 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Glow effect for important elements */
-        .glow {
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from {
-                box-shadow: 0 0 5px rgba(0, 198, 255, 0.5);
-            }
-            to {
-                box-shadow: 0 0 20px rgba(0, 198, 255, 0.8);
-            }
-        }
-
-        /* Responsive adjustments */
         @media (max-width: 768px) {
             .dashboard, .control-section {
                 grid-template-columns: 1fr;
@@ -1039,245 +500,623 @@
                 font-size: 36px;
             }
             .card {
-                padding: 18px;
+                padding: 20px;
             }
             .control-btn {
-                padding: 10px 15px;
-                font-size: 13px;
+                padding: 12px 20px;
+                font-size: 14px;
             }
-            header {
-                flex-direction: column;
-                gap: 15px;
-                text-align: center;
-            }
-            .connection-status {
-                margin-top: 10px;
-            }
-        }
-
-        /* Scrollbar styling */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: rgba(30, 41, 59, 0.5);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(var(--primary), var(--secondary));
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
         }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+    <div id="particles-js"></div>
     <div class="loading-overlay" id="loadingOverlay">
-      <div class="loading-spinner"></div>
-      <div class="loading-text">Đang kết nối hệ thống IoT...</div>
+        <div class="loading-spinner"></div>
     </div>
+    <div class="notification" id="notification"></div>
     <div class="container">
-      <header>
-        <div class="header-left">
-          <div class="logo">IoT</div>
-          <h1>Bảng điều khiển Thông minh</h1>
-        </div>
-        <div class="connection-status">
-          <div class="status-indicator" id="connectionStatus"></div>
-          <span class="status-text" id="statusText">Đang kết nối...</span>
-        </div>
-      </header>
-
-      <div class="last-update" id="lastUpdate">Cập nhật lần cuối: --/--/----
-        --:--:--</div>
-
-      <div class="dashboard">
-        <div class="card temperature">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Nhiệt độ hiện tại">Nhiệt
-              độ</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 22C14.7614 22 17 19.7614 17 17C17 15.3644 16.2143 13.9121 15.0005 13.0005V5C15.0005 3.34315 13.6574 2 12.0005 2C10.3437 2 9.00052 3.34315 9.00052 5V13.0005C7.78672 13.9121 7 15.3644 7 17C7 19.7614 9.23858 22 12 22Z"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
+        <header>
+            <div class="header-left">
+                <div class="logo">IoT</div>
+                <h1>Giám sát Thông Minh</h1>
             </div>
-          </div>
-          <div class="card-value" id="temperature">--</div>
-          <div class="card-unit">°C</div>
-          <div class="card-trend">
-            <span id="tempTrend">--</span>
-            <span id="tempTrendIcon">→</span>
-          </div>
-        </div>
-
-        <div class="card humidity">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Độ ẩm hiện tại">Độ ẩm</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
+            <div class="connection-status">
+                <div class="status-indicator" id="connectionStatus"></div>
+                <span class="status-text" id="statusText">Đang kết nối...</span>
+                <button class="theme-toggle" id="themeToggle"><i class="fas fa-moon"></i></button>
             </div>
-          </div>
-          <div class="card-value" id="humidity">--</div>
-          <div class="card-unit">%</div>
-          <div class="card-trend">
-            <span id="humidTrend">--</span>
-            <span id="humidTrendIcon">→</span>
-          </div>
-        </div>
+        </header>
 
-        <div class="card motor">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Trạng thái động cơ 1">Động cơ
-              1</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
-                  stroke="currentColor" stroke-width="2" />
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
+        <div class="last-update" id="lastUpdate">Cập nhật lần cuối: --/--/---- --:--:--</div>
+
+        <div class="dashboard">
+            <div class="card temperature">
+                <div class="card-header">
+                    <span class="card-title" data-tooltip="Nhiệt độ hiện tại">Nhiệt độ</span>
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C14.7614 22 17 19.7614 17 17C17 15.3644 16.2143 13.9121 15.0005 13.0005V5C15.0005 3.34315 13.6574 2 12.0005 2C10.3437 2 9.00052 3.34315 9.00052 5V13.0005C7.78672 13.9121 7 15.3644 7 17C7 19.7614 9.23858 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-value" id="temperature">--</div>
+                <div class="card-unit">°C</div>
+                <div class="card-trend">
+                    <span id="tempTrend">--</span>
+                    <span id="tempTrendIcon">→</span>
+                </div>
             </div>
-          </div>
-          <div class="mode-selector" id="relay1ModeSelector">
-            <div class="mode-option active" data-mode="auto">Tự động</div>
-            <div class="mode-option" data-mode="manual">Thủ công</div>
-          </div>
-          <div class="status-container">
-            <div class="led-indicator off" id="motor1Led"></div>
-            <span class="status-label">Trạng thái: <span
-                id="motor1StatusText">TẮT</span></span>
-          </div>
-          <div class="last-change" id="motor1LastChange">Lần cuối: --/--/----
-            --:--:--</div>
-          <div id="relay1ManualControl" style="display: none;">
-            <button class="control-btn btn-on" id="relay1OnBtn">BẬT</button>
-            <button class="control-btn btn-off" id="relay1OffBtn">TẮT</button>
-          </div>
-        </div>
 
-        <div class="card motor">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Trạng thái động cơ 2">Động cơ
-              2</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
-                  stroke="currentColor" stroke-width="2" />
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
+            <div class="card humidity">
+                <div class="card-header">
+                    <span class="card-title" data-tooltip="Độ ẩm hiện tại">Độ ẩm</span>
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="card-value" id="humidity">--</div>
+                <div class="card-unit">%</div>
+                <div class="card-trend">
+                    <span id="humidTrend">--</span>
+                    <span id="humidTrendIcon">→</span>
+                </div>
             </div>
-          </div>
-          <div class="mode-selector" id="relay2ModeSelector">
-            <div class="mode-option active" data-mode="auto">Tự động</div>
-            <div class="mode-option" data-mode="manual">Thủ công</div>
-          </div>
-          <div class="status-container">
-            <div class="led-indicator off" id="motor2Led"></div>
-            <span class="status-label">Trạng thái: <span
-                id="motor2StatusText">TẮT</span></span>
-          </div>
-          <div class="last-change" id="motor2LastChange">Lần cuối: --/--/----
-            --:--:--</div>
-          <div id="relay2ManualControl" style="display: none;">
-            <button class="control-btn btn-on" id="relay2OnBtn">BẬT</button>
-            <button class="control-btn btn-off" id="relay2OffBtn">TẮT</button>
-          </div>
-        </div>
-      </div>
 
-      <div class="chart-section">
-        <div class="main-chart-container">
-          <div class="chart-title">
-            <i class="fas fa-chart-line"></i> Biểu đồ Nhiệt độ & Độ ẩm
-          </div>
-          <canvas id="sensorChart"></canvas>
-        </div>
-      </div>
-
-      <div class="control-section">
-        <div class="card weather">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Thời tiết hiện tại">Thời
-              tiết</span>
-            <div class="card-icon">
-              <i class="fas fa-cloud-sun"></i>
+            <div class="card motor">
+                <div class="card-header">
+                    <span class="card-title" data-tooltip="Trạng thái động cơ 1">Động cơ 1</span>
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mode-selector" id="relay1ModeSelector">
+                    <div class="mode-option active" data-mode="auto">Tự động</div>
+                    <div class="mode-option" data-mode="manual">Thủ công</div>
+                </div>
+                <div class="status-container">
+                    <div class="led-indicator off" id="motor1Led"></div>
+                    <span class="status-label">Trạng thái: <span id="motor1StatusText">TẮT</span></span>
+                </div>
+                <div class="last-change" id="motor1LastChange">Lần cuối: --/--/---- --:--:--</div>
+                <div id="relay1ManualControl" style="display: none;">
+                    <button class="control-btn btn-on" id="relay1OnBtn">BẬT</button>
+                    <button class="control-btn btn-off" id="relay1OffBtn">TẮT</button>
+                </div>
             </div>
-          </div>
-          <div class="weather-icon" id="weatherIcon">
-            <i class="fas fa-question"></i>
-          </div>
-          <div class="card-value" id="weatherStatus">--</div>
-          <div class="status-container">
-            <span class="status-label">Nhiệt độ: <span
-                id="weatherTemp">--</span>°C</span>
-          </div>
-          <div class="status-container">
-            <span class="status-label">Độ ẩm: <span
-                id="weatherHumid">--</span>%</span>
-          </div>
-          <div class="last-change" id="weatherLastUpdate">Cập nhật: --/--/----
-            --:--:--</div>
-        </div>
 
-        <div class="card weather">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Dự báo mưa">Dự báo mưa</span>
-            <div class="card-icon">
-              <i class="fas fa-cloud-rain"></i>
+            <div class="card motor">
+                <div class="card-header">
+                    <span class="card-title" data-tooltip="Trạng thái động cơ 2">Động cơ 2</span>
+                    <div class="card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" stroke="currentColor" stroke-width="2"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mode-selector" id="relay2ModeSelector">
+                    <div class="mode-option active" data-mode="auto">Tự động</div>
+                    <div class="mode-option" data-mode="manual">Thủ công</div>
+                </div>
+                <div class="status-container">
+                    <div class="led-indicator off" id="motor2Led"></div>
+                    <span class="status-label">Trạng thái: <span id="motor2StatusText">TẮT</span></span>
+                </div>
+                <div class="last-change" id="motor2LastChange">Lần cuối: --/--/---- --:--:--</div>
+                <div id="relay2ManualControl" style="display: none;">
+                    <button class="control-btn btn-on" id="relay2OnBtn">BẬT</button>
+                    <button class="control-btn btn-off" id="relay2OffBtn">TẮT</button>
+                </div>
             </div>
-          </div>
-          <div class="weather-icon" id="rainIcon">
-            <i class="fas fa-question"></i>
-          </div>
-          <div class="card-value" id="rainForecast">--</div>
-          <div class="status-container">
-            <span class="status-label">Độ ẩm hiện tại: <span
-                id="currentHumidity">--</span>%</span>
-          </div>
-          <div class="last-change" id="rainLastUpdate">Cập nhật: --/--/----
-            --:--:--</div>
         </div>
-      </div>
 
-      <div class="history-section">
-        <div class="history-title">
-          <i class="fas fa-history"></i> Lịch sử thao tác
+        <div class="chart-section">
+            <div class="main-chart-container">
+                <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm</div>
+                <canvas id="sensorChart"></canvas>
+            </div>
         </div>
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Thời gian</th>
-              <th>Thao tác</th>
-              <th>Giá trị</th>
-            </tr>
-          </thead>
-          <tbody id="historyTable"></tbody>
-        </table>
-      </div>
 
-      <div class="footer">
-        <p>© 2025 Hệ thống Giám sát IoT - Thiết kế bởi LÊ THANH VƯƠNG</p>
-      </div>
+        <div class="control-section">
+            <div class="card weather">
+                <div class="card-header">
+                    <span class="card-title" data-tooltip="Thời tiết hiện tại">Thời tiết</span>
+                    <div class="card-icon">
+                        <i class="fas fa-cloud-sun"></i>
+                    </div>
+                </div>
+                <div class="weather-icon" id="weatherIcon">
+                    <i class="fas fa-question"></i>
+                </div>
+                <div class="card-value" id="weatherStatus">--</div>
+                <div class="weather-details">
+                    <span>Nhiệt độ: <span id="weatherTemp">--</span>°C</span>
+                    <span>Độ ẩm: <span id="weatherHumid">--</span>%</span>
+                </div>
+                <div class="last-change" id="weatherLastUpdate">Cập nhật: --/--/---- --:--:--</div>
+            </div>
+
+            <div class="card weather">
+                <div class="card-header">
+                    <span class="card-title" data-tooltip="Dự báo mưa">Dự báo mưa</span>
+                    <div class="card-icon">
+                        <i class="fas fa-cloud-rain"></i>
+                    </div>
+                </div>
+                <div class="weather-icon" id="rainIcon">
+                    <i class="fas fa-question"></i>
+                </div>
+                <div class="card-value" id="rainForecast">--</div>
+                <div class="weather-details">
+                    <span>Độ ẩm: <span id="currentHumidity">--</span>%</span>
+                    <span>Xác suất: <span id="rainProbability">--</span>%</span>
+                </div>
+                <div class="last-change" id="rainLastUpdate">Cập nhật: --/--/---- --:--:--</div>
+            </div>
+        </div>
+
+        <div class="history-section">
+            <div class="history-title">Lịch sử thao tác</div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Thời gian</th>
+                        <th>Thao tác</th>
+                        <th>Giá trị</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable"></tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Bản quyền thuộc về LÊ THANH VƯƠNG</p>
+        </div>
     </div>
-  </body>
+
+    <script>
+        // Khởi tạo Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 50, density: { enable: true, value_area: 800 } },
+                color: { value: '#1e90ff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: true },
+                size: { value: 3, random: true },
+                line_linked: { enable: false },
+                move: { enable: true, speed: 1.5, direction: 'none', random: true }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: false }, onclick: { enable: false } }
+            },
+            retina_detect: true
+        });
+
+        // Chuyển đổi chủ đề sáng/tối
+        const themeToggle = document.getElementById('themeToggle');
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+            }
+        });
+
+        // Ẩn loading overlay
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        function hideLoadingOverlay() {
+            loadingOverlay.classList.add('hidden');
+            setTimeout(() => loadingOverlay.style.display = 'none', 500);
+        }
+        window.addEventListener('load', () => setTimeout(hideLoadingOverlay, 1000));
+
+        // Thông báo
+        const notification = document.getElementById('notification');
+        function showNotification(message) {
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+
+        // Khởi tạo Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
+            authDomain: "webvuongle.firebaseapp.com",
+            databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "webvuongle",
+            storageBucket: "webvuongle.appspot.com",
+            messagingSenderId: "72756137917",
+            appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        const sensorRef = database.ref('sensor_data');
+        const relay1Ref = database.ref('relays/relay1');
+        const relay2Ref = database.ref('relays/relay2');
+        const historyRef = database.ref('history');
+
+        let prevTemperature = null;
+        let prevHumidity = null;
+        let prevMotor1Status = null;
+        let prevMotor2Status = null;
+
+        const chartData = {
+            labels: [],
+            temperature: [],
+            humidity: []
+        };
+
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const sensorChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Nhiệt độ (°C)',
+                        data: chartData.temperature,
+                        borderColor: '#ff4757',
+                        backgroundColor: 'rgba(255, 71, 87, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Độ ẩm (%)',
+                        data: chartData.humidity,
+                        borderColor: '#1e90ff',
+                        backgroundColor: 'rgba(30, 144, 255, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top', labels: { color: '#2d3436', font: { size: 14 } } },
+                    tooltip: { backgroundColor: 'rgba(45, 52, 54, 0.9)', padding: 10 }
+                },
+                scales: {
+                    y: { beginAtZero: false, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } },
+                    x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } }
+                }
+            }
+        });
+
+        setInterval(() => sensorChart.update(), 5000);
+
+        database.ref('.info/connected').on('value', (snapshot) => {
+            const connectionStatus = document.getElementById('connectionStatus');
+            const statusText = document.getElementById('statusText');
+            if (snapshot.val() === true) {
+                connectionStatus.classList.add('connected');
+                statusText.textContent = 'Đã kết nối';
+                hideLoadingOverlay();
+            } else {
+                connectionStatus.classList.remove('connected');
+                statusText.textContent = 'Mất kết nối';
+            }
+        });
+
+        sensorRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const tempCard = document.querySelector('.temperature');
+                const humidCard = document.querySelector('.humidity');
+                tempCard.classList.add('updated');
+                humidCard.classList.add('updated');
+                setTimeout(() => {
+                    tempCard.classList.remove('updated');
+                    humidCard.classList.remove('updated');
+                }, 500);
+
+                document.getElementById('temperature').textContent = data.temperature.toFixed(1);
+                document.getElementById('humidity').textContent = data.humidity.toFixed(1);
+                if (prevTemperature !== null) {
+                    const tempDiff = data.temperature - prevTemperature;
+                    updateTrend('temp', tempDiff);
+                }
+                if (prevHumidity !== null) {
+                    const humidDiff = data.humidity - prevHumidity;
+                    updateTrend('humid', humidDiff);
+                }
+                prevTemperature = data.temperature;
+                prevHumidity = data.humidity;
+                const now = new Date();
+                document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
+                chartData.labels.push(formatTime(now));
+                chartData.temperature.push(data.temperature);
+                chartData.humidity.push(data.humidity);
+                if (chartData.labels.length > 20) {
+                    chartData.labels.shift();
+                    chartData.temperature.shift();
+                    chartData.humidity.shift();
+                }
+                updateRainForecast(data.humidity);
+                updateWeatherStatus(data.temperature, data.humidity);
+            }
+        });
+
+        function updateWeatherStatus(temp, humid) {
+            const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
+            const weatherStatus = document.getElementById('weatherStatus');
+            const weatherTemp = document.getElementById('weatherTemp');
+            const weatherHumid = document.getElementById('weatherHumid');
+            weatherTemp.textContent = temp.toFixed(1);
+            weatherHumid.textContent = humid.toFixed(1);
+            let icon, status;
+            if (humid > 80) {
+                if (temp > 30) {
+                    icon = 'fa-poo-storm';
+                    status = 'Nóng ẩm';
+                } else {
+                    icon = 'fa-cloud-rain';
+                    status = 'Mưa';
+                }
+            } else if (temp > 30) {
+                icon = 'fa-sun';
+                status = 'Nóng';
+            } else if (temp < 15) {
+                icon = 'fa-snowflake';
+                status = 'Lạnh';
+            } else {
+                icon = 'fa-cloud-sun';
+                status = 'Ôn hòa';
+            }
+            weatherIcon.className = `fas ${icon}`;
+            weatherStatus.textContent = status;
+            document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+        }
+
+        function updateRainForecast(humidity) {
+            const rainForecast = document.getElementById('rainForecast');
+            const rainIcon = document.getElementById('rainIcon').firstElementChild;
+            const currentHumidity = document.getElementById('currentHumidity');
+            const rainProbability = document.getElementById('rainProbability');
+            const rainLastUpdate = document.getElementById('rainLastUpdate');
+            currentHumidity.textContent = humidity.toFixed(1);
+            let forecastText = '';
+            let iconClass = '';
+            let probability = 0;
+            if (humidity >= 80) {
+                forecastText = 'KHẢ NĂNG MƯA CAO';
+                iconClass = 'fa-cloud-rain';
+                probability = 90;
+            } else if (humidity >= 60) {
+                forecastText = 'CÓ THỂ MƯA';
+                iconClass = 'fa-cloud';
+                probability = 60;
+            } else {
+                forecastText = 'ÍT KHẢ NĂNG MƯA';
+                iconClass = 'fa-sun';
+                probability = 10;
+            }
+            rainForecast.textContent = forecastText;
+            rainIcon.className = `fas ${iconClass}`;
+            rainProbability.textContent = probability;
+            rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+        }
+
+        relay1Ref.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const motor1Card = document.querySelectorAll('.motor')[0];
+                motor1Card.classList.add('updated');
+                setTimeout(() => motor1Card.classList.remove('updated'), 500);
+
+                const motor1Led = document.getElementById('motor1Led');
+                const motor1StatusText = document.getElementById('motor1StatusText');
+                const manualControl = document.getElementById('relay1ManualControl');
+                if (data.status) {
+                    motor1Led.classList.remove('off');
+                    motor1Led.classList.add('on');
+                    motor1StatusText.textContent = 'BẬT';
+                } else {
+                    motor1Led.classList.remove('on');
+                    motor1Led.classList.add('off');
+                    motor1StatusText.textContent = 'TẮT';
+                }
+                if (prevMotor1Status !== null && prevMotor1Status !== data.status) {
+                    showNotification(`Động cơ 1 đã ${data.status ? 'BẬT' : 'TẮT'}`);
+                }
+                prevMotor1Status = data.status;
+                const modeOptions = document.querySelectorAll('#relay1ModeSelector .mode-option');
+                modeOptions.forEach(option => {
+                    option.classList.remove('active');
+                    if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
+                        option.classList.add('active');
+                    }
+                });
+                manualControl.style.display = data.manual ? 'block' : 'none';
+                if (data.timestamp) {
+                    document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
+                }
+            }
+        });
+
+        relay2Ref.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                const motor2Card = document.querySelectorAll('.motor')[1];
+                motor2Card.classList.add('updated');
+                setTimeout(() => motor2Card.classList.remove('updated'), 500);
+
+                const motor2Led = document.getElementById('motor2Led');
+                const motor2StatusText = document.getElementById('motor2StatusText');
+                const manualControl = document.getElementById('relay2ManualControl');
+                if (data.status) {
+                    motor2Led.classList.remove('off');
+                    motor2Led.classList.add('on');
+                    motor2StatusText.textContent = 'BẬT';
+                } else {
+                    motor2Led.classList.remove('on');
+                    motor2Led.classList.add('off');
+                    motor2StatusText.textContent = 'TẮT';
+                }
+                if (prevMotor2Status !== null && prevMotor2Status !== data.status) {
+                    showNotification(`Động cơ 2 đã ${data.status ? 'BẬT' : 'TẮT'}`);
+                }
+                prevMotor2Status = data.status;
+                const modeOptions = document.querySelectorAll('#relay2ModeSelector .mode-option');
+                modeOptions.forEach(option => {
+                    option.classList.remove('active');
+                    if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
+                        option.classList.add('active');
+                    }
+                });
+                manualControl.style.display = data.manual ? 'block' : 'none';
+                if (data.timestamp) {
+                    document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
+                }
+            }
+        });
+
+        historyRef.limitToLast(5).on('value', (snapshot) => {
+            const historyTable = document.getElementById('historyTable');
+            historyTable.innerHTML = '';
+            snapshot.forEach((childSnapshot) => {
+                const action = childSnapshot.val();
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDateTime(new Date(action.timestamp))}</td>
+                    <td>${action.action}</td>
+                    <td>${action.value}</td>
+                `;
+                historyTable.prepend(row);
+            });
+        });
+
+        document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const mode = option.dataset.mode;
+                const isManual = mode === 'manual';
+                document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
+                relay1Ref.update({
+                    manual: isManual,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                historyRef.push({
+                    action: 'Thay đổi chế độ động cơ 1',
+                    value: isManual ? 'Thủ công' : 'Tự động',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+        });
+
+        document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const mode = option.dataset.mode;
+                const isManual = mode === 'manual';
+                document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
+                relay2Ref.update({
+                    manual: isManual,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+                historyRef.push({
+                    action: 'Thay đổi chế độ động cơ 2',
+                    value: isManual ? 'Thủ công' : 'Tự động',
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            });
+        });
+
+        document.getElementById('relay1OnBtn').addEventListener('click', () => {
+            relay1Ref.update({
+                status: true,
+                manual: true,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            historyRef.push({
+                action: 'Bật thủ công động cơ 1',
+                value: 'BẬT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        document.getElementById('relay1OffBtn').addEventListener('click', () => {
+            relay1Ref.update({
+                status: false,
+                manual: true,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            historyRef.push({
+                action: 'Tắt thủ công động cơ 1',
+                value: 'TẮT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        document.getElementById('relay2OnBtn').addEventListener('click', () => {
+            relay2Ref.update({
+                status: true,
+                manual: true,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            historyRef.push({
+                action: 'Bật thủ công động cơ 2',
+                value: 'BẬT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        document.getElementById('relay2OffBtn').addEventListener('click', () => {
+            relay2Ref.update({
+                status: false,
+                manual: true,
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+            historyRef.push({
+                action: 'Tắt thủ công động cơ 2',
+                value: 'TẮT',
+                timestamp: firebase.database.ServerValue.TIMESTAMP
+            });
+        });
+
+        function updateTrend(type, diff) {
+            const trendElement = document.getElementById(`${type}Trend`);
+            const trendIconElement = document.getElementById(`${type}TrendIcon`);
+            const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
+            trendElement.textContent = Math.abs(diff).toFixed(1);
+            trendElement.className = trendClass;
+            trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
+            trendIconElement.className = trendClass;
+        }
+
+        function formatDateTime(date) {
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            const seconds = date.getSeconds().toString().padStart(2, '0');
+            return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+    </script>
+</body>
 </html>
