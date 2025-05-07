@@ -4,12 +4,490 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Giám sát IoT - Bảng điều khiển Thông minh</title>
-    <script
-      src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script
-      src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script
-      src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
+    <script type="module">
+      // Import Firebase v9 modules
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
+      import { getDatabase, ref, onValue, update, push, set, limitToLast } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics.js";
+      
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
+        authDomain: "webvuongle.firebaseapp.com",
+        databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "webvuongle",
+        storageBucket: "webvuongle.firebasestorage.app",
+        messagingSenderId: "72756137917",
+        appId: "1:72756137917:web:c67f01f04c4f18a520ccd4",
+        measurementId: "G-SCZS6DKEG1"
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+      const database = getDatabase(app);
+
+      // Biến lưu trữ lịch sử
+      const historyData = [];
+
+      // Thêm một lắng nghe sự kiện kết nối để xử lý trạng thái kết nối
+      const connectedRef = ref(database, '.info/connected');
+      onValue(connectedRef, (snap) => {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusText = document.getElementById('statusText');
+        
+        if (snap.val() === true) {
+          console.log("Đã kết nối với Firebase!");
+          
+          // Ẩn overlay loading
+          loadingOverlay.style.opacity = '0';
+          setTimeout(() => loadingOverlay.style.display = 'none', 500);
+          
+          // Cập nhật trạng thái kết nối
+          connectionStatus.classList.add('connected');
+          statusText.textContent = 'Đã kết nối';
+          
+          // Bắt đầu lắng nghe dữ liệu khi đã kết nối thành công
+          setupDataListeners();
+        } else {
+          console.log("Đã mất kết nối với Firebase");
+          
+          // Hiển thị thông báo khi mất kết nối
+          connectionStatus.classList.remove('connected');
+          statusText.textContent = 'Mất kết nối';
+        }
+      });
+
+      // Chuyển các listener ra ngoài để chỉ gọi khi đã kết nối thành công
+      function setupDataListeners() {
+        let prevTemperature = null;
+        let prevHumidity = null;
+
+        const chartData = {
+            labels: [],
+            temperature: [],
+            humidity: []
+        };
+
+        try {
+          const ctx = document.getElementById('sensorChart').getContext('2d');
+          const sensorChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                  labels: chartData.labels,
+                  datasets: [
+                      {
+                          label: 'Nhiệt độ (°C)',
+                          data: chartData.temperature,
+                          borderColor: '#ff2d75',
+                          backgroundColor: 'rgba(255, 45, 117, 0.1)',
+                          borderWidth: 3,
+                          tension: 0.3,
+                          fill: true,
+                          pointRadius: 4,
+                          pointBackgroundColor: '#ff2d75',
+                          pointHoverRadius: 6
+                      },
+                      {
+                          label: 'Độ ẩm (%)',
+                          data: chartData.humidity,
+                          borderColor: '#00c6ff',
+                          backgroundColor: 'rgba(0, 198, 255, 0.1)',
+                          borderWidth: 3,
+                          tension: 0.3,
+                          fill: true,
+                          pointRadius: 4,
+                          pointBackgroundColor: '#00c6ff',
+                          pointHoverRadius: 6
+                      }
+                  ]
+              },
+              options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  plugins: {
+                      legend: { 
+                          position: 'top', 
+                          labels: { 
+                              color: '#e2e8f0', 
+                              font: { size: 14 },
+                              padding: 20,
+                              usePointStyle: true,
+                              pointStyle: 'circle'
+                          } 
+                      },
+                      tooltip: { 
+                          backgroundColor: 'rgba(30, 41, 59, 0.95)', 
+                          padding: 15,
+                          borderColor: 'rgba(148, 163, 184, 0.2)',
+                          borderWidth: 1,
+                          titleColor: '#e2e8f0',
+                          bodyColor: '#e2e8f0',
+                          titleFont: { size: 14 },
+                          bodyFont: { size: 13 },
+                          cornerRadius: 12,
+                          displayColors: true,
+                          boxPadding: 5
+                      }
+                  },
+                  scales: {
+                      y: { 
+                          beginAtZero: false, 
+                          grid: { 
+                              color: 'rgba(148, 163, 184, 0.1)' 
+                          }, 
+                          ticks: { 
+                              color: '#94a3b8',
+                              font: { size: 12 }
+                          } 
+                      },
+                      x: { 
+                          grid: { 
+                              color: 'rgba(148, 163, 184, 0.1)' 
+                          }, 
+                          ticks: { 
+                              color: '#94a3b8',
+                              font: { size: 12 }
+                          } 
+                      }
+                  },
+                  interaction: {
+                      intersect: false,
+                      mode: 'index'
+                  }
+              }
+          });
+
+          setInterval(() => sensorChart.update(), 5000);
+
+          // Listen for sensor data changes
+          const sensorDataRef = ref(database, 'sensor_data');
+          onValue(sensorDataRef, (snapshot) => {
+              const data = snapshot.val();
+              const now = new Date();
+
+              if (data) {
+                  document.getElementById('temperature').textContent = data.temperature.toFixed(1);
+                  document.getElementById('humidity').textContent = data.humidity.toFixed(1);
+
+                  if (prevTemperature !== null) {
+                      const tempDiff = data.temperature - prevTemperature;
+                      updateTrend('temp', tempDiff);
+                  }
+                  if (prevHumidity !== null) {
+                      const humidDiff = data.humidity - prevHumidity;
+                      updateTrend('humid', humidDiff);
+                  }
+                  prevTemperature = data.temperature;
+                  prevHumidity = data.humidity;
+
+                  document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
+                  chartData.labels.push(formatTime(now));
+                  chartData.temperature.push(data.temperature);
+                  chartData.humidity.push(data.humidity);
+
+                  if (chartData.labels.length > 20) {
+                      chartData.labels.shift();
+                      chartData.temperature.shift();
+                      chartData.humidity.shift();
+                  }
+
+                  updateRainForecast(data.humidity);
+                  updateWeatherStatus(data.temperature, data.humidity);
+              }
+          }, (error) => {
+              console.error("Lỗi khi đọc dữ liệu sensor_data:", error);
+          });
+
+          // Listen for relay status changes
+          const relaysRef = ref(database, 'relays');
+          onValue(relaysRef, (snapshot) => {
+              const data = snapshot.val();
+              const now = new Date();
+
+              if (data) {
+                  // Relay 1
+                  const motor1Led = document.getElementById('motor1Led');
+                  const motor1StatusText = document.getElementById('motor1StatusText');
+                  const manualControl1 = document.getElementById('relay1ManualControl');
+                  if (data.relay1.status) {
+                      motor1Led.classList.remove('off');
+                      motor1Led.classList.add('on');
+                      motor1StatusText.textContent = 'BẬT';
+                  } else {
+                      motor1Led.classList.remove('on');
+                      motor1Led.classList.add('off');
+                      motor1StatusText.textContent = 'TẮT';
+                  }
+                  const modeOptions1 = document.querySelectorAll('#relay1ModeSelector .mode-option');
+                  modeOptions1.forEach(option => {
+                      option.classList.remove('active');
+                      if ((option.dataset.mode === 'auto' && !data.relay1.manual) || (option.dataset.mode === 'manual' && data.relay1.manual)) {
+                          option.classList.add('active');
+                      }
+                  });
+                  manualControl1.style.display = data.relay1.manual ? 'block' : 'none';
+                  document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(now)}`;
+
+                  // Relay 2
+                  const motor2Led = document.getElementById('motor2Led');
+                  const motor2StatusText = document.getElementById('motor2StatusText');
+                  const manualControl2 = document.getElementById('relay2ManualControl');
+                  if (data.relay2.status) {
+                      motor2Led.classList.remove('off');
+                      motor2Led.classList.add('on');
+                      motor2StatusText.textContent = 'BẬT';
+                  } else {
+                      motor2Led.classList.remove('on');
+                      motor2Led.classList.add('off');
+                      motor2StatusText.textContent = 'TẮT';
+                  }
+                  const modeOptions2 = document.querySelectorAll('#relay2ModeSelector .mode-option');
+                  modeOptions2.forEach(option => {
+                      option.classList.remove('active');
+                      if ((option.dataset.mode === 'auto' && !data.relay2.manual) || (option.dataset.mode === 'manual' && data.relay2.manual)) {
+                          option.classList.add('active');
+                      }
+                  });
+                  manualControl2.style.display = data.relay2.manual ? 'block' : 'none';
+                  document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(now)}`;
+              }
+          }, (error) => {
+              console.error("Lỗi khi đọc dữ liệu relays:", error);
+          });
+
+          // Listen for history changes
+          const historyRef = ref(database, 'history');
+          const limitedHistoryRef = limitToLast(historyRef, 5);
+          onValue(limitedHistoryRef, (snapshot) => {
+              const historyTable = document.getElementById('historyTable');
+              historyTable.innerHTML = ''; // Clear existing rows
+              
+              snapshot.forEach((childSnapshot) => {
+                  const record = childSnapshot.val();
+                  addHistory(record.action, record.value);
+              });
+          }, (error) => {
+              console.error("Lỗi khi đọc dữ liệu history:", error);
+          });
+
+          // Thiết lập sự kiện click cho các button
+          setupButtonEvents();
+        } catch (error) {
+          console.error("Lỗi khi thiết lập biểu đồ hoặc listener:", error);
+        }
+      }
+
+      function setupButtonEvents() {
+        document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const mode = option.dataset.mode;
+                const isManual = mode === 'manual';
+                document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
+                
+                // Update relay1 mode in Firebase
+                update(ref(database, 'relays/relay1'), {
+                    manual: isManual
+                }).catch(error => console.error("Lỗi khi cập nhật chế độ relay1:", error));
+                
+                addHistory('Thay đổi chế độ động cơ 1', isManual ? 'Thủ công' : 'Tự động');
+            });
+        });
+
+        document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const mode = option.dataset.mode;
+                const isManual = mode === 'manual';
+                document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
+                
+                // Update relay2 mode in Firebase
+                update(ref(database, 'relays/relay2'), {
+                    manual: isManual
+                }).catch(error => console.error("Lỗi khi cập nhật chế độ relay2:", error));
+                
+                addHistory('Thay đổi chế độ động cơ 2', isManual ? 'Thủ công' : 'Tự động');
+            });
+        });
+
+        document.getElementById('relay1OnBtn').addEventListener('click', () => {
+            update(ref(database, 'relays/relay1'), {
+                status: true,
+                speed: 100
+            }).catch(error => console.error("Lỗi khi bật relay1:", error));
+            
+            // Add to history
+            const newHistoryRef = push(ref(database, 'history'));
+            set(newHistoryRef, {
+                action: 'Bật thủ công động cơ 1',
+                value: 'BẬT',
+                timestamp: Date.now()
+            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
+        });
+
+        document.getElementById('relay1OffBtn').addEventListener('click', () => {
+            update(ref(database, 'relays/relay1'), {
+                status: false,
+                speed: 0
+            }).catch(error => console.error("Lỗi khi tắt relay1:", error));
+            
+            // Add to history
+            const newHistoryRef = push(ref(database, 'history'));
+            set(newHistoryRef, {
+                action: 'Tắt thủ công động cơ 1',
+                value: 'TẮT',
+                timestamp: Date.now()
+            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
+        });
+
+        document.getElementById('relay2OnBtn').addEventListener('click', () => {
+            update(ref(database, 'relays/relay2'), {
+                status: true,
+                speed: 100
+            }).catch(error => console.error("Lỗi khi bật relay2:", error));
+            
+            // Add to history
+            const newHistoryRef = push(ref(database, 'history'));
+            set(newHistoryRef, {
+                action: 'Bật thủ công động cơ 2',
+                value: 'BẬT',
+                timestamp: Date.now()
+            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
+        });
+
+        document.getElementById('relay2OffBtn').addEventListener('click', () => {
+            update(ref(database, 'relays/relay2'), {
+                status: false,
+                speed: 0
+            }).catch(error => console.error("Lỗi khi tắt relay2:", error));
+            
+            // Add to history
+            const newHistoryRef = push(ref(database, 'history'));
+            set(newHistoryRef, {
+                action: 'Tắt thủ công động cơ 2',
+                value: 'TẮT',
+                timestamp: Date.now()
+            }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
+        });
+      }
+
+      function updateWeatherStatus(temp, humid) {
+          const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
+          const weatherStatus = document.getElementById('weatherStatus');
+          const weatherTemp = document.getElementById('weatherTemp');
+          const weatherHumid = document.getElementById('weatherHumid');
+          weatherTemp.textContent = temp.toFixed(1);
+          weatherHumid.textContent = humid.toFixed(1);
+          let icon, status;
+          if (humid > 80) {
+              if (temp > 30) {
+                  icon = 'fa-poo-storm';
+                  status = 'NÓNG ẨM';
+              } else {
+                  icon = 'fa-cloud-rain';
+                  status = 'MƯA';
+              }
+          } else if (temp > 30) {
+              icon = 'fa-sun';
+              status = 'NÓNG';
+          } else if (temp < 15) {
+              icon = 'fa-snowflake';
+              status = 'LẠNH';
+          } else {
+              icon = 'fa-cloud-sun';
+              status = 'ÔN HÒA';
+          }
+          weatherIcon.className = `fas ${icon}`;
+          weatherStatus.textContent = status;
+          document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+      }
+
+      function updateRainForecast(humidity) {
+          const rainForecast = document.getElementById('rainForecast');
+          const rainIcon = document.getElementById('rainIcon').firstElementChild;
+          const currentHumidity = document.getElementById('currentHumidity');
+          const rainLastUpdate = document.getElementById('rainLastUpdate');
+          currentHumidity.textContent = humidity.toFixed(1);
+          let forecastText = '';
+          let iconClass = '';
+          if (humidity >= 80) {
+              forecastText = 'KHẢ NĂNG MƯA CAO';
+              iconClass = 'fa-cloud-rain';
+          } else if (humidity >= 60) {
+              forecastText = 'CÓ THỂ MƯA';
+              iconClass = 'fa-cloud';
+          } else {
+              forecastText = 'ÍT KHẢ NĂNG MƯA';
+              iconClass = 'fa-sun';
+          }
+          rainForecast.textContent = forecastText;
+          rainIcon.className = `fas ${iconClass}`;
+          rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+      }
+
+      function addHistory(action, value) {
+          const historyTable = document.getElementById('historyTable');
+          const now = new Date();
+          const row = document.createElement('tr');
+          row.innerHTML = `
+              <td>${formatDateTime(now)}</td>
+              <td>${action}</td>
+              <td>${value}</td>
+          `;
+          historyTable.prepend(row);
+          
+          // Giữ chỉ 5 bản ghi mới nhất
+          if (historyTable.children.length > 5) {
+              historyTable.removeChild(historyTable.lastChild);
+          }
+          
+          // Cập nhật historyData (nếu cần sử dụng ở nơi khác)
+          historyData.push({ action, value, timestamp: now.getTime() });
+          if (historyData.length > 5) {
+              historyData.shift();
+          }
+      }
+
+      function updateTrend(type, diff) {
+          try {
+              const trendElement = document.getElementById(`${type}Trend`);
+              const trendIconElement = document.getElementById(`${type}TrendIcon`);
+              const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
+              trendElement.textContent = Math.abs(diff).toFixed(1);
+              trendElement.className = trendClass;
+              trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
+              trendIconElement.className = trendClass;
+          } catch (error) {
+              console.error("Lỗi khi cập nhật xu hướng:", error);
+          }
+      }
+
+      function formatDateTime(date) {
+          const day = date.getDate().toString().padStart(2, '0');
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          const year = date.getFullYear();
+          const hours = date.getHours().toString().padStart(2, '0');
+          const minutes = date.getMinutes().toString().padStart(2, '0');
+          const seconds = date.getSeconds().toString().padStart(2, '0');
+          return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      }
+
+      function formatTime(date) {
+          const hours = date.getHours().toString().padStart(2, '0');
+          const minutes = date.getMinutes().toString().padStart(2, '0');
+          return `${hours}:${minutes}`;
+      }
+
+      // Thêm xử lý lỗi tổng thể
+      window.addEventListener('error', function(event) {
+          console.error('Lỗi JavaScript:', event.message, 'tại', event.filename, ':', event.lineno);
+          alert('Đã xảy ra lỗi: ' + event.message);
+      });
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
@@ -801,477 +1279,5 @@
         <p>© 2025 Hệ thống Giám sát IoT - Thiết kế bởi LÊ THANH VƯƠNG</p>
       </div>
     </div>
-
-    <script>
-        // Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
-  authDomain: "webvuongle.firebaseapp.com",
-  databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "webvuongle",
-  storageBucket: "webvuongle.firebasestorage.app",
-  messagingSenderId: "72756137917",
-  appId: "1:72756137917:web:c67f01f04c4f18a520ccd4",
-  measurementId: "G-SCZS6DKEG1"
-};
-
-// Kiểm tra xem Firebase đã được khởi tạo chưa
-if (!firebase.apps.length) {
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-} else {
-  // Nếu đã khởi tạo, sử dụng app hiện tại
-  firebase.app();
-}
-
-// Tạo biến database sau khi đã khởi tạo Firebase
-const database = firebase.database();
-
-// Thêm một lắng nghe sự kiện kết nối để xử lý trạng thái kết nối
-const connectedRef = firebase.database().ref(".info/connected");
-connectedRef.on("value", (snap) => {
-  const loadingOverlay = document.getElementById('loadingOverlay');
-  const connectionStatus = document.getElementById('connectionStatus');
-  const statusText = document.getElementById('statusText');
-  
-  if (snap.val() === true) {
-    console.log("Đã kết nối với Firebase!");
-    
-    // Ẩn overlay loading
-    loadingOverlay.style.opacity = '0';
-    setTimeout(() => loadingOverlay.style.display = 'none', 500);
-    
-    // Cập nhật trạng thái kết nối
-    connectionStatus.classList.add('connected');
-    statusText.textContent = 'Đã kết nối';
-    
-    // Bắt đầu lắng nghe dữ liệu khi đã kết nối thành công
-    setupDataListeners();
-  } else {
-    console.log("Đã mất kết nối với Firebase");
-    
-    // Hiển thị thông báo khi mất kết nối
-    connectionStatus.classList.remove('connected');
-    statusText.textContent = 'Mất kết nối';
-  }
-});
-
-// Chuyển các listener ra ngoài để chỉ gọi khi đã kết nối thành công
-function setupDataListeners() {
-  let prevTemperature = null;
-  let prevHumidity = null;
-  const historyData = [];
-
-  const chartData = {
-      labels: [],
-      temperature: [],
-      humidity: []
-  };
-
-  try {
-    const ctx = document.getElementById('sensorChart').getContext('2d');
-    const sensorChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartData.labels,
-            datasets: [
-                {
-                    label: 'Nhiệt độ (°C)',
-                    data: chartData.temperature,
-                    borderColor: '#ff2d75',
-                    backgroundColor: 'rgba(255, 45, 117, 0.1)',
-                    borderWidth: 3,
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#ff2d75',
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'Độ ẩm (%)',
-                    data: chartData.humidity,
-                    borderColor: '#00c6ff',
-                    backgroundColor: 'rgba(0, 198, 255, 0.1)',
-                    borderWidth: 3,
-                    tension: 0.3,
-                    fill: true,
-                    pointRadius: 4,
-                    pointBackgroundColor: '#00c6ff',
-                    pointHoverRadius: 6
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { 
-                    position: 'top', 
-                    labels: { 
-                        color: '#e2e8f0', 
-                        font: { size: 14 },
-                        padding: 20,
-                        usePointStyle: true,
-                        pointStyle: 'circle'
-                    } 
-                },
-                tooltip: { 
-                    backgroundColor: 'rgba(30, 41, 59, 0.95)', 
-                    padding: 15,
-                    borderColor: 'rgba(148, 163, 184, 0.2)',
-                    borderWidth: 1,
-                    titleColor: '#e2e8f0',
-                    bodyColor: '#e2e8f0',
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 13 },
-                    cornerRadius: 12,
-                    displayColors: true,
-                    boxPadding: 5
-                }
-            },
-            scales: {
-                y: { 
-                    beginAtZero: false, 
-                    grid: { 
-                        color: 'rgba(148, 163, 184, 0.1)' 
-                    }, 
-                    ticks: { 
-                        color: '#94a3b8',
-                        font: { size: 12 }
-                    } 
-                },
-                x: { 
-                    grid: { 
-                        color: 'rgba(148, 163, 184, 0.1)' 
-                    }, 
-                    ticks: { 
-                        color: '#94a3b8',
-                        font: { size: 12 }
-                    } 
-                }
-            },
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            }
-        }
-    });
-
-    setInterval(() => sensorChart.update(), 5000);
-
-    // Listen for sensor data changes
-    database.ref('sensor_data').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const now = new Date();
-
-        if (data) {
-            document.getElementById('temperature').textContent = data.temperature.toFixed(1);
-            document.getElementById('humidity').textContent = data.humidity.toFixed(1);
-
-            if (prevTemperature !== null) {
-                const tempDiff = data.temperature - prevTemperature;
-                updateTrend('temp', tempDiff);
-            }
-            if (prevHumidity !== null) {
-                const humidDiff = data.humidity - prevHumidity;
-                updateTrend('humid', humidDiff);
-            }
-            prevTemperature = data.temperature;
-            prevHumidity = data.humidity;
-
-            document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
-            chartData.labels.push(formatTime(now));
-            chartData.temperature.push(data.temperature);
-            chartData.humidity.push(data.humidity);
-
-            if (chartData.labels.length > 20) {
-                chartData.labels.shift();
-                chartData.temperature.shift();
-                chartData.humidity.shift();
-            }
-
-            updateRainForecast(data.humidity);
-            updateWeatherStatus(data.temperature, data.humidity);
-        }
-    }, (error) => {
-        console.error("Lỗi khi đọc dữ liệu sensor_data:", error);
-    });
-
-    // Listen for relay status changes
-    database.ref('relays').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const now = new Date();
-
-        if (data) {
-            // Relay 1
-            const motor1Led = document.getElementById('motor1Led');
-            const motor1StatusText = document.getElementById('motor1StatusText');
-            const manualControl1 = document.getElementById('relay1ManualControl');
-            if (data.relay1.status) {
-                motor1Led.classList.remove('off');
-                motor1Led.classList.add('on');
-                motor1StatusText.textContent = 'BẬT';
-            } else {
-                motor1Led.classList.remove('on');
-                motor1Led.classList.add('off');
-                motor1StatusText.textContent = 'TẮT';
-            }
-            const modeOptions1 = document.querySelectorAll('#relay1ModeSelector .mode-option');
-            modeOptions1.forEach(option => {
-                option.classList.remove('active');
-                if ((option.dataset.mode === 'auto' && !data.relay1.manual) || (option.dataset.mode === 'manual' && data.relay1.manual)) {
-                    option.classList.add('active');
-                }
-            });
-            manualControl1.style.display = data.relay1.manual ? 'block' : 'none';
-            document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(now)}`;
-
-            // Relay 2
-            const motor2Led = document.getElementById('motor2Led');
-            const motor2StatusText = document.getElementById('motor2StatusText');
-            const manualControl2 = document.getElementById('relay2ManualControl');
-            if (data.relay2.status) {
-                motor2Led.classList.remove('off');
-                motor2Led.classList.add('on');
-                motor2StatusText.textContent = 'BẬT';
-            } else {
-                motor2Led.classList.remove('on');
-                motor2Led.classList.add('off');
-                motor2StatusText.textContent = 'TẮT';
-            }
-            const modeOptions2 = document.querySelectorAll('#relay2ModeSelector .mode-option');
-            modeOptions2.forEach(option => {
-                option.classList.remove('active');
-                if ((option.dataset.mode === 'auto' && !data.relay2.manual) || (option.dataset.mode === 'manual' && data.relay2.manual)) {
-                    option.classList.add('active');
-                }
-            });
-            manualControl2.style.display = data.relay2.manual ? 'block' : 'none';
-            document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(now)}`;
-        }
-    }, (error) => {
-        console.error("Lỗi khi đọc dữ liệu relays:", error);
-    });
-
-    // Listen for history changes
-    database.ref('history').limitToLast(5).on('child_added', (snapshot) => {
-        const record = snapshot.val();
-        addHistory(record.action, record.value);
-    }, (error) => {
-        console.error("Lỗi khi đọc dữ liệu history:", error);
-    });
-
-    // Thiết lập sự kiện click cho các button
-    setupButtonEvents();
-  } catch (error) {
-    console.error("Lỗi khi thiết lập biểu đồ hoặc listener:", error);
-  }
-}
-
-function setupButtonEvents() {
-  document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
-      option.addEventListener('click', () => {
-          const mode = option.dataset.mode;
-          const isManual = mode === 'manual';
-          document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
-          option.classList.add('active');
-          document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
-          
-          // Update relay1 mode in Firebase
-          database.ref('relays/relay1').update({
-              manual: isManual
-          }).catch(error => console.error("Lỗi khi cập nhật chế độ relay1:", error));
-          
-          addHistory('Thay đổi chế độ động cơ 1', isManual ? 'Thủ công' : 'Tự động');
-      });
-  });
-
-  document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
-      option.addEventListener('click', () => {
-          const mode = option.dataset.mode;
-          const isManual = mode === 'manual';
-          document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
-          option.classList.add('active');
-          document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
-          
-          // Update relay2 mode in Firebase
-          database.ref('relays/relay2').update({
-              manual: isManual
-          }).catch(error => console.error("Lỗi khi cập nhật chế độ relay2:", error));
-          
-          addHistory('Thay đổi chế độ động cơ 2', isManual ? 'Thủ công' : 'Tự động');
-      });
-  });
-
-  document.getElementById('relay1OnBtn').addEventListener('click', () => {
-      database.ref('relays/relay1').update({
-          status: true,
-          speed: 100
-      }).catch(error => console.error("Lỗi khi bật relay1:", error));
-      
-      // Add to history
-      const newHistoryRef = database.ref('history').push();
-      newHistoryRef.set({
-          action: 'Bật thủ công động cơ 1',
-          value: 'BẬT',
-          timestamp: Date.now()
-      }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-  });
-
-  document.getElementById('relay1OffBtn').addEventListener('click', () => {
-      database.ref('relays/relay1').update({
-          status: false,
-          speed: 0
-      }).catch(error => console.error("Lỗi khi tắt relay1:", error));
-      
-      // Add to history
-      const newHistoryRef = database.ref('history').push();
-      newHistoryRef.set({
-          action: 'Tắt thủ công động cơ 1',
-          value: 'TẮT',
-          timestamp: Date.now()
-      }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-  });
-
-  document.getElementById('relay2OnBtn').addEventListener('click', () => {
-      database.ref('relays/relay2').update({
-          status: true,
-          speed: 100
-      }).catch(error => console.error("Lỗi khi bật relay2:", error));
-      
-      // Add to history
-      const newHistoryRef = database.ref('history').push();
-      newHistoryRef.set({
-          action: 'Bật thủ công động cơ 2',
-          value: 'BẬT',
-          timestamp: Date.now()
-      }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-  });
-
-  document.getElementById('relay2OffBtn').addEventListener('click', () => {
-      database.ref('relays/relay2').update({
-          status: false,
-          speed: 0
-      }).catch(error => console.error("Lỗi khi tắt relay2:", error));
-      
-      // Add to history
-      const newHistoryRef = database.ref('history').push();
-      newHistoryRef.set({
-          action: 'Tắt thủ công động cơ 2',
-          value: 'TẮT',
-          timestamp: Date.now()
-      }).catch(error => console.error("Lỗi khi thêm lịch sử:", error));
-  });
-}
-
-function updateWeatherStatus(temp, humid) {
-    const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
-    const weatherStatus = document.getElementById('weatherStatus');
-    const weatherTemp = document.getElementById('weatherTemp');
-    const weatherHumid = document.getElementById('weatherHumid');
-    weatherTemp.textContent = temp.toFixed(1);
-    weatherHumid.textContent = humid.toFixed(1);
-    let icon, status;
-    if (humid > 80) {
-        if (temp > 30) {
-            icon = 'fa-poo-storm';
-            status = 'NÓNG ẨM';
-        } else {
-            icon = 'fa-cloud-rain';
-            status = 'MƯA';
-        }
-    } else if (temp > 30) {
-        icon = 'fa-sun';
-        status = 'NÓNG';
-    } else if (temp < 15) {
-        icon = 'fa-snowflake';
-        status = 'LẠNH';
-    } else {
-        icon = 'fa-cloud-sun';
-        status = 'ÔN HÒA';
-    }
-    weatherIcon.className = `fas ${icon}`;
-    weatherStatus.textContent = status;
-    document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
-}
-
-function updateRainForecast(humidity) {
-    const rainForecast = document.getElementById('rainForecast');
-    const rainIcon = document.getElementById('rainIcon').firstElementChild;
-    const currentHumidity = document.getElementById('currentHumidity');
-    const rainLastUpdate = document.getElementById('rainLastUpdate');
-    currentHumidity.textContent = humidity.toFixed(1);
-    let forecastText = '';
-    let iconClass = '';
-    if (humidity >= 80) {
-        forecastText = 'KHẢ NĂNG MƯA CAO';
-        iconClass = 'fa-cloud-rain';
-    } else if (humidity >= 60) {
-        forecastText = 'CÓ THỂ MƯA';
-        iconClass = 'fa-cloud';
-    } else {
-        forecastText = 'ÍT KHẢ NĂNG MƯA';
-        iconClass = 'fa-sun';
-    }
-    rainForecast.textContent = forecastText;
-    rainIcon.className = `fas ${iconClass}`;
-    rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
-}
-
-function addHistory(action, value) {
-    const historyTable = document.getElementById('historyTable');
-    const now = new Date();
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${formatDateTime(now)}</td>
-        <td>${action}</td>
-        <td>${value}</td>
-    `;
-    historyTable.prepend(row);
-    historyData.push({ action, value, timestamp: now.getTime() });
-    if (historyData.length > 5) {
-        historyData.shift();
-        if (historyTable.children.length > 5) {
-            historyTable.removeChild(historyTable.lastChild);
-        }
-    }
-}
-
-function updateTrend(type, diff) {
-    try {
-        const trendElement = document.getElementById(`${type}Trend`);
-        const trendIconElement = document.getElementById(`${type}TrendIcon`);
-        const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
-        trendElement.textContent = Math.abs(diff).toFixed(1);
-        trendElement.className = trendClass;
-        trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
-        trendIconElement.className = trendClass;
-    } catch (error) {
-        console.error("Lỗi khi cập nhật xu hướng:", error);
-    }
-}
-
-function formatDateTime(date) {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-}
-
-function formatTime(date) {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
-}
-
-// Thêm xử lý lỗi tổng thể
-window.addEventListener('error', function(event) {
-    console.error('Lỗi JavaScript:', event.message, 'tại', event.filename, ':', event.lineno);
-    alert('Đã xảy ra lỗi: ' + event.message);
-});
-    </script>
   </body>
 </html>
