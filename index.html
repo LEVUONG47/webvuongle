@@ -1,52 +1,26 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giám sát IoT - Dashboard Thông Minh</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet">
-    <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Add Firebase SDKs -->
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js";
-        import { getDatabase, ref, onValue, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-database.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics.js";
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
-            authDomain: "webvuongle.firebaseapp.com",
-            databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "webvuongle",
-            storageBucket: "webvuongle.firebasestorage.app",
-            messagingSenderId: "72756137917",
-            appId: "1:72756137917:web:c67f01f04c4f18a520ccd4",
-            measurementId: "G-SCZS6DKEG1"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
-        const database = getDatabase(app);
-        
-        // Make Firebase available globally
-        window.firebase = {
-            database,
-            ref,
-            onValue,
-            update,
-            push,
-            serverTimestamp
-        };
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Giám sát IoT - Dashboard Thông Minh</title>
+        <!-- Firebase SDK -->
+        <script type="module">
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+      import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+      import { getAuth } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+      window.firebase = { initializeApp, getDatabase, getAuth };
     </script>
-    <style>
+        <script
+            src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet">
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
         :root {
             --primary: #1e90ff;
             --secondary: #00cc99;
@@ -544,650 +518,764 @@
             }
         }
     </style>
-  </head>
-  <body>
-    <div id="particles-js"></div>
-    <div class="loading-overlay" id="loadingOverlay">
-      <div class="loading-spinner"></div>
-    </div>
-    <div class="notification" id="notification"></div>
-    <div class="container">
-      <header>
-        <div class="header-left">
-          <div class="logo">IoT</div>
-          <h1>Giám sát Thông Minh</h1>
+    </head>
+    <body>
+        <div id="particles-js"></div>
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-spinner"></div>
         </div>
-        <div class="connection-status">
-          <div class="status-indicator" id="connectionStatus"></div>
-          <span class="status-text" id="statusText">Đang kết nối...</span>
-          <button class="theme-toggle" id="themeToggle"><i
-              class="fas fa-moon"></i></button>
-        </div>
-      </header>
+        <div class="notification" id="notification"></div>
+        <div class="container">
+            <header>
+                <div class="header-left">
+                    <div class="logo">IoT</div>
+                    <h1>Giám sát Thông Minh</h1>
+                </div>
+                <div class="connection-status">
+                    <div class="status-indicator" id="connectionStatus"></div>
+                    <span class="status-text" id="statusText">Đang kết
+                        nối...</span>
+                    <button class="theme-toggle" id="themeToggle"><i
+                            class="fas fa-moon"></i></button>
+                </div>
+            </header>
 
-      <div class="last-update" id="lastUpdate">Cập nhật lần cuối: --/--/----
-        --:--:--</div>
+            <div class="last-update" id="lastUpdate">Cập nhật lần cuối:
+                --/--/---- --:--:--</div>
 
-      <div class="dashboard">
-        <div class="card temperature">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Nhiệt độ hiện tại">Nhiệt
-              độ</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 22C14.7614 22 17 19.7614 17 17C17 15.3644 16.2143 13.9121 15.0005 13.0005V5C15.0005 3.34315 13.6574 2 12.0005 2C10.3437 2 9.00052 3.34315 9.00052 5V13.0005C7.78672 13.9121 7 15.3644 7 17C7 19.7614 9.23858 22 12 22Z"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
+            <div class="dashboard">
+                <div class="card temperature">
+                    <div class="card-header">
+                        <span class="card-title"
+                            data-tooltip="Nhiệt độ hiện tại">Nhiệt độ</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 22C14.7614 22 17 19.7614 17 17C17 15.3644 16.2143 13.9121 15.0005 13.0005V5C15.0005 3.34315 13.6574 2 12.0005 2C10.3437 2 9.00052 3.34315 9.00052 5V13.0005C7.78672 13.9121 7 15.3644 7 17C7 19.7614 9.23858 22 12 22Z"
+                                    stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-value" id="temperature">--</div>
+                    <div class="card-unit">°C</div>
+                    <div class="card-trend">
+                        <span id="tempTrend">--</span>
+                        <span id="tempTrendIcon">→</span>
+                    </div>
+                </div>
+
+                <div class="card humidity">
+                    <div class="card-header">
+                        <span class="card-title"
+                            data-tooltip="Độ ẩm hiện tại">Độ ẩm</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path
+                                    d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z"
+                                    stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-value" id="humidity">--</div>
+                    <div class="card-unit">%</div>
+                    <div class="card-trend">
+                        <span id="humidTrend">--</span>
+                        <span id="humidTrendIcon">→</span>
+                    </div>
+                </div>
+
+                <div class="card motor">
+                    <div class="card-header">
+                        <span class="card-title"
+                            data-tooltip="Trạng thái động cơ 1">Động cơ 1</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+                                    stroke="currentColor" stroke-width="2" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                    stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mode-selector" id="relay1ModeSelector">
+                        <div class="mode-option active" data-mode="auto">Tự
+                            động</div>
+                        <div class="mode-option" data-mode="manual">Thủ
+                            công</div>
+                    </div>
+                    <div class="status-container">
+                        <div class="led-indicator off" id="motor1Led"></div>
+                        <span class="status-label">Trạng thái: <span
+                                id="motor1StatusText">TẮT</span></span>
+                    </div>
+                    <div class="last-change" id="motor1LastChange">Lần cuối:
+                        --/--/---- --:--:--</div>
+                    <div id="relay1ManualControl" style="display: none;">
+                        <button class="control-btn btn-on"
+                            id="relay1OnBtn">BẬT</button>
+                        <button class="control-btn btn-off"
+                            id="relay1OffBtn">TẮT</button>
+                    </div>
+                </div>
+
+                <div class="card motor">
+                    <div class="card-header">
+                        <span class="card-title"
+                            data-tooltip="Trạng thái động cơ 2">Động cơ 2</span>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+                                    stroke="currentColor" stroke-width="2" />
+                                <path
+                                    d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+                                    stroke="currentColor" stroke-width="2" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="mode-selector" id="relay2ModeSelector">
+                        <div class="mode-option active" data-mode="auto">Tự
+                            động</div>
+                        <div class="mode-option" data-mode="manual">Thủ
+                            công</div>
+                    </div>
+                    <div class="status-container">
+                        <div class="led-indicator off" id="motor2Led"></div>
+                        <span class="status-label">Trạng thái: <span
+                                id="motor2StatusText">TẮT</span></span>
+                    </div>
+                    <div class="last-change" id="motor2LastChange">Lần cuối:
+                        --/--/---- --:--:--</div>
+                    <div id="relay2ManualControl" style="display: none;">
+                        <button class="control-btn btn-on"
+                            id="relay2OnBtn">BẬT</button>
+                        <button class="control-btn btn-off"
+                            id="relay2OffBtn">TẮT</button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="card-value" id="temperature">--</div>
-          <div class="card-unit">°C</div>
-          <div class="card-trend">
-            <span id="tempTrend">--</span>
-            <span id="tempTrendIcon">→</span>
-          </div>
-        </div>
 
-        <div class="card humidity">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Độ ẩm hiện tại">Độ ẩm</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 20C15.3137 20 18 17.3137 18 14C18 10.6863 12 4 12 4C12 4 6 10.6863 6 14C6 17.3137 8.68629 20 12 20Z"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
+            <div class="chart-section">
+                <div class="main-chart-container">
+                    <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm</div>
+                    <canvas id="sensorChart"></canvas>
+                </div>
             </div>
-          </div>
-          <div class="card-value" id="humidity">--</div>
-          <div class="card-unit">%</div>
-          <div class="card-trend">
-            <span id="humidTrend">--</span>
-            <span id="humidTrendIcon">→</span>
-          </div>
-        </div>
 
-        <div class="card motor">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Trạng thái động cơ 1">Động cơ
-              1</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
-                  stroke="currentColor" stroke-width="2" />
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
+            <div class="control-section">
+                <div class="card weather">
+                    <div class="card-header">
+                        <span class="card-title"
+                            data-tooltip="Thời tiết hiện tại">Thời tiết</span>
+                        <div class="card-icon">
+                            <i class="fas fa-cloud-sun"></i>
+                        </div>
+                    </div>
+                    <div class="weather-icon" id="weatherIcon">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="card-value" id="weatherStatus">--</div>
+                    <div class="weather-details">
+                        <span>Nhiệt độ: <span
+                                id="weatherTemp">--</span>°C</span>
+                        <span>Độ ẩm: <span id="weatherHumid">--</span>%</span>
+                    </div>
+                    <div class="last-change" id="weatherLastUpdate">Cập nhật:
+                        --/--/---- --:--:--</div>
+                </div>
+
+                <div class="card weather">
+                    <div class="card-header">
+                        <span class="card-title" data-tooltip="Dự báo mưa">Dự
+                            báo mưa</span>
+                        <div class="card-icon">
+                            <i class="fas fa-cloud-rain"></i>
+                        </div>
+                    </div>
+                    <div class="weather-icon" id="rainIcon">
+                        <i class="fas fa-question"></i>
+                    </div>
+                    <div class="card-value" id="rainForecast">--</div>
+                    <div class="weather-details">
+                        <span>Độ ẩm: <span
+                                id="currentHumidity">--</span>%</span>
+                        <span>Xác suất: <span
+                                id="rainProbability">--</span>%</span>
+                    </div>
+                    <div class="last-change" id="rainLastUpdate">Cập nhật:
+                        --/--/---- --:--:--</div>
+                </div>
             </div>
-          </div>
-          <div class="mode-selector" id="relay1ModeSelector">
-            <div class="mode-option active" data-mode="auto">Tự động</div>
-            <div class="mode-option" data-mode="manual">Thủ công</div>
-          </div>
-          <div class="status-container">
-            <div class="led-indicator off" id="motor1Led"></div>
-            <span class="status-label">Trạng thái: <span
-                id="motor1StatusText">TẮT</span></span>
-          </div>
-          <div class="last-change" id="motor1LastChange">Lần cuối: --/--/----
-            --:--:--</div>
-          <div id="relay1ManualControl" style="display: none;">
-            <button class="control-btn btn-on" id="relay1OnBtn">BẬT</button>
-            <button class="control-btn btn-off" id="relay1OffBtn">TẮT</button>
-          </div>
-        </div>
 
-        <div class="card motor">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Trạng thái động cơ 2">Động cơ
-              2</span>
-            <div class="card-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
-                  stroke="currentColor" stroke-width="2" />
-                <path
-                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.09a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l-.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
-                  stroke="currentColor" stroke-width="2" />
-              </svg>
+            <div class="history-section">
+                <div class="history-title">Lịch sử thao tác</div>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Thao tác</th>
+                            <th>Giá trị</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable"></tbody>
+                </table>
             </div>
-          </div>
-          <div class="mode-selector" id="relay2ModeSelector">
-            <div class="mode-option active" data-mode="auto">Tự động</div>
-            <div class="mode-option" data-mode="manual">Thủ công</div>
-          </div>
-          <div class="status-container">
-            <div class="led-indicator off" id="motor2Led"></div>
-            <span class="status-label">Trạng thái: <span
-                id="motor2StatusText">TẮT</span></span>
-          </div>
-          <div class="last-change" id="motor2LastChange">Lần cuối: --/--/----
-            --:--:--</div>
-          <div id="relay2ManualControl" style="display: none;">
-            <button class="control-btn btn-on" id="relay2OnBtn">BẬT</button>
-            <button class="control-btn btn-off" id="relay2OffBtn">TẮT</button>
-          </div>
-        </div>
-      </div>
 
-      <div class="chart-section">
-        <div class="main-chart-container">
-          <div class="chart-title">Biểu đồ Nhiệt độ & Độ ẩm</div>
-          <canvas id="sensorChart"></canvas>
-        </div>
-      </div>
-
-      <div class="control-section">
-        <div class="card weather">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Thời tiết hiện tại">Thời
-              tiết</span>
-            <div class="card-icon">
-              <i class="fas fa-cloud-sun"></i>
+            <div class="footer">
+                <p>© 2025 Bản quyền thuộc về LÊ THANH VƯƠNG</p>
             </div>
-          </div>
-          <div class="weather-icon" id="weatherIcon">
-            <i class="fas fa-question"></i>
-          </div>
-          <div class="card-value" id="weatherStatus">--</div>
-          <div class="weather-details">
-            <span>Nhiệt độ: <span id="weatherTemp">--</span>°C</span>
-            <span>Độ ẩm: <span id="weatherHumid">--</span>%</span>
-          </div>
-          <div class="last-change" id="weatherLastUpdate">Cập nhật: --/--/----
-            --:--:--</div>
         </div>
 
-        <div class="card weather">
-          <div class="card-header">
-            <span class="card-title" data-tooltip="Dự báo mưa">Dự báo mưa</span>
-            <div class="card-icon">
-              <i class="fas fa-cloud-rain"></i>
-            </div>
-          </div>
-          <div class="weather-icon" id="rainIcon">
-            <i class="fas fa-question"></i>
-          </div>
-          <div class="card-value" id="rainForecast">--</div>
-          <div class="weather-details">
-            <span>Độ ẩm: <span id="currentHumidity">--</span>%</span>
-            <span>Xác suất: <span id="rainProbability">--</span>%</span>
-          </div>
-          <div class="last-change" id="rainLastUpdate">Cập nhật: --/--/----
-            --:--:--</div>
-        </div>
-      </div>
+        <script type="module">
+      // Import Firebase functions
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+      import { getDatabase, ref, onValue, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
+      import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
 
-      <div class="history-section">
-        <div class="history-title">Lịch sử thao tác</div>
-        <table class="history-table">
-          <thead>
-            <tr>
-              <th>Thời gian</th>
-              <th>Thao tác</th>
-              <th>Giá trị</th>
-            </tr>
-          </thead>
-          <tbody id="historyTable"></tbody>
-        </table>
-      </div>
+      // Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
+        authDomain: "webvuongle.firebaseapp.com",
+        databaseURL: "https://webvuongle-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "webvuongle",
+        storageBucket: "webvuongle.appspot.com",
+        messagingSenderId: "72756137917",
+        appId: "1:72756137917:web:c67f01f04c4f18a520ccd4",
+        measurementId: "G-SCZS6DKEG1"
+      };
 
-      <div class="footer">
-        <p>© 2025 Bản quyền thuộc về LÊ THANH VƯƠNG</p>
-      </div>
-    </div>
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+      const auth = getAuth(app);
 
-    <script>
-        // Wait for Firebase to be loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            // Khởi tạo Particles.js
-            particlesJS('particles-js', {
-                particles: {
-                    number: { value: 50, density: { enable: true, value_area: 800 } },
-                    color: { value: '#1e90ff' },
-                    shape: { type: 'circle' },
-                    opacity: { value: 0.5, random: true },
-                    size: { value: 3, random: true },
-                    line_linked: { enable: false },
-                    move: { enable: true, speed: 1.5, direction: 'none', random: true }
-                },
-                interactivity: {
-                    detect_on: 'canvas',
-                    events: { onhover: { enable: false }, onclick: { enable: false } }
-                },
-                retina_detect: true
-            });
+      // Initialize Particles.js
+      particlesJS('particles-js', {
+        particles: {
+          number: { value: 50, density: { enable: true, value_area: 800 } },
+          color: { value: '#1e90ff' },
+          shape: { type: 'circle' },
+          opacity: { value: 0.5, random: true },
+          size: { value: 3, random: true },
+          line_linked: { enable: false },
+          move: { enable: true, speed: 1.5, direction: 'none', random: true }
+        },
+        interactivity: {
+          detect_on: 'canvas',
+          events: { onhover: { enable: false }, onclick: { enable: false } }
+        },
+        retina_detect: true
+      });
 
-            // Chuyển đổi chủ đề sáng/tối
-            const themeToggle = document.getElementById('themeToggle');
-            themeToggle.addEventListener('click', () => {
-                const currentTheme = document.documentElement.getAttribute('data-theme');
-                if (currentTheme === 'dark') {
-                    document.documentElement.removeAttribute('data-theme');
-                    themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
-                } else {
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                    themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-                }
-            });
+      // Theme toggle
+      const themeToggle = document.getElementById('themeToggle');
+      themeToggle.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+          document.documentElement.removeAttribute('data-theme');
+          themeToggle.innerHTML = '<i class="fas fa-moon"></i>';
+        } else {
+          document.documentElement.setAttribute('data-theme', 'dark');
+          themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+      });
 
-            // Ẩn loading overlay
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            function hideLoadingOverlay() {
-                loadingOverlay.classList.add('hidden');
-                setTimeout(() => loadingOverlay.style.display = 'none', 500);
+      // Loading overlay
+      const loadingOverlay = document.getElementById('loadingOverlay');
+      function hideLoadingOverlay() {
+        loadingOverlay.classList.add('hidden');
+        setTimeout(() => loadingOverlay.style.display = 'none', 500);
+      }
+
+      // Notification
+      const notification = document.getElementById('notification');
+      function showNotification(message) {
+        notification.textContent = message;
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 3000);
+      }
+
+      // Chart initialization
+      const chartData = {
+        labels: [],
+        temperature: [],
+        humidity: []
+      };
+
+      const ctx = document.getElementById('sensorChart').getContext('2d');
+      const sensorChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Nhiệt độ (°C)',
+              data: chartData.temperature,
+              borderColor: '#ff4757',
+              backgroundColor: 'rgba(255, 71, 87, 0.1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+              pointRadius: 4
+            },
+            {
+              label: 'Độ ẩm (%)',
+              data: chartData.humidity,
+              borderColor: '#1e90ff',
+              backgroundColor: 'rgba(30, 144, 255, 0.1)',
+              borderWidth: 2,
+              tension: 0.4,
+              fill: true,
+              pointRadius: 4
             }
-            window.addEventListener('load', () => setTimeout(hideLoadingOverlay, 1000));
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { color: '#2d3436', font: { size: 14 } } },
+            tooltip: { backgroundColor: 'rgba(45, 52, 54, 0.9)', padding: 10 }
+          },
+          scales: {
+            y: { beginAtZero: false, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } },
+            x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } }
+          }
+        }
+      });
 
-            // Thông báo
-            const notification = document.getElementById('notification');
-            function showNotification(message) {
-                notification.textContent = message;
-                notification.classList.add('show');
-                setTimeout(() => notification.classList.remove('show'), 3000);
-            }
+      setInterval(() => sensorChart.update(), 5000);
 
-            // Firebase references
-            const { database, ref, onValue, update, push, serverTimestamp } = firebase;
-            const sensorRef = ref(database, 'sensor_data');
-            const relay1Ref = ref(database, 'relays/relay1');
-            const relay2Ref = ref(database, 'relays/relay2');
-            const historyRef = ref(database, 'history');
-            const connectedRef = ref(database, '.info/connected');
+      // Authentication
+      let prevTemperature = null;
+      let prevHumidity = null;
+      let prevMotor1Status = null;
+      let prevMotor2Status = null;
 
-            let prevTemperature = null;
-            let prevHumidity = null;
-            let prevMotor1Status = null;
-            let prevMotor2Status = null;
-
-            const chartData = {
-                labels: [],
-                temperature: [],
-                humidity: []
-            };
-
-            const ctx = document.getElementById('sensorChart').getContext('2d');
-            const sensorChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: chartData.labels,
-                    datasets: [
-                        {
-                            label: 'Nhiệt độ (°C)',
-                            data: chartData.temperature,
-                            borderColor: '#ff4757',
-                            backgroundColor: 'rgba(255, 71, 87, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4
-                        },
-                        {
-                            label: 'Độ ẩm (%)',
-                            data: chartData.humidity,
-                            borderColor: '#1e90ff',
-                            backgroundColor: 'rgba(30, 144, 255, 0.1)',
-                            borderWidth: 2,
-                            tension: 0.4,
-                            fill: true,
-                            pointRadius: 4
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'top', labels: { color: '#2d3436', font: { size: 14 } } },
-                        tooltip: { backgroundColor: 'rgba(45, 52, 54, 0.9)', padding: 10 }
-                    },
-                    scales: {
-                        y: { beginAtZero: false, grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } },
-                        x: { grid: { color: 'rgba(0, 0, 0, 0.1)' }, ticks: { color: '#2d3436' } }
-                    }
-                }
-            });
-
-            setInterval(() => sensorChart.update(), 5000);
-
-            // Connection status listener
-            onValue(connectedRef, (snapshot) => {
-                const connectionStatus = document.getElementById('connectionStatus');
-                const statusText = document.getElementById('statusText');
-                if (snapshot.val() === true) {
-                    connectionStatus.classList.add('connected');
-                    statusText.textContent = 'Đã kết nối';
-                    hideLoadingOverlay();
-                } else {
-                    connectionStatus.classList.remove('connected');
-                    statusText.textContent = 'Mất kết nối';
-                }
-            });
-
-            // Sensor data listener
-            onValue(sensorRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const tempCard = document.querySelector('.temperature');
-                    const humidCard = document.querySelector('.humidity');
-                    tempCard.classList.add('updated');
-                    humidCard.classList.add('updated');
-                    setTimeout(() => {
-                        tempCard.classList.remove('updated');
-                        humidCard.classList.remove('updated');
-                    }, 500);
-
-                    document.getElementById('temperature').textContent = data.temperature.toFixed(1);
-                    document.getElementById('humidity').textContent = data.humidity.toFixed(1);
-                    if (prevTemperature !== null) {
-                        const tempDiff = data.temperature - prevTemperature;
-                        updateTrend('temp', tempDiff);
-                    }
-                    if (prevHumidity !== null) {
-                        const humidDiff = data.humidity - prevHumidity;
-                        updateTrend('humid', humidDiff);
-                    }
-                    prevTemperature = data.temperature;
-                    prevHumidity = data.humidity;
-                    const now = new Date();
-                    document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
-                    chartData.labels.push(formatTime(now));
-                    chartData.temperature.push(data.temperature);
-                    chartData.humidity.push(data.humidity);
-                    if (chartData.labels.length > 20) {
-                        chartData.labels.shift();
-                        chartData.temperature.shift();
-                        chartData.humidity.shift();
-                    }
-                    updateRainForecast(data.humidity);
-                    updateWeatherStatus(data.temperature, data.humidity);
-                }
-            });
-
-            function updateWeatherStatus(temp, humid) {
-                const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
-                const weatherStatus = document.getElementById('weatherStatus');
-                const weatherTemp = document.getElementById('weatherTemp');
-                const weatherHumid = document.getElementById('weatherHumid');
-                weatherTemp.textContent = temp.toFixed(1);
-                weatherHumid.textContent = humid.toFixed(1);
-                let icon, status;
-                if (humid > 80) {
-                    if (temp > 30) {
-                        icon = 'fa-poo-storm';
-                        status = 'Nóng ẩm';
-                    } else {
-                        icon = 'fa-cloud-rain';
-                        status = 'Mưa';
-                    }
-                } else if (temp > 30) {
-                    icon = 'fa-sun';
-                    status = 'Nóng';
-                } else if (temp < 15) {
-                    icon = 'fa-snowflake';
-                    status = 'Lạnh';
-                } else {
-                    icon = 'fa-cloud-sun';
-                    status = 'Ôn hòa';
-                }
-                weatherIcon.className = `fas ${icon}`;
-                weatherStatus.textContent = status;
-                document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
-            }
-
-            function updateRainForecast(humidity) {
-                const rainForecast = document.getElementById('rainForecast');
-                const rainIcon = document.getElementById('rainIcon').firstElementChild;
-                const currentHumidity = document.getElementById('currentHumidity');
-                const rainProbability = document.getElementById('rainProbability');
-                const rainLastUpdate = document.getElementById('rainLastUpdate');
-                currentHumidity.textContent = humidity.toFixed(1);
-                let forecastText = '';
-                let iconClass = '';
-                let probability = 0;
-                if (humidity >= 80) {
-                    forecastText = 'KHẢ NĂNG MƯA CAO';
-                    iconClass = 'fa-cloud-rain';
-                    probability = 90;
-                } else if (humidity >= 60) {
-                    forecastText = 'CÓ THỂ MƯA';
-                    iconClass = 'fa-cloud';
-                    probability = 60;
-                } else {
-                    forecastText = 'ÍT KHẢ NĂNG MƯA';
-                    iconClass = 'fa-sun';
-                    probability = 10;
-                }
-                rainForecast.textContent = forecastText;
-                rainIcon.className = `fas ${iconClass}`;
-                rainProbability.textContent = probability;
-                rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
-            }
-
-            // Relay 1 listener
-            onValue(relay1Ref, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const motor1Card = document.querySelectorAll('.motor')[0];
-                    motor1Card.classList.add('updated');
-                    setTimeout(() => motor1Card.classList.remove('updated'), 500);
-
-                    const motor1Led = document.getElementById('motor1Led');
-                    const motor1StatusText = document.getElementById('motor1StatusText');
-                    const manualControl = document.getElementById('relay1ManualControl');
-                    if (data.status) {
-                        motor1Led.classList.remove('off');
-                        motor1Led.classList.add('on');
-                        motor1StatusText.textContent = 'BẬT';
-                    } else {
-                        motor1Led.classList.remove('on');
-                        motor1Led.classList.add('off');
-                        motor1StatusText.textContent = 'TẮT';
-                    }
-                    if (prevMotor1Status !== null && prevMotor1Status !== data.status) {
-                        showNotification(`Động cơ 1 đã ${data.status ? 'BẬT' : 'TẮT'}`);
-                    }
-                    prevMotor1Status = data.status;
-                    const modeOptions = document.querySelectorAll('#relay1ModeSelector .mode-option');
-                    modeOptions.forEach(option => {
-                        option.classList.remove('active');
-                        if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
-                            option.classList.add('active');
-                        }
-                    });
-                    manualControl.style.display = data.manual ? 'block' : 'none';
-                    if (data.timestamp) {
-                        document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
-                    }
-                }
-            });
-
-            // Relay 2 listener
-            onValue(relay2Ref, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    const motor2Card = document.querySelectorAll('.motor')[1];
-                    motor2Card.classList.add('updated');
-                    setTimeout(() => motor2Card.classList.remove('updated'), 500);
-
-                    const motor2Led = document.getElementById('motor2Led');
-                    const motor2StatusText = document.getElementById('motor2StatusText');
-                    const manualControl = document.getElementById('relay2ManualControl');
-                    if (data.status) {
-                        motor2Led.classList.remove('off');
-                        motor2Led.classList.add('on');
-                        motor2StatusText.textContent = 'BẬT';
-                    } else {
-                        motor2Led.classList.remove('on');
-                        motor2Led.classList.add('off');
-                        motor2StatusText.textContent = 'TẮT';
-                    }
-                    if (prevMotor2Status !== null && prevMotor2Status !== data.status) {
-                        showNotification(`Động cơ 2 đã ${data.status ? 'BẬT' : 'TẮT'}`);
-                    }
-                    prevMotor2Status = data.status;
-                    const modeOptions = document.querySelectorAll('#relay2ModeSelector .mode-option');
-                    modeOptions.forEach(option => {
-                        option.classList.remove('active');
-                        if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
-                            option.classList.add('active');
-                        }
-                    });
-                    manualControl.style.display = data.manual ? 'block' : 'none';
-                    if (data.timestamp) {
-                        document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
-                    }
-                }
-            });
-
-            // History listener
-            onValue(historyRef, (snapshot) => {
-                const historyTable = document.getElementById('historyTable');
-                historyTable.innerHTML = '';
-                const historyData = [];
-                snapshot.forEach((childSnapshot) => {
-                    historyData.push(childSnapshot.val());
-                });
-                
-                // Sort by timestamp (newest first) and limit to 5
-                historyData.sort((a, b) => b.timestamp - a.timestamp).slice(0, 5).forEach(action => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${formatDateTime(new Date(action.timestamp))}</td>
-                        <td>${action.action}</td>
-                        <td>${action.value}</td>
-                    `;
-                    historyTable.appendChild(row);
-                });
-            });
-
-            // Mode selector for relay 1
-            document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    const mode = option.dataset.mode;
-                    const isManual = mode === 'manual';
-                    document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
-                    update(relay1Ref, {
-                        manual: isManual,
-                        timestamp: serverTimestamp()
-                    });
-                    push(historyRef, {
-                        action: 'Thay đổi chế độ động cơ 1',
-                        value: isManual ? 'Thủ công' : 'Tự động',
-                        timestamp: serverTimestamp()
-                    });
-                });
-            });
-
-            // Mode selector for relay 2
-            document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    const mode = option.dataset.mode;
-                    const isManual = mode === 'manual';
-                    document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
-                    option.classList.add('active');
-                    document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
-                    update(relay2Ref, {
-                        manual: isManual,
-                        timestamp: serverTimestamp()
-                    });
-                    push(historyRef, {
-                        action: 'Thay đổi chế độ động cơ 2',
-                        value: isManual ? 'Thủ công' : 'Tự động',
-                        timestamp: serverTimestamp()
-                    });
-                });
-            });
-
-            // Manual control buttons for relay 1
-            document.getElementById('relay1OnBtn').addEventListener('click', () => {
-                update(relay1Ref, {
-                    status: true,
-                    manual: true,
-                    timestamp: serverTimestamp()
-                });
-                push(historyRef, {
-                    action: 'Bật thủ công động cơ 1',
-                    value: 'BẬT',
-                    timestamp: serverTimestamp()
-                });
-            });
-
-            document.getElementById('relay1OffBtn').addEventListener('click', () => {
-                update(relay1Ref, {
-                    status: false,
-                    manual: true,
-                    timestamp: serverTimestamp()
-                });
-                push(historyRef, {
-                    action: 'Tắt thủ công động cơ 1',
-                    value: 'TẮT',
-                    timestamp: serverTimestamp()
-                });
-            });
-
-            // Manual control buttons for relay 2
-            document.getElementById('relay2OnBtn').addEventListener('click', () => {
-                update(relay2Ref, {
-                    status: true,
-                    manual: true,
-                    timestamp: serverTimestamp()
-                });
-                push(historyRef, {
-                    action: 'Bật thủ công động cơ 2',
-                    value: 'BẬT',
-                    timestamp: serverTimestamp()
-                });
-            });
-
-            document.getElementById('relay2OffBtn').addEventListener('click', () => {
-                update(relay2Ref, {
-                    status: false,
-                    manual: true,
-                    timestamp: serverTimestamp()
-                });
-                push(historyRef, {
-                    action: 'Tắt thủ công động cơ 2',
-                    value: 'TẮT',
-                    timestamp: serverTimestamp()
-                });
-            });
-
-            function updateTrend(type, diff) {
-                const trendElement = document.getElementById(`${type}Trend`);
-                const trendIconElement = document.getElementById(`${type}TrendIcon`);
-                const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
-                trendElement.textContent = Math.abs(diff).toFixed(1);
-                trendElement.className = trendClass;
-                trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
-                trendIconElement.className = trendClass;
-            }
-
-            function formatDateTime(date) {
-                const day = date.getDate().toString().padStart(2, '0');
-                const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                const year = date.getFullYear();
-                const hours = date.getHours().toString().padStart(2, '0');
-                const minutes = date.getMinutes().toString().padStart(2, '0');
-                const seconds = date.getSeconds().toString().padStart(2, '0');
-                return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-            }
-
-            function formatTime(date) {
-                const hours = date.getHours().toString().padStart(2, '0');
-                const minutes = date.getMinutes().toString().padStart(2, '0');
-                return `${hours}:${minutes}`;
-            }
+      signInAnonymously(auth)
+        .then(() => {
+          console.log('Signed in anonymously');
+          hideLoadingOverlay();
+          initializeRealtimeListeners();
+        })
+        .catch((error) => {
+          console.error('Anonymous auth failed:', error);
+          showNotification('Lỗi xác thực Firebase. Vui lòng thử lại.');
+          document.getElementById('statusText').textContent = 'Mất kết nối';
         });
+
+      onAuthStateChanged(auth, (user) => {
+        const connectionStatus = document.getElementById('connectionStatus');
+        const statusText = document.getElementById('statusText');
+        if (user) {
+          connectionStatus.classList.add('connected');
+          statusText.textContent = 'Đã kết nối';
+        } else {
+          connectionStatus.classList.remove('connected');
+          statusText.textContent = 'Mất kết nối';
+        }
+      });
+
+      // Realtime listeners
+      function initializeRealtimeListeners() {
+        // Sensor data
+        const sensorRef = ref(database, 'sensor_data');
+        onValue(sensorRef, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const tempCard = document.querySelector('.temperature');
+            const humidCard = document.querySelector('.humidity');
+            tempCard.classList.add('updated');
+            humidCard.classList.add('updated');
+            setTimeout(() => {
+              tempCard.classList.remove('updated');
+              humidCard.classList.remove('updated');
+            }, 500);
+
+            document.getElementById('temperature').textContent = data.temperature.toFixed(1);
+            document.getElementById('humidity').textContent = data.humidity.toFixed(1);
+
+            if (prevTemperature !== null) {
+              const tempDiff = data.temperature - prevTemperature;
+              updateTrend('temp', tempDiff);
+            }
+            if (prevHumidity !== null) {
+              const humidDiff = data.humidity - prevHumidity;
+              updateTrend('humid', humidDiff);
+            }
+
+            prevTemperature = data.temperature;
+            prevHumidity = data.humidity;
+
+            const now = new Date();
+            document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${formatDateTime(now)}`;
+
+            chartData.labels.push(formatTime(now));
+            chartData.temperature.push(data.temperature);
+            chartData.humidity.push(data.humidity);
+
+            if (chartData.labels.length > 20) {
+              chartData.labels.shift();
+              chartData.temperature.shift();
+              chartData.humidity.shift();
+            }
+
+            updateWeatherStatus(data.temperature, data.humidity);
+            updateRainForecast(data.humidity);
+          }
+        }, (error) => {
+          console.error('Error reading sensor data:', error);
+          showNotification('Lỗi đọc dữ liệu cảm biến.');
+        });
+
+        // Relay 1
+        const relay1Ref = ref(database, 'relays/relay1');
+        onValue(relay1Ref, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const motor1Card = document.querySelectorAll('.motor')[0];
+            motor1Card.classList.add('updated');
+            setTimeout(() => motor1Card.classList.remove('updated'), 500);
+
+            const motor1Led = document.getElementById('motor1Led');
+            const motor1StatusText = document.getElementById('motor1StatusText');
+            const manualControl = document.getElementById('relay1ManualControl');
+
+            if (data.status) {
+              motor1Led.classList.remove('off');
+              motor1Led.classList.add('on');
+              motor1StatusText.textContent = 'BẬT';
+            } else {
+              motor1Led.classList.remove('on');
+              motor1Led.classList.add('off');
+              motor1StatusText.textContent = 'TẮT';
+            }
+
+            if (prevMotor1Status !== null && prevMotor1Status !== data.status) {
+              showNotification(`Động cơ 1 đã ${data.status ? 'BẬT' : 'TẮT'}`);
+            }
+            prevMotor1Status = data.status;
+
+            const modeOptions = document.querySelectorAll('#relay1ModeSelector .mode-option');
+            modeOptions.forEach(option => {
+              option.classList.remove('active');
+              if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
+                option.classList.add('active');
+              }
+            });
+
+            manualControl.style.display = data.manual ? 'block' : 'none';
+
+            if (data.timestamp) {
+              document.getElementById('motor1LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
+            }
+          }
+        }, (error) => {
+          console.error('Error reading relay1 data:', error);
+          showNotification('Lỗi đọc dữ liệu động cơ 1.');
+        });
+
+        // Relay 2
+        const relay2Ref = ref(database, 'relays/relay2');
+        onValue(relay2Ref, (snapshot) => {
+          const data = snapshot.val();
+          if (data) {
+            const motor2Card = document.querySelectorAll('.motor')[1];
+            motor2Card.classList.add('updated');
+            setTimeout(() => motor2Card.classList.remove('updated'), 500);
+
+            const motor2Led = document.getElementById('motor2Led');
+            const motor2StatusText = document.getElementById('motor2StatusText');
+            const manualControl = document.getElementById('relay2ManualControl');
+
+            if (data.status) {
+              motor2Led.classList.remove('off');
+              motor2Led.classList.add('on');
+              motor2StatusText.textContent = 'BẬT';
+            } else {
+              motor2Led.classList.remove('on');
+              motor2Led.classList.add('off');
+              motor2StatusText.textContent = 'TẮT';
+            }
+
+            if (prevMotor2Status !== null && prevMotor2Status !== data.status) {
+              showNotification(`Động cơ 2 đã ${data.status ? 'BẬT' : 'TẮT'}`);
+            }
+            prevMotor2Status = data.status;
+
+            const modeOptions = document.querySelectorAll('#relay2ModeSelector .mode-option');
+            modeOptions.forEach(option => {
+              option.classList.remove('active');
+              if ((option.dataset.mode === 'auto' && !data.manual) || (option.dataset.mode === 'manual' && data.manual)) {
+                option.classList.add('active');
+              }
+            });
+
+            manualControl.style.display = data.manual ? 'block' : 'none';
+
+            if (data.timestamp) {
+              document.getElementById('motor2LastChange').textContent = `Lần cuối: ${formatDateTime(new Date(data.timestamp))}`;
+            }
+          }
+        }, (error) => {
+          console.error('Error reading relay2 data:', error);
+          showNotification('Lỗi đọc dữ liệu động cơ 2.');
+        });
+
+        // History
+        const historyRef = ref(database, 'history');
+        onValue(historyRef, (snapshot) => {
+          const historyTable = document.getElementById('historyTable');
+          historyTable.innerHTML = '';
+          const records = [];
+          snapshot.forEach((childSnapshot) => {
+            records.push({ key: childSnapshot.key, ...childSnapshot.val() });
+          });
+          // Sort by timestamp (newest first) and limit to 5
+          records.sort((a, b) => b.timestamp - a.timestamp);
+          records.slice(0, 5).forEach((action) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${formatDateTime(new Date(action.timestamp))}</td>
+              <td>${action.action}</td>
+              <td>${action.value}</td>
+            `;
+            historyTable.prepend(row);
+          });
+        }, (error) => {
+          console.error('Error reading history:', error);
+          showNotification('Lỗi đọc lịch sử thao tác.');
+        });
+      }
+
+      // Relay control events
+      document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const mode = option.dataset.mode;
+          const isManual = mode === 'manual';
+          document.querySelectorAll('#relay1ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+          document.getElementById('relay1ManualControl').style.display = isManual ? 'block' : 'none';
+
+          set(ref(database, 'relays/relay1'), {
+            status: false,
+            speed: 0,
+            manual: isManual,
+            timestamp: serverTimestamp()
+          }).then(() => {
+            push(ref(database, 'history'), {
+              action: 'Thay đổi chế độ động cơ 1',
+              value: isManual ? 'Thủ công' : 'Tự động',
+              timestamp: serverTimestamp()
+            });
+            showNotification(`Động cơ 1 chuyển sang chế độ ${isManual ? 'thủ công' : 'tự động'}`);
+          }).catch((error) => {
+            console.error('Error updating relay1 mode:', error);
+            showNotification('Lỗi thay đổi chế độ động cơ 1.');
+          });
+        });
+      });
+
+      document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const mode = option.dataset.mode;
+          const isManual = mode === 'manual';
+          document.querySelectorAll('#relay2ModeSelector .mode-option').forEach(opt => opt.classList.remove('active'));
+          option.classList.add('active');
+          document.getElementById('relay2ManualControl').style.display = isManual ? 'block' : 'none';
+
+          set(ref(database, 'relays/relay2'), {
+            status: false,
+            speed: 0,
+            manual: isManual,
+            timestamp: serverTimestamp()
+          }).then(() => {
+            push(ref(database, 'history'), {
+              action: 'Thay đổi chế độ động cơ 2',
+              value: isManual ? 'Thủ công' : 'Tự động',
+              timestamp: serverTimestamp()
+            });
+            showNotification(`Động cơ 2 chuyển sang chế độ ${isManual ? 'thủ công' : 'tự động'}`);
+          }).catch((error) => {
+            console.error('Error updating relay2 mode:', error);
+            showNotification('Lỗi thay đổi chế độ động cơ 2.');
+          });
+        });
+      });
+
+      document.getElementById('relay1OnBtn').addEventListener('click', () => {
+        set(ref(database, 'relays/relay1'), {
+          status: true,
+          speed: 100,
+          manual: true,
+          timestamp: serverTimestamp()
+        }).then(() => {
+          push(ref(database, 'history'), {
+            action: 'Bật thủ công động cơ 1',
+            value: 'BẬT',
+            timestamp: serverTimestamp()
+          });
+          showNotification('Động cơ 1 đã bật');
+        }).catch((error) => {
+          console.error('Error turning on relay1:', error);
+          showNotification('Lỗi bật động cơ 1.');
+        });
+      });
+
+      document.getElementById('relay1OffBtn').addEventListener('click', () => {
+        set(ref(database, 'relays/relay1'), {
+          status: false,
+          speed: 0,
+          manual: true,
+          timestamp: serverTimestamp()
+        }).then(() => {
+          push(ref(database, 'history'), {
+            action: 'Tắt thủ công động cơ 1',
+            value: 'TẮT',
+            timestamp: serverTimestamp()
+          });
+          showNotification('Động cơ 1 đã tắt');
+        }).catch((error) => {
+          console.error('Error turning off relay1:', error);
+          showNotification('Lỗi tắt động cơ 1.');
+        });
+      });
+
+      document.getElementById('relay2OnBtn').addEventListener('click', () => {
+        set(ref(database, 'relays/relay2'), {
+          status: true,
+          speed: 100,
+          manual: true,
+          timestamp: serverTimestamp()
+        }).then(() => {
+          push(ref(database, 'history'), {
+            action: 'Bật thủ công động cơ 2',
+            value: 'BẬT',
+            timestamp: serverTimestamp()
+          });
+          showNotification('Động cơ 2 đã bật');
+        }).catch((error) => {
+          console.error('Error turning on relay2:', error);
+          showNotification('Lỗi bật động cơ 2.');
+        });
+      });
+
+      document.getElementById('relay2OffBtn').addEventListener('click', () => {
+        set(ref(database, 'relays/relay2'), {
+          status: false,
+          speed: 0,
+          manual: true,
+          timestamp: serverTimestamp()
+        }).then(() => {
+          push(ref(database, 'history'), {
+            action: 'Tắt thủ công động cơ 2',
+            value: 'TẮT',
+            timestamp: serverTimestamp()
+          });
+          showNotification('Động cơ 2 đã tắt');
+        }).catch((error) => {
+          console.error('Error turning off relay2:', error);
+          showNotification('Lỗi tắt động cơ 2.');
+        });
+      });
+
+      // Helper functions
+      function updateTrend(type, diff) {
+        const trendElement = document.getElementById(`${type}Trend`);
+        const trendIconElement = document.getElementById(`${type}TrendIcon`);
+        const trendClass = diff > 0 ? 'trend-up' : (diff < 0 ? 'trend-down' : 'trend-neutral');
+        trendElement.textContent = Math.abs(diff).toFixed(1);
+        trendElement.className = trendClass;
+        trendIconElement.textContent = diff > 0 ? '↑' : (diff < 0 ? '↓' : '→');
+        trendIconElement.className = trendClass;
+      }
+
+      function formatDateTime(date) {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const seconds = date.getSeconds().toString().padStart(2, '0');
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      }
+
+      function formatTime(date) {
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        return `${hours}:${minutes}`;
+      }
+
+      function updateWeatherStatus(temp, humid) {
+        const weatherIcon = document.getElementById('weatherIcon').firstElementChild;
+        const weatherStatus = document.getElementById('weatherStatus');
+        const weatherTemp = document.getElementById('weatherTemp');
+        const weatherHumid = document.getElementById('weatherHumid');
+        weatherTemp.textContent = temp.toFixed(1);
+        weatherHumid.textContent = humid.toFixed(1);
+        let icon, status;
+        if (humid > 80) {
+          if (temp > 30) {
+            icon = 'fa-poo-storm';
+            status = 'Nóng ẩm';
+          } else {
+            icon = 'fa-cloud-rain';
+            status = 'Mưa';
+          }
+        } else if (temp > 30) {
+          icon = 'fa-sun';
+          status = 'Nóng';
+        } else if (temp < 15) {
+          icon = 'fa-snowflake';
+          status = 'Lạnh';
+        } else {
+          icon = 'fa-cloud-sun';
+          status = 'Ôn hòa';
+        }
+        weatherIcon.className = `fas ${icon}`;
+        weatherStatus.textContent = status;
+        document.getElementById('weatherLastUpdate').textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+      }
+
+      function updateRainForecast(humidity) {
+        const rainForecast = document.getElementById('rainForecast');
+        const rainIcon = document.getElementById('rainIcon').firstElementChild;
+        const currentHumidity = document.getElementById('currentHumidity');
+        const rainProbability = document.getElementById('rainProbability');
+        const rainLastUpdate = document.getElementById('rainLastUpdate');
+        currentHumidity.textContent = humidity.toFixed(1);
+        let forecastText = '';
+        let iconClass = '';
+        let probability = 0;
+        if (humidity >= 80) {
+          forecastText = 'KHẢ NĂNG MƯA CAO';
+          iconClass = 'fa-cloud-rain';
+          probability = 90;
+        } else if (humidity >= 60) {
+          forecastText = 'CÓ THỂ MƯA';
+          iconClass = 'fa-cloud';
+          probability = 60;
+        } else {
+          forecastText = 'ÍT KHẢ NĂNG MƯA';
+          iconClass = 'fa-sun';
+          probability = 10;
+        }
+        rainForecast.textContent = forecastText;
+        rainIcon.className = `fas ${iconClass}`;
+        rainProbability.textContent = probability;
+        rainLastUpdate.textContent = `Cập nhật: ${formatDateTime(new Date())}`;
+      }
+
+      // Load initial data
+      window.addEventListener('load', () => setTimeout(hideLoadingOverlay, 1000));
     </script>
-  </body>
+    </body>
 </html>
