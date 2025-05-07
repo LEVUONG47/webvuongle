@@ -735,11 +735,10 @@
         </div>
 
         <script type="module">
-      // Import Firebase functions
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
-      import { getDatabase, ref, onValue, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js';
-      import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
-
+            // Import các hàm cần thiết từ SDK
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+            import { getDatabase } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+            import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
       // Firebase configuration
       const firebaseConfig = {
         apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
@@ -748,15 +747,13 @@
         projectId: "webvuongle",
         storageBucket: "webvuongle.appspot.com",
         messagingSenderId: "72756137917",
-        appId: "1:72756137917:web:c67f01f04c4f18a520ccd4",
-        measurementId: "G-SCZS6DKEG1"
+        appId: "1:72756137917:web:c67f01f04c4f18a520ccd4"
       };
 
-      // Initialize Firebase
-      const app = initializeApp(firebaseConfig);
-      const database = getDatabase(app);
-      const auth = getAuth(app);
-
+      // Khởi tạo Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const auth = getAuth(app);
       // Initialize Particles.js
       particlesJS('particles-js', {
         particles: {
@@ -861,16 +858,16 @@
       let prevMotor2Status = null;
 
       signInAnonymously(auth)
-        .then(() => {
-          console.log('Signed in anonymously');
-          hideLoadingOverlay();
-          initializeRealtimeListeners();
-        })
-        .catch((error) => {
-          console.error('Anonymous auth failed:', error);
-          showNotification('Lỗi xác thực Firebase. Vui lòng thử lại.');
-          document.getElementById('statusText').textContent = 'Mất kết nối';
-        });
+  .then(() => {
+    console.log('Đăng nhập ẩn danh thành công');
+    hideLoadingOverlay();
+    initializeRealtimeListeners();
+  })
+  .catch((error) => {
+    console.error('Đăng nhập ẩn danh thất bại:', error);
+    showNotification('Lỗi xác thực Firebase. Vui lòng thử lại.');
+    document.getElementById('statusText').textContent = 'Mất kết nối';
+  });
 
       onAuthStateChanged(auth, (user) => {
         const connectionStatus = document.getElementById('connectionStatus');
