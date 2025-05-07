@@ -736,10 +736,9 @@
 
         <script type="module">
             // Import các hàm cần thiết từ SDK
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-            import { getDatabase } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-            import { getAuth } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-      // Firebase configuration
+            import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+            import { getDatabase, ref, onValue, set, push, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-database.js';
+            import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
       const firebaseConfig = {
         apiKey: "AIzaSyBWZE9Ip1cHoletCu7p6vqNz9NOAOQ1l9s",
         authDomain: "webvuongle.firebaseapp.com",
